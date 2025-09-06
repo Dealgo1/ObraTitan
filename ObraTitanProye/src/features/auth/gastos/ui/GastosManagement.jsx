@@ -10,7 +10,7 @@
  * - Si no hay proyecto seleccionado, muestra un mensaje de error.
  * - Renderiza un card con:
  *    - Título del módulo.
- *    - Nombre del proyecto.
+ *    - Nombre del proyectos
  *    - Botón para ir al listado de gastos del proyecto.
  *    - Formulario <GastosForm /> para crear gasto/ingreso.
  *
