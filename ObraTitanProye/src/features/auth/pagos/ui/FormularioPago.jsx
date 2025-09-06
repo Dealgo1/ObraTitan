@@ -1,15 +1,55 @@
+/**
+ * src/components/.../FormularioPago.jsx
+ * ------------------------------------------------------------
+ * Formulario para registrar un pago asociado a un proyecto.
+ *
+ * Props:
+ * - onSubmit: (payload) => void
+ *      Callback que recibe el objeto del pago al enviar el formulario.
+ * - nombreProyecto: string
+ *      Se muestra como encabezado del formulario (fallback: "Proyecto Sin Nombre").
+ * - projectId: string
+ *      ID del proyecto; se usa para cargar proveedores vinculados.
+ *
+ * Estado interno:
+ * - proveedorEmpleado: string  → nombre seleccionado/escrito del proveedor/empleado.
+ * - metodoPago: string         → Efectivo, Transferencia, Cheque, Tarjeta.
+ * - monto: string              → monto del pago (texto; se envía tal cual).
+ * - moneda: string             → C$, USD, EUR.
+ * - fecha: string              → fecha en formato "YYYY-MM-DD" (del input date).
+ * - proveedores: array<any>    → lista cargada desde Firestore por projectId.
+ *
+ * Lógica:
+ * - Al montar/cambiar projectId: se piden proveedores (obtenerProveedores).
+ * - Al enviar:
+ *    - Convierte la fecha "YYYY-MM-DD" a Date local (sin TZ) → fechaLocal.
+ *    - Llama `onSubmit` con { proveedorEmpleado, metodoPago, monto, moneda, fecha: fechaLocal }.
+ *
+ * Notas:
+ * - El input de proveedor usa <datalist> para autocompletar por nombre.
+ * - El monto se guarda como string; si necesitas número, convierte en el onSubmit del padre.
+ * - Manejo básico de errores en carga de proveedores (console.error).
+ */
+
 import React, { useState, useEffect } from "react";
 import "../../PagosCss/FormularioPago.css";
 import { obtenerProveedores } from "../../services/firebaseProveedores";
 
 const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
+  // === Estado de formulario ===
   const [proveedorEmpleado, setProveedorEmpleado] = useState("");
   const [metodoPago, setMetodoPago] = useState("");
   const [monto, setMonto] = useState("");
   const [moneda, setMoneda] = useState("C$");
   const [fecha, setFecha] = useState("");
+
+  // Lista de proveedores vinculados al proyecto
   const [proveedores, setProveedores] = useState([]);
 
+  /**
+   * Carga de proveedores al cambiar `projectId`.
+   * - Si no hay projectId, no intenta cargar.
+   */
   useEffect(() => {
     const cargarProveedores = async () => {
       try {
@@ -23,8 +63,16 @@ const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
     if (projectId) cargarProveedores();
   }, [projectId]);
 
+  /**
+   * handleSubmit
+   * ----------------------------------------------------------
+   * - Normaliza la fecha del input a objeto Date local (YYYY, MM-1, DD).
+   * - Dispara el callback `onSubmit` con el payload del pago.
+   */
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Convierte "YYYY-MM-DD" → Date local sin hora
     const [year, month, day] = fecha.split("-");
     const fechaLocal = new Date(year, month - 1, day);
 
@@ -33,14 +81,18 @@ const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
       metodoPago,
       monto,
       moneda,
-      fecha: fechaLocal, // ⬅️ esta fecha se guarda como la del gasto
+      fecha: fechaLocal, // ⬅️ se guarda como fecha del gasto
     });
   };
 
   return (
     <form className="formulario-pago" onSubmit={handleSubmit}>
-      <h3 className="form-nombre-proyecto">{nombreProyecto || "Proyecto Sin Nombre"}</h3>
+      {/* Encabezado con el nombre del proyecto */}
+      <h3 className="form-nombre-proyecto">
+        {nombreProyecto || "Proyecto Sin Nombre"}
+      </h3>
 
+      {/* Proveedor/Empleado con datalist (autocompletar) */}
       <label>Proveedor/Empleado:</label>
       <input
         list="proveedores"
@@ -53,6 +105,7 @@ const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
         ))}
       </datalist>
 
+      {/* Método de pago */}
       <label>Método de pago:</label>
       <select
         value={metodoPago}
@@ -66,6 +119,7 @@ const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
         <option value="Tarjeta">Tarjeta</option>
       </select>
 
+      {/* Monto + Moneda */}
       <label>Monto:</label>
       <div className="form-monto-con-moneda">
         <input
@@ -84,6 +138,7 @@ const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
         </select>
       </div>
 
+      {/* Fecha del pago */}
       <label>Fecha:</label>
       <input
         type="date"
@@ -91,6 +146,7 @@ const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
         onChange={(e) => setFecha(e.target.value)}
       />
 
+      {/* CTA */}
       <div className="form-botones-derecha">
         <button type="submit" className="form-btn-agregar">
           Agregar Pago

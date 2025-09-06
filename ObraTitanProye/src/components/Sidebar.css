@@ -1,6 +1,10 @@
-/* Botón Toggle (☰ / X) */
+/* ==============================
+   Botón Toggle (☰ / X)
+   - Se muestra solo en pantallas pequeñas (responsive).
+   - Fijo en la parte superior izquierda.
+   ============================== */
 .sidebar-toggle {
-  display: none;
+  display: none; /* Oculto en desktop */
   position: fixed;
   top: 1rem;
   left: 2rem;
@@ -10,11 +14,15 @@
   background: rgba(0, 0, 0, 0.6);
   border: none;
   border-radius: 12px;
-  padding: 0;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+
+  /* Alineación interna (ícono centrado) */
   justify-content: center;
   align-items: center;
+
+  /* Animaciones */
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
@@ -23,10 +31,14 @@
 }
 
 .sidebar-toggle:active {
-  transform: scale(0.95) rotate(-2deg);
+  transform: scale(0.95) rotate(-2deg); /* Efecto al presionar */
 }
 
-/* Contenedor principal del sidebar */
+/* ==============================
+   Contenedor principal del sidebar
+   - Fijo en lateral izquierdo.
+   - Estilo: gradiente + bordes redondeados.
+   ============================== */
 .sidebar {
   position: fixed;
   top: 2rem;
@@ -35,16 +47,24 @@
   height: calc(100vh - 4rem);
   background: linear-gradient(180deg, #e3a008, #c88000);
   border-radius: 25px;
+
+  /* Flex vertical para logo + items */
   display: flex;
   flex-direction: column;
   align-items: center;
+
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   z-index: 1000;
   padding-bottom: 2rem;
+
+  /* Animaciones de apertura/cierre */
   transition: transform 0.35s ease, width 0.3s ease-in-out;
 }
 
-/* Contenedor del logo con comportamiento dinámico */
+/* ==============================
+   Logo del sidebar
+   - Posición cambia según abierto/cerrado.
+   ============================== */
 .sidebar-logo {
   width: 100%;
   display: flex;
@@ -52,56 +72,61 @@
   transition: padding-top 0.3s ease;
 }
 
-/* Posición del logo cuando el sidebar está cerrado */
 .logo-arriba {
   padding-top: 3rem;
 }
 
-/* Posición del logo cuando el sidebar está abierto */
 .logo-abajo {
   padding-top: 2.5rem;
   padding-bottom: 1rem;
 }
 
-/* Imagen del logo */
 .sidebar-logo-img {
   width: 110px;
   height: auto;
   max-width: 100%;
-  transition: width 0.3s ease;
   margin-top: -10px;
+  transition: width 0.3s ease;
 }
 
-/* Animación del logo al hacer hover */
 .sidebar-logo:hover .sidebar-logo-img {
-  transform: scale(1.05);
+  transform: scale(1.05); /* Zoom suave */
   transition: transform 0.2s ease;
 }
 
-/* Contenedor de navegación (íconos) */
+/* ==============================
+   Navegación (contenedor de ítems)
+   - Scroll interno sin barra visible.
+   ============================== */
 .sidebar-nav {
-  flex: 1;
+  flex: 1; /* Ocupa el espacio restante */
   width: 100%;
-  min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+
   gap: 1.8rem;
   padding: 0 0.5rem;
   overflow-y: auto;
 }
 
 .sidebar-nav::-webkit-scrollbar {
-  width: 0;
+  width: 0; /* Oculta el scrollbar */
 }
 
-/* Estilo de cada ítem del sidebar */
+/* ==============================
+   Ítems de navegación
+   - Cada icono clickable con efecto hover.
+   ============================== */
 .sidebar-item {
+  position: relative; /* Necesario para tooltip */
   width: 85%;
   text-align: center;
   padding: 0.8rem 0;
   cursor: pointer;
   border-radius: 10px;
+
+  /* Transiciones suaves */
   transition: background-color 0.25s, transform 0.2s;
 }
 
@@ -116,7 +141,9 @@
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
 }
 
-/* Estilo general de los íconos */
+/* ==============================
+   Íconos generales
+   ============================== */
 .sidebar-icon {
   width: 30px;
   height: 30px;
@@ -127,7 +154,7 @@
   transform: scale(1.1);
 }
 
-/* Iconos individuales (por si necesitás controlarlos por clase) */
+/* Íconos más grandes (personalización) */
 .icon-check,
 .icon-calc,
 .icon-money,
@@ -138,61 +165,70 @@
   height: 42px;
 }
 
-/* 📌 Tamaño personalizado solo para el ícono de sesión */
+/* Ícono de sesión (usuarios/logout) */
 .icon-sesion {
   width: 42px !important;
   height: 42px !important;
   object-fit: contain;
 }
 
-
-
-.sidebar-item {
-  position: relative;
-}
-
+/* ==============================
+   Tooltip de cada ítem
+   - Usa data-tooltip en HTML.
+   ============================== */
 .sidebar-item::after {
   content: attr(data-tooltip);
   position: absolute;
-  left: 8%; /* Centra horizontalmente respecto al contenedor (icono) */
-  top: 50%; /* Coloca el tooltip en el centro vertical del icono */
-  transform: translate(-50%, -50%); /* Centra el tooltip en ambos ejes (X e Y) */
+  left: 8%;  /* Cerca del icono */
+  top: 50%;
+  transform: translate(-50%, -50%);
   background: #D35400;
   color: white;
   padding: 4px 8px;
   border-radius: 5px;
   white-space: nowrap;
-  opacity: 0; /* Inicialmente invisible */
+
+  /* Oculto por defecto */
+  opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease, transform 0.3s ease; /* Añadimos transición para opacidad y movimiento */
+
+  /* Animaciones */
+  transition: opacity 0.3s ease, transform 0.3s ease;
   font-size: 12px;
   z-index: 10;
-  width: 75px; /* Ancho fijo */
-  height: 30px; /* Alto fijo */
-  text-align: center; /* Centra el texto */
-  line-height: 30px; /* Alinea el texto verticalmente */
-  overflow: hidden; /* Si el texto es más largo, lo recorta */
-  text-overflow: ellipsis; /* Muestra "..." si el texto es demasiado largo */
+
+  /* Dimensiones */
+  width: 75px;
+  height: 30px;
+  text-align: center;
+  line-height: 30px;
+
+  /* Control de overflow de texto */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+/* Visible al hover */
 .sidebar-item:hover::after {
-  opacity: 1; /* Hace que se vuelva visible al pasar el ratón */
-  transform: translate(-50%, -50%) scale(1.1); /* Puede añadir un ligero escalado si lo deseas */
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.1);
 }
 
-/* Para la animación de desplazamiento, se ajusta también el movimiento */
+/* Animación de desplazamiento suave */
 .sidebar-item::after {
   transform: translateY(-50%) translateX(10px);
 }
 
 .sidebar-item:hover::after {
   opacity: 1;
-  transform: translateY(-50%) translateX(0); /* Desplazamiento suave cuando se muestra */
+  transform: translateY(-50%) translateX(0);
 }
 
-
-
-/* Diseño responsive para tablets/laptops más pequeños */
+/* ==============================
+   Responsive: Tablets/Laptops (≤1280px)
+   - Sidebar ocupa toda la altura lateral.
+   - Se oculta por defecto (translateX).
+   ============================== */
 @media (max-width: 1280px) {
   .sidebar {
     top: 0;
@@ -200,16 +236,16 @@
     width: 100px;
     height: 100vh;
     border-radius: 0;
-    transform: translateX(-100%);
+    transform: translateX(-100%); /* Oculta */
     padding: 2rem 0;
   }
 
   .sidebar.open {
-    transform: translateX(0);
+    transform: translateX(0); /* Muestra */
   }
 
   .sidebar-toggle {
-    display: flex;
+    display: flex; /* Visible toggle */
     width: 36px;
     height: 36px;
   }
@@ -223,7 +259,10 @@
   }
 }
 
-/* Diseño responsive para móviles */
+/* ==============================
+   Responsive: Móviles (≤480px)
+   - Ajuste de tamaños para pantalla reducida.
+   ============================== */
 @media (max-width: 480px) {
   .sidebar-toggle {
     top: 0.8rem;

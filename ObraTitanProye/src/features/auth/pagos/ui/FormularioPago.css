@@ -1,14 +1,19 @@
+/* ==========================================================================
+   Fuente y variables de tema
+   ========================================================================== */
 @import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
 
 :root {
-  --form-naranja: #D35400;
-  --form-naranja-hover: #b34700;
-  --form-blanco: #fff;
-  --form-negro: #000;
+  --form-naranja: #D35400;          /* color principal (botones/bordes) */
+  --form-naranja-hover: #b34700;    /* hover del botón principal */
+  --form-blanco: #fff;              /* fondos claros */
+  --form-negro: #000;               /* textos oscuros */
 }
 
-
-
+/* ==========================================================================
+   Layout base del módulo de pagos
+   - Fondo gris oscuro y tipografía Arapey
+   ========================================================================== */
 /* 🎯 Fondo oscuro del layout */
 .dashboard-container {
   display: flex;
@@ -35,6 +40,9 @@
   max-width: 700px;
 }
 
+/* ==========================================================================
+   Tarjeta del formulario
+   ========================================================================== */
 /* 📦 Contenedor del formulario */
 .form-pago-container {
   display: flex;
@@ -53,7 +61,7 @@
   font-family: 'Arapey', serif;
 }
 
-/* 🏷️ Nombre del proyecto */
+/* 🏷️ Nombre del proyecto (encabezado de la tarjeta) */
 .form-nombre-proyecto {
   font-size: 28px;
   color: var(--form-negro);
@@ -61,7 +69,7 @@
   font-weight: 700;
 }
 
-/* 🏷️ Etiquetas */
+/* 🏷️ Etiquetas de campos */
 .formulario-pago label {
   display: block;
   margin-top: 20px;
@@ -69,7 +77,7 @@
   font-size: 20px;
 }
 
-/* 🔲 Inputs y selects */
+/* 🔲 Campos de texto y selects (estilo consistente) */
 .formulario-pago input,
 .form-select-input {
   width: 100%;
@@ -83,17 +91,24 @@
   font-family: 'Arapey', serif;
 }
 
-/* 💰 Monto y Moneda */
+/* ==========================================================================
+   Monto y Moneda (layout combinado)
+   ========================================================================== */
+/* 💰 Contenedor de monto + moneda */
 .form-monto-con-moneda {
   display: flex;
   gap: 10px;
   margin-top: 6px;
 }
+
+/* Input de monto (toma el espacio restante) */
 .form-monto-con-moneda input {
   flex: 1;
   padding: 14px;
   font-size: 17px;
 }
+
+/* Select de moneda (ancho fijo en desktop) */
 .form-moneda-select {
   width: 90px;
   padding: 14px;
@@ -105,6 +120,9 @@
   font-family: 'Arapey', serif;
 }
 
+/* ==========================================================================
+   Botones
+   ========================================================================== */
 /* ✅ Botón alineado a la derecha */
 .form-botones-derecha {
   display: flex;
@@ -112,7 +130,7 @@
   margin-top: 50px;
 }
 
-/* ✅ Botón estilo Arapey */
+/* ✅ Botón estilo Arapey (CTA principal) */
 .form-btn-agregar {
   background-color: var(--form-naranja);
   color: var(--form-negro);
@@ -126,11 +144,17 @@
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
   transition: background-color 0.3s ease;
 }
+
 .form-btn-agregar:hover {
   background-color: var(--form-naranja-hover);
 }
 
-/* 📱 RESPONSIVE */
+/* ==========================================================================
+   Responsive (≤ 768px)
+   - Reduce padding
+   - Centra botón
+   - Apila monto/moneda en columna
+   ========================================================================== */
 @media (max-width: 768px) {
   .formulario-pago {
     padding: 20px;
