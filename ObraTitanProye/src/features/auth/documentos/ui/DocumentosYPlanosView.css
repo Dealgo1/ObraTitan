@@ -1,0 +1,185 @@
+/* ────────────────────────────────────────────
+   Layout general de la vista
+──────────────────────────────────────────── */
+.doc-plan-app-container {
+  display: flex;
+  height: 100vh;
+  flex-direction: column; /* ✅ disposición en columna, útil para pantallas pequeñas */
+}
+
+.doc-plan-content-wrapper {
+  flex: 1;
+  background: #2f2f2f;   /* fondo oscuro general */
+  padding: 20px;         /* espaciado interno */
+  overflow-y: auto;      /* permite scroll si el contenido excede */
+}
+
+.doc-plan-container {
+  max-width: 800px;      /* ancho máximo para mantener legibilidad */
+  margin: 0 auto;        /* centra horizontalmente */
+  width: 100%;           /* ocupa todo el ancho disponible */
+}
+
+/* ────────────────────────────────────────────
+   Encabezados
+──────────────────────────────────────────── */
+.doc-plan-title {
+  font-family: 'Arapey', serif;
+  color: #ffffff;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.doc-plan-project-name {
+  font-family: 'Arapey', serif;
+  font-size: 40px;
+  color: #000000;
+  margin-bottom: 20px;
+  padding-bottom: 5px;
+}
+
+/* ────────────────────────────────────────────
+   Formulario de carga
+──────────────────────────────────────────── */
+.doc-plan-form-upload {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* ligera sombra */
+}
+
+.doc-plan-form-group {
+  margin-bottom: 20px;
+}
+
+.doc-plan-label {
+  display: block;
+  font-family: 'Arapey', serif;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+.doc-plan-input,
+.doc-plan-select {
+  width: 100%;
+  padding: 8px;
+  font-family: 'Arapey', serif;
+  border: 2px solid #D35400; /* borde naranja */
+  border-radius: 4px;
+}
+
+/* ────────────────────────────────────────────
+   Botón principal
+──────────────────────────────────────────── */
+.doc-plan-submit-btn {
+  display: block;
+  margin: 0 auto;              /* centra horizontalmente */
+  padding: 10px 20px;
+  background-color: #D35400;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Arapey', serif;
+  color: #000;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.doc-plan-submit-btn:hover {
+  background-color: #aa4909; /* más oscuro en hover */
+}
+
+/* ────────────────────────────────────────────
+   Sección de archivo subido (si existiera preview)
+──────────────────────────────────────────── */
+.doc-plan-uploaded-file {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.doc-plan-uploaded-title {
+  font-family: 'Arapey', serif;
+  color: #ffffff;
+}
+
+.doc-plan-file-link {
+  color: #ffffff;
+  font-family: 'Arapey', serif;
+  text-decoration: none;
+}
+
+.doc-plan-file-link:hover {
+  text-decoration: underline;
+}
+
+/* ────────────────────────────────────────────
+   Toast de éxito (aparece tras subida correcta)
+──────────────────────────────────────────── */
+.doc-plan-toast-success {
+  margin-top: 20px;
+  padding: 12px 20px;
+  background-color: #D35400;
+  color: white;
+  border-radius: 8px;
+  font-weight: bold;
+  animation: fadeInOut 3s ease-in-out; /* animación de entrada/salida */
+}
+
+/* Animación del toast: aparece, permanece y se desvanece */
+@keyframes fadeInOut {
+  0% {
+      opacity: 0;
+      transform: translateY(-10px);
+  }
+  10%, 90% {
+      opacity: 1;
+      transform: translateY(0);
+  }
+  100% {
+      opacity: 0;
+      transform: translateY(-10px);
+  }
+}
+
+/* ────────────────────────────────────────────
+   Responsividad: pantallas pequeñas (< 365px)
+──────────────────────────────────────────── */
+@media (max-width: 365px) {
+  .doc-plan-content-wrapper {
+      padding: 10px; /* menos padding */
+  }
+
+  .doc-plan-title {
+      font-size: 20px; /* título más pequeño */
+  }
+
+  .doc-plan-project-name {
+      font-size: 24px; /* nombre del proyecto más pequeño */
+  }
+
+  .doc-plan-input,
+  .doc-plan-select {
+      padding: 6px; /* inputs más compactos */
+  }
+
+  .doc-plan-submit-btn {
+      padding: 8px 16px; /* botón más compacto */
+  }
+
+  .doc-plan-uploaded-title {
+      font-size: 16px;
+  }
+
+  .doc-plan-toast-success {
+      padding: 10px 15px;
+      font-size: 14px;
+  }
+
+  .doc-plan-container {
+      padding: 10px;
+      width: 100%;
+  }
+
+  .doc-plan-form-upload {
+      padding: 15px;
+  }
+}
