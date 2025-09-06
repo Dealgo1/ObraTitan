@@ -1,0 +1,129 @@
+/* ==========================================================================
+   Fuente global
+   ========================================================================== */
+@import url('https://fonts.googleapis.com/css2?family=Arapey&display=swap');
+
+/* ==========================================================================
+   Contenedor principal
+   - Fondo gris oscuro
+   - Centra el contenido vertical y horizontalmente
+   ========================================================================== */
+.inicio-container {
+  background-color: #3A3A3A;
+  color: #fff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+/* ==========================================================================
+   Caja blanca con el contenido del inicio
+   - Bordes redondeados
+   - Sombra dorada (resalta)
+   - Diseño centrado
+   ========================================================================== */
+.inicio-contenido-vertical {
+  background-color: #ffffff;
+  padding: 3rem 2rem;
+  border-radius: 2rem;
+  box-shadow: 0 15px 30px #E3A008;
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ==========================================================================
+   Animación (Lottie)
+   ========================================================================== */
+.inicio-animacion {
+  width: 200px;
+  max-height: 200px;
+  margin-bottom: 2rem;
+}
+
+/* ==========================================================================
+   Título principal
+   ========================================================================== */
+.inicio-titulo {
+  font-family: 'Arapey', serif;
+  font-size: 2.7rem;
+  margin-bottom: 1rem;
+  color: #000000;
+}
+
+/* ==========================================================================
+   Descripción breve
+   ========================================================================== */
+.inicio-descripcion {
+  font-size: 1.2rem;
+  color: #000000;
+  margin-bottom: 2rem;
+  max-width: 600px;
+}
+
+/* ==========================================================================
+   Botón principal (CTA)
+   - Fondo naranja fuerte
+   - Cambia a naranja claro al pasar el mouse
+   ========================================================================== */
+.btn-principal {
+  background-color: #D35400;
+  color: black;
+  border: none;
+  padding: 0.9rem 2.5rem;
+  border-radius: 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.btn-principal:hover {
+  background-color: #ffb84d;
+}
+
+/* ==========================================================================
+   Responsive (tablets/móviles)
+   - Ajusta tamaño de animación, título y descripción
+   ========================================================================== */
+@media (max-width: 768px) {
+  .inicio-animacion {
+    width: 140px;
+  }
+
+  .inicio-titulo {
+    font-size: 2.2rem;
+  }
+
+  .inicio-descripcion {
+    font-size: 1.1rem;
+    padding: 0 1rem;
+  }
+}
+
+/* ==========================================================================
+   Animación de entrada/salida (fade in/out)
+   - Usada para el mensaje flotante en iOS
+   ========================================================================== */
+@keyframes fadeinout {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(10px);
+    display: none;
+  }
+}
