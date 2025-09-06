@@ -1,0 +1,306 @@
+@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+
+/* ==========================================================================
+   🎨 Fondo general del módulo (gris oscuro)
+   - Abarca toda la altura de la pantalla y da padding interno.
+   ========================================================================== */
+.fondo-oscuro {
+  background-color: #3A3A3A;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   🧾 Título del módulo
+   - Usa clamp para ser fluido entre tamaños
+   - Centrado y con tipografía Arapey
+   ========================================================================== */
+.titulo-modulo {
+  font-size: clamp(2rem, 4vw, 40px);
+  font-weight: bold;
+  color: white;
+  font-family: 'Arapey', serif;
+  text-align: center;
+  margin: 80px auto 20px;
+  padding-inline: 1rem;
+}
+
+/* ==========================================================================
+   📦 Contenedor ancho para la tabla (centra y limita ancho)
+   ========================================================================== */
+.tabla-ancha {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   ✅ Tarjeta blanca que envuelve la tabla y controles
+   - Sombra suave y bordes redondeados
+   ========================================================================== */
+.tabla-contenedor {
+  background-color: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  font-family: 'Arapey', serif;
+  width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   🧭 Scroll horizontal para tablas grandes
+   ========================================================================== */
+.scroll-tabla {
+  width: 100%;
+  overflow-x: auto;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   📊 Tabla de pagos (estructura base)
+   - min-width asegura scroll horizontal si hay muchas columnas
+   ========================================================================== */
+.tabla-pagos {
+  width: 100%;
+  min-width: 800px;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  white-space: nowrap;
+}
+
+.tabla-pagos th,
+.tabla-pagos td {
+  border: 1px solid #ccc;
+  padding: 12px;
+  font-size: 20px;
+  vertical-align: middle;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.tabla-pagos th {
+  background-color: #f2f2f2;
+}
+
+/* ==========================================================================
+   🏷️ Nombre del proyecto (sobre la tarjeta)
+   ========================================================================== */
+.nombre-proyecto {
+  font-size: clamp(1.5rem, 3vw, 28px);
+  font-weight: 600;
+  color: #000000;
+  font-family: 'Arapey', serif;
+  margin-bottom: 15px;
+  text-align: left;
+  padding-inline: 1rem;
+}
+
+/* ==========================================================================
+   ✏️ Inputs de edición inline dentro de la tabla
+   ========================================================================== */
+.input-editar {
+  width: 100%;
+  padding: 6px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid #D35400;
+  background-color: #fffaf3; /* tono suave para diferenciar edición */
+}
+
+/* ==========================================================================
+   💰 Monto + Moneda (contenedor combinado)
+   - Mantiene el select junto al input (no se baja)
+   ========================================================================== */
+.monto-con-moneda {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: nowrap; /* ❌ evita salto de línea de la moneda */
+}
+
+.moneda-select {
+  width: 80px;
+  border-radius: 4px;
+  border: 1px solid #D35400;
+  background-color: white;
+  color: #222;
+  padding: 6px;
+  font-size: 15px;
+}
+
+/* ==========================================================================
+   🔧 Botones de acción (editar/guardar/eliminar)
+   ========================================================================== */
+.iconos-acciones {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap; /* permite bajar a segunda línea si falta espacio */
+}
+
+.iconos-acciones button {
+  background: #f0f0f0;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  padding: 7px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.iconos-acciones button:hover {
+  transform: scale(1.1);
+  background-color: #D35400;
+}
+
+.iconos-acciones img {
+  width: 22px;
+  height: 22px;
+}
+
+/* ==========================================================================
+   🎯 Resaltado de fila en edición
+   ========================================================================== */
+.fila-seleccionada td {
+  background-color: #fff7e6;
+}
+
+/* ==========================================================================
+   ➕ Botón flotante inferior para crear pago
+   ========================================================================== */
+.btn-flotante {
+  background-color: #D35400;
+  color: rgb(0, 0, 0);
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: block;
+  margin: 20px auto 0;
+  font-family: 'Arapey', serif;
+}
+
+.btn-flotante:hover {
+  background-color: #b84300;
+}
+
+/* ==========================================================================
+   📱 Responsive (móviles / tablets)
+   - Ajusta tipografías, layouts y botones
+   ========================================================================== */
+@media (max-width: 768px) {
+  .titulo-modulo {
+    font-size: 26px;
+    text-align: center;
+    margin-left: 0;
+  }
+
+  .nombre-proyecto {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .iconos-acciones {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .monto-con-moneda {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .moneda-select {
+    width: 100%;
+  }
+
+  .btn-flotante {
+    width: 100%;
+    font-size: 15px;
+  }
+
+  .tabla-pagos {
+    width: max-content; /* permite scroll horizontal del contenedor */
+  }
+
+  .tabla-contenedor {
+    padding: 15px;
+  }
+}
+
+/* ==========================================================================
+   🧩 Ajuste para pantallas grandes con sidebar fijo
+   - Deja espacio al contenido principal
+   ========================================================================== */
+@media (min-width: 1024px) {
+  .contenido-principal {
+    padding-left: 160px;
+    box-sizing: border-box;
+  }
+}
+
+/* ==========================================================================
+   ✅ Toast de éxito (animado)
+   ========================================================================== */
+.toast-exito-pago {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #27ae60;
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  font-family: 'Arapey', serif;
+  z-index: 3000;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+/* Animación de entrada/salida del toast */
+@keyframes fadeInOut {
+  0%   { opacity: 0; transform: translateY(20px); }
+  10%  { opacity: 1; transform: translateY(0); }
+  90%  { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(20px); }
+}
+
+/* ==========================================================================
+   🔎 Barra superior de búsqueda
+   - Input con icono interno a la izquierda
+   ========================================================================== */
+.barra-superior-proveedores {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+.input-con-icono {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.icono-dentro-input {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+}
+
+.input-busqueda {
+  width: 100%;
+  padding: 0.6rem 0.6rem 0.6rem 40px; /* deja espacio para el icono */
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-family: 'Arapey', serif;
+}
