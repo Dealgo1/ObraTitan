@@ -1,0 +1,398 @@
+@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+
+/* ────────────────────────────────────────────
+   Variables (colores, tipografía)
+──────────────────────────────────────────── */
+:root {
+  --color-fondo: #3A3A3A;
+  --color-primario: #D35400;
+  --color-secundario: #f2f2f2;
+  --fuente-principal: 'Arapey', serif;
+}
+
+/* ────────────────────────────────────────────
+   Reset & Box Sizing
+   (garantiza que padding/border no rompan el layout)
+──────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ────────────────────────────────────────────
+   Layout general
+   (fondo, altura mínima, tipografía base)
+──────────────────────────────────────────── */
+.archivo-overview-fondo {
+  background-color: var(--color-fondo);
+  min-height: 100vh;
+  padding: 20px;
+  font-family: var(--fuente-principal);
+}
+
+/* Wrapper para espaciado interno global de la vista */
+.archivo-overview-wrapper {
+  padding: 20px;
+}
+
+/* ────────────────────────────────────────────
+   Contenedor principal (centrado y ancho óptimo)
+   (tarjeta blanca con sombra y ancho máximo)
+──────────────────────────────────────────── */
+.archivo-overview-contenedor {
+  background-color: #ffffff;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  font-family: var(--fuente-principal);
+  width: 95%;
+  max-width: 1100px;
+  margin: 30px auto; /* centra horizontalmente */
+}
+
+/* ────────────────────────────────────────────
+   Título
+   (tipografía grande, blanco sobre fondo oscuro)
+──────────────────────────────────────────── */
+.archivo-overview-titulo {
+  font-size: clamp(2rem, 4vw, 40px);
+  font-weight: bold;
+  color: #ffffff;
+  text-align: center;
+  margin: 80px auto 20px;
+  padding-inline: 1rem; /* evita que el texto pegue a los bordes */
+}
+
+/* ────────────────────────────────────────────
+   Scroll / tabla
+   (scroll horizontal en contenedor para tablas anchas)
+──────────────────────────────────────────── */
+.archivo-overview-tabla-scroll {
+  width: 100%;
+  overflow-x: auto; /* habilita scroll en x si no cabe */
+}
+
+/* Tabla base: ocupa ancho total y fija mínimo para evitar roturas */
+.archivo-overview-tabla {
+  width: 100%;
+  min-width: 800px;        /* evita que colapse en pantallas muy pequeñas */
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  white-space: nowrap;     /* mantiene celdas en una línea */
+  table-layout: auto;      /* deja que el navegador calcule anchos */
+}
+
+/* Celdas: borde, padding y alineación centrada vertical/horizontal */
+.archivo-overview-tabla th,
+.archivo-overview-tabla td {
+  border: 1px solid #ccc;
+  padding: 12px;
+  font-size: 18px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Encabezados con fondo suave para distinguir columnas */
+.archivo-overview-tabla th {
+  background-color: var(--color-secundario);
+  font-weight: bold;
+}
+
+/* ────────────────────────────────────────────
+   Inputs / buscador
+   (estilo coherente con paleta y feedback de focus)
+──────────────────────────────────────────── */
+.archivo-overview-input {
+  width: 100%;
+  min-width: 150px;
+  padding: 6px;
+  font-size: 15px;
+  border-radius: 6px;
+  border: 1px solid var(--color-primario);
+  background-color: #fffaf3; /* leve tono para diferenciar input editable */
+}
+
+/* Contenedor con icono de búsqueda posicionado absoluto */
+.archivo-overview-buscador-contenedor {
+  position: relative;
+  margin-top: 20px;
+}
+
+/* Input de buscador con padding para no solapar el icono */
+.archivo-overview-buscador {
+  width: 100%;
+  padding: 10px 10px 10px 30px; /* deja espacio para el icono a la izquierda */
+  margin: 20px 0;
+  font-size: 16px;
+  border: 2px solid var(--color-primario);
+  border-radius: 5px;
+  outline: none;
+  transition: all 0.3s ease; /* suaviza el cambio de foco */
+}
+
+.archivo-overview-buscador::placeholder {
+  color: rgba(0,0,0,0.5);
+  font-family: var(--fuente-principal);
+}
+
+/* Resalta el borde/halo al enfocar el buscador */
+.archivo-overview-buscador:focus {
+  border-color: #b84300;
+  box-shadow: 0 0 5px #b84300;
+}
+
+/* Icono de búsqueda dentro del input */
+.archivo-overview-icono-buscar {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  opacity: 0.5;
+}
+
+/* ────────────────────────────────────────────
+   Acciones y botones
+   (contenedor flexible y feedback al hover)
+──────────────────────────────────────────── */
+.archivo-overview-acciones {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap; /* permite que los botones bajen de línea */
+}
+
+/* Botones de acción (descargar, ver, editar, eliminar) */
+.archivo-overview-acciones button {
+  background: #f0f0f0;
+  border: 1px solid #000;
+  border-radius: 8px;
+  padding: 7px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+/* Hover: leve zoom y cambio a color primario */
+.archivo-overview-acciones button:hover {
+  transform: scale(1.1);
+  background-color: var(--color-primario);
+}
+
+/* Iconos dentro de los botones */
+.archivo-overview-acciones img {
+  width: 22px;
+  height: 22px;
+}
+
+/* Botón CTA “Registrar Documento” centrado y con hover */
+.archivo-overview-boton-documento {
+  background-color: var(--color-primario);
+  color: #000;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  display: block;
+  margin: 20px auto 0;
+  font-family: var(--fuente-principal);
+}
+
+.archivo-overview-boton-documento:hover {
+  background-color: #b84300;
+}
+
+/* ────────────────────────────────────────────
+   Fila seleccionada (modo edición)
+   (resalta visualmente la fila en edición)
+──────────────────────────────────────────── */
+.archivo-overview-fila-seleccionada td {
+  background-color: #fff7e6;
+}
+
+/* ────────────────────────────────────────────
+   Modal
+   (overlay centrado + caja con scroll interno)
+──────────────────────────────────────────── */
+.archivo-overview-modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.5); /* oscurece el fondo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* por encima del resto */
+}
+
+/* Caja del modal con máximo alto y scroll vertical */
+.archivo-overview-modal-contenido {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+  position: relative;
+}
+
+/* Botón/cierre del modal (ícono “×” grande clicable) */
+.archivo-overview-modal-cerrar {
+  background: transparent;
+  border: none;
+  font-size: 4.5rem; /* tamaño grande para fácil toque en móvil */
+  position: absolute;
+  top: -2.8rem; right: 0;
+  cursor: pointer;
+}
+
+.archivo-overview-modal-cerrar:hover {
+  color: red;
+}
+
+/* ────────────────────────────────────────────
+   Loader Animado
+   (pantalla completa con barras que suben/bajan)
+──────────────────────────────────────────── */
+.archivo-overview-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: var(--color-fondo);
+  color: #fff;
+  font-family: var(--fuente-principal);
+}
+
+/* Contenedor de las “barras” animadas */
+.wave-loader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 5px;
+  height: 60px;
+  margin-bottom: 20px;
+}
+
+/* Cada barra de la animación */
+.wave-loader .wave {
+  width: 6px; height: 30px;
+  margin: 0 4px;
+  background-color: var(--color-primario);
+  border-radius: 20px;
+  animation: wave 1.2s infinite ease-in-out;
+}
+
+/* Desfase progresivo para crear efecto ondulante */
+.wave-loader .wave:nth-child(2) { animation-delay: 0.1s; }
+.wave-loader .wave:nth-child(3) { animation-delay: 0.2s; }
+.wave-loader .wave:nth-child(4) { animation-delay: 0.3s; }
+.wave-loader .wave:nth-child(5) { animation-delay: 0.4s; }
+
+/* Keyframes de la animación vertical */
+@keyframes wave {
+  0%, 40%, 100% { transform: scaleY(0.4); }
+  20% { transform: scaleY(1); }
+}
+
+/* ────────────────────────────────────────────
+   Media Queries (de mayor a menor)
+   (ajustan márgenes, tamaños y distribución)
+──────────────────────────────────────────── */
+
+/* Ajuste fino entre 1440 y 1280: compensa sidebar ancho y centra tarjeta */
+@media (max-width: 1440px) and (min-width: 1280px) {
+  .archivo-overview-contenedor {
+    margin: 0px auto; /* asegura centrado vertical */
+    width: 92%;
+    max-width: 1050px;
+    margin-left: 150px; /* desplazamiento lateral (p.ej. cuando sidebar es fija) */
+  }
+}
+
+/* Dispositivos grandes/medianos */
+@media (max-width: 1280px) {
+  .archivo-overview-wrapper { padding: 20px; }
+  .archivo-overview-titulo { font-size: 35px; margin: 60px auto 20px; }
+  .archivo-overview-contenedor {
+    width: 90%;
+    max-width: 1000px;
+    margin: 30px auto;
+  }
+  .archivo-overview-tabla { min-width: 90%; }
+  .archivo-overview-tabla th, td { font-size: 16px; padding: 10px; }
+  .archivo-overview-acciones button { padding: 8px 12px; font-size: 16px; }
+  .archivo-overview-acciones img { width: 20px; height: 20px; }
+  .archivo-overview-boton-documento { width: 100%; font-size: 18px; }
+  .archivo-overview-nombre-proyecto { font-size: 32px; } /* título secundario más grande */
+}
+
+/* Tablets anchas / pantallas medianas */
+@media (max-width: 870px) {
+  .archivo-overview-wrapper { padding: 15px; }
+  .archivo-overview-titulo { font-size: 30px; margin: 50px auto 20px; }
+  .archivo-overview-contenedor {
+    width: 95%;
+    max-width: 900px;
+    margin: 20px auto;
+  }
+  .archivo-overview-tabla { min-width: 85%; }
+  .archivo-overview-tabla th, td { font-size: 16px; padding: 10px; }
+  .archivo-overview-acciones button { padding: 6px; font-size: 14px; }
+  .archivo-overview-acciones img { width: 18px; height: 18px; }
+  .archivo-overview-boton-documento { width: 100%; font-size: 18px; }
+  .archivo-overview-nombre-proyecto { font-size: 24px; }
+}
+
+/* Tablets / móviles grandes */
+@media (max-width: 768px) {
+  .archivo-overview-wrapper { padding: 10px; }
+  .archivo-overview-titulo { font-size: 26px; }
+  .archivo-overview-contenedor {
+    width: 98%;
+    max-width: none;
+    margin: 15px auto;
+  }
+  .archivo-overview-tabla { min-width: 100%; }
+  .archivo-overview-tabla th, td { font-size: 16px; padding: 8px; }
+  .archivo-overview-acciones { flex-direction: column; } /* botones apilados */
+  .archivo-overview-boton-documento { font-size: 18px; }
+  .archivo-overview-nombre-proyecto { font-size: 28px; }
+}
+
+/* Móviles */
+@media (max-width: 480px) {
+  .archivo-overview-titulo { font-size: 22px; }
+  .archivo-overview-contenedor { padding: 20px; }
+  .archivo-overview-tabla th, td { font-size: 14px; padding: 6px; }
+  .archivo-overview-boton-documento { padding: 10px; font-size: 14px; }
+  .archivo-overview-input { font-size: 14px; padding: 5px; }
+  .archivo-overview-acciones button { padding: 5px; }
+  .archivo-overview-acciones img { width: 20px; height: 20px; }
+  .archivo-overview-modal-contenido { padding: 1rem; } /* modal más compacto */
+}
+
+/* Pantallas muy pequeñas (feature phones) */
+@media (max-width: 299px) {
+  .archivo-overview-titulo { font-size: 16px; margin: 40px auto 10px; }
+  .archivo-overview-contenedor { padding: 15px; }
+  .archivo-overview-tabla th, td { font-size: 12px; padding: 5px; }
+  .archivo-overview-acciones button { padding: 5px; font-size: 12px; }
+  .archivo-overview-acciones img { width: 18px; height: 18px; }
+  .archivo-overview-boton-documento { font-size: 14px; padding: 8px; }
+  .archivo-overview-nombre-proyecto { font-size: 18px; }
+}
+
+/* Ultra-estrechas (modo extremo) */
+@media (max-width: 207px) {
+  .archivo-overview-titulo { font-size: 12px; margin: 30px auto 8px; }
+  .archivo-overview-contenedor { padding: 10px; }
+  .archivo-overview-tabla th, td { font-size: 10px; padding: 4px; }
+  .archivo-overview-acciones button { padding: 3px; font-size: 10px; }
+  .archivo-overview-acciones img { width: 16px; height: 16px; }
+  .archivo-overview-boton-documento { font-size: 12px; padding: 6px; }
+  .archivo-overview-nombre-proyecto { font-size: 14px; }
+}

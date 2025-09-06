@@ -1,0 +1,204 @@
+/* ==========================
+   🎨 Importar tipografía
+   ========================== */
+@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+
+/* ==========================
+   🎨 Variables de colores globales
+   ========================== */
+:root {
+  --naranja: #D35400;
+  --naranja-hover: #b34700;
+  --blanco: #fff;
+  --negro: #000;
+  --gris-claro: #f5f5f5;
+}
+
+/* ==========================
+   📦 Layout general de la vista proveedores
+   ========================== */
+.layout-proveedores {
+  background-color: #2f2f2f; /* Fondo oscuro */
+  min-height: 100vh; /* Toda la altura de la pantalla */
+  padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================
+   🧱 Título en color blanco
+   ========================== */
+.titulo-fondo-oscuro {
+  font-family: 'Arapey', serif;
+  font-weight: 700;
+  color: var(--blanco);
+  font-size: clamp(2.5rem, 6vw, 5rem); /* Escala adaptativa */
+  margin-left: clamp(2rem, 10vw, 200px); /* Espacio a la izquierda */
+  margin-bottom: 1rem;
+}
+
+/* ==========================
+   🧾 Contenedor principal de la tarjeta
+   ========================== */
+.proveedores-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* Alinea arriba */
+}
+
+/* ==========================
+   🗂️ Tarjeta blanca central
+   ========================== */
+.proveedores-card {
+  background-color: var(--blanco);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 1000px;
+  padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3); /* Sombra elegante */
+  font-family: 'Arapey', serif;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* Separación interna */
+}
+
+/* ==========================
+   📋 Lista de proveedores
+   ========================== */
+.lista-proveedores {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* Separación entre ítems */
+}
+
+/* ==========================
+   📄 Cada item de proveedor
+   ========================== */
+.proveedor-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 2px solid var(--naranja);
+  border-radius: 10px;
+  padding: 2rem 1.5rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Efecto hover: se vuelve naranja */
+.proveedor-item:hover {
+  background-color: var(--naranja);
+  color: var(--blanco);
+}
+
+/* ==========================
+   🏷️ Nombre de la empresa
+   ========================== */
+.proveedor-nombre {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--negro);
+}
+
+/* ==========================
+   👉 Flecha a la derecha
+   ========================== */
+.proveedor-arrow {
+  display: flex;
+  align-items: center;
+}
+
+.flecha-derecha {
+  width: 25px;
+  height: auto;
+}
+
+/* ==========================
+   ➕ Botón agregar proveedor
+   ========================== */
+.contenedor-boton-agregar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-agregar-proveedor {
+  background-color: var(--naranja);
+  color: var(--negro);
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 10px;
+  font-weight: bold;
+  font-family: 'Arapey', serif;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+/* Hover: oscurece el naranja */
+.btn-agregar-proveedor:hover {
+  background-color: var(--naranja-hover);
+}
+
+/* ==========================
+   📱 Responsive (pantallas chicas)
+   ========================== */
+@media (max-width: 768px) {
+  .titulo-fondo-oscuro {
+    margin-left: 0;
+    text-align: center; /* Centrar título */
+  }
+
+  .proveedores-container {
+    padding: 1rem 0;
+  }
+
+  .proveedores-card {
+    padding: 1rem;
+  }
+
+  .btn-agregar-proveedor {
+    width: 100%; /* Ocupa toda la pantalla */
+    justify-content: center;
+  }
+}
+
+/* ==========================
+   🔍 Barra de búsqueda
+   ========================== */
+.barra-superior-proveedores {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+}
+
+/* Contenedor con icono dentro */
+.input-con-icono {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+}
+
+.icono-dentro-input {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  opacity: 0.7; /* Semi transparente */
+}
+
+/* Input de búsqueda con espacio para icono */
+.input-busqueda {
+  width: 100%;
+  padding: 0.6rem 0.6rem 0.6rem 40px; /* Espacio a la izquierda para el icono */
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-family: 'Arapey', serif;
+}
