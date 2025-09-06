@@ -1,0 +1,449 @@
+@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+
+/* ───────────────────────────────────────────
+   Variables de tema (colores, layout)
+──────────────────────────────────────────── */
+:root {
+  --max-content-width: 1200px;
+  --layout-padding: 2rem;
+  --layout-padding-mobile: 1rem;
+
+  --naranja: #D35400;
+  --verde: #27ae60;
+  --azul: #2980b9;
+  --gris-fondo: #2f2f2f;
+  --blanco: #fff;
+  --negro: #000;
+}
+
+/* ───────────────────────────────────────────
+   Base / Reset mínimo
+──────────────────────────────────────────── */
+body {
+  font-family: 'Arapey', serif;
+  margin: 0;
+  background-color: var(--gris-fondo);
+}
+
+/* ───────────────────────────────────────────
+   Layout principal de la vista Presupuesto
+──────────────────────────────────────────── */
+.layout-presupuesto {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--gris-fondo);
+}
+
+.contenido-presupuesto {
+  flex: 1;
+  padding: var(--layout-padding);
+  margin-left: clamp(70px, 10vw, 120px); /* margen para dejar espacio al sidebar */
+  box-sizing: border-box;
+  animation: fadeIn 0.5s ease;
+}
+
+/* ───────────────────────────────────────────
+   Títulos
+──────────────────────────────────────────── */
+.titulo,
+.subtitulo {
+  color: var(--blanco);
+  font-weight: bold;
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  margin-bottom: 1rem;
+  animation: slideIn 0.6s ease;
+}
+
+/* ───────────────────────────────────────────
+   Switch de vistas (Materiales / Estructuras)
+──────────────────────────────────────────── */
+.switch-vista {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.6s ease;
+}
+
+.switch-btn {
+  background-color: #eee;
+  padding: 0.7rem 1.3rem;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-family: 'Arapey', serif;
+  transition: all 0.2s ease;
+}
+
+.switch-btn.activo {
+  background-color: var(--verde);
+  color: white;
+  border: 2px solid #1e8449;
+}
+
+/* ───────────────────────────────────────────
+   Tarjetas de formulario (Materiales / Estructura)
+──────────────────────────────────────────── */
+.formulario-material,
+.formulario-estructura {
+  background-color: var(--blanco);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  color: #333;
+  margin-bottom: 2rem;
+  animation: fadeInUp 0.6s ease;
+}
+
+/* Inputs / Selects / Botones dentro de los formularios */
+.formulario-material input,
+.formulario-estructura input,
+.formulario-material select,
+.formulario-estructura select,
+.formulario-material button,
+.formulario-estructura button {
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  min-width: 160px;
+  font-family: 'Arapey', serif;
+  transition: all 0.2s ease;
+}
+
+input[type="file"] {
+  padding: 0.3rem;
+  background-color: transparent;
+  color: #000;
+}
+
+button { cursor: pointer; }
+
+/* Botones de acción en formularios */
+.formulario-material button,
+.formulario-estructura button {
+  background-color: var(--naranja);
+  color: white;
+  font-weight: bold;
+  border: none;
+}
+
+.formulario-material button:hover,
+.formulario-estructura button:hover {
+  background-color: #e67e22;
+}
+
+/* ───────────────────────────────────────────
+   Listado de materiales (ítems)
+──────────────────────────────────────────── */
+.lista-materiales { width: 100%; }
+
+.material-item {
+  background-color: var(--blanco);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.imagen-mini {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Botón eliminar (consolidado) */
+.btn-eliminar {
+  margin-left: auto;
+  background-color: #c0392b;
+  color: white;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  font-family: 'Arapey', serif;
+}
+
+.btn-eliminar:hover { background-color: #e74c3c; }
+
+/* ───────────────────────────────────────────
+   Total de presupuesto
+──────────────────────────────────────────── */
+.total-container {
+  background-color: var(--naranja);
+  color: white;
+  padding: 1rem 2rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  border-radius: 12px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.6s ease;
+}
+
+/* ───────────────────────────────────────────
+   Botones finales (Exportar/Guardar)
+──────────────────────────────────────────── */
+.acciones {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-left: clamp(60px, 10vw, 120px);
+  animation: fadeInUp 0.6s ease;
+  /* Forzar visibilidad */
+  visibility: visible;
+  opacity: 1;
+}
+
+.acciones button {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  border: none;
+  font-family: 'Arapey', serif;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.acciones button:hover { transform: scale(1.03); }
+
+.btn-pdf { background-color: var(--azul); color: white; }
+
+/* Botón: guardar estructura individual (visible y en flujo) */
+.btn-guardar-estructura-unica {
+  background-color: var(--verde);
+  color: white;
+  font-weight: bold;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  font-family: 'Arapey', serif;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  width: auto;
+  margin-top: 1rem;
+  display: inline-block;
+  visibility: visible;
+  opacity: 1;
+}
+
+.btn-guardar-estructura-unica:hover {
+  background-color: #1e8449;
+  transform: scale(1.03);
+}
+
+/* ───────────────────────────────────────────
+   Lista de estructuras (cards + tabla)
+──────────────────────────────────────────── */
+.lista-estructuras { margin-top: 2rem; }
+
+.subtitulo {
+  color: var(--blanco);
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.estructura-card {
+  background-color: var(--blanco);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.acciones-estructura {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-editar {
+  background-color: var(--azul);
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  cursor: not-allowed; /* botón inactivo por ahora */
+  font-family: 'Arapey', serif;
+  opacity: 0.6;
+}
+
+/* Contenedor visual para la tabla de estructuras */
+.lista-estructuras {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid #ddd;
+  background-color: var(--blanco);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  overflow-x: auto; /* scroll horizontal en móviles */
+}
+
+.tabla-estructuras {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Arapey', serif;
+}
+
+.tabla-estructuras th,
+.tabla-estructuras td {
+  padding: 0.8rem 1rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.tabla-estructuras th {
+  background-color: var(--naranja);
+  color: white;
+  font-weight: bold;
+}
+
+/* ───────────────────────────────────────────
+   Animaciones
+──────────────────────────────────────────── */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+  from { transform: translateX(-30px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+/* ───────────────────────────────────────────
+   Responsivo: móviles / tablets
+──────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .contenido-presupuesto {
+    padding: var(--layout-padding-mobile);
+    margin-left: 0 !important;
+  }
+
+  .titulo {
+    margin-left: 0;
+    text-align: center;
+    font-size: clamp(1.5rem, 8vw, 3rem);
+  }
+
+  .formulario-material,
+  .formulario-estructura {
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+
+  .acciones {
+    flex-direction: column;
+    margin-left: 0;
+    align-items: center;
+  }
+
+  .material-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-eliminar { align-self: flex-end; }
+}
+
+/* Escritorio (ajusta margen del contenido con sidebar visible) */
+@media (min-width: 769px) {
+  .contenido-presupuesto {
+    margin-left: clamp(70px, 10vw, 120px);
+  }
+}
+
+/* Control del sidebar en móvil (oculto por defecto) */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+
+  .sidebar.open {
+    display: flex;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+  }
+
+  .sidebar-toggle { display: block; }
+
+  .contenido-presupuesto { margin-left: 0 !important; }
+}
+
+/* ───────────────────────────────────────────
+   Tablet / pantallas medianas
+──────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .contenido-presupuesto {
+    margin-left: 0 !important;
+    padding: var(--layout-padding-mobile);
+  }
+
+  .titulo,
+  .subtitulo {
+    text-align: center;
+    margin-left: 0;
+  }
+
+  .switch-vista { justify-content: center; }
+
+  .formulario-material,
+  .formulario-estructura {
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+
+  .acciones {
+    flex-direction: column;
+    margin-left: 0;
+    align-items: center;
+  }
+
+  .material-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .acciones-estructura {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .btn-editar,
+  .btn-eliminar {
+    font-size: 0.9rem;
+  }
+}
+
+/* ───────────────────────────────────────────
+   Contenedor de la calculadora (wrapper)
+──────────────────────────────────────────── */
+.calculadora-container {
+  background-color: var(--blanco);
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  max-width: 900px;
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: fadeInUp 0.6s ease;
+}
