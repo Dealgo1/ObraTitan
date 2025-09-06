@@ -1,0 +1,201 @@
+@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+
+/* ==========================================================================
+   Variables de layout
+   ========================================================================== */
+:root {
+  --layout-padding: 2rem;
+  --layout-padding-mobile: 1rem;
+  --sidebar-width: 120px;
+}
+
+/* ==========================================================================
+   Layout base del módulo (fondo oscuro y espacio para sidebar)
+   ========================================================================== */
+.layout-formulario-gasto {
+  background-color: #2f2f2f !important;             /* fondo del área */
+  min-height: 100vh !important;                     /* ocupar pantalla completa */
+  padding: 2rem !important;                         /* padding general */
+  padding-left: calc(120px + 2rem) !important;      /* deja espacio para sidebar */
+  box-sizing: border-box !important;
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+/* Contenedor de contenido (limita ancho máximo) */
+.contenido-gastos {
+  width: 100% !important;
+  max-width: 1300px !important;
+  margin: 0 auto !important;
+}
+
+/* Columna principal (centra el panel) */
+.gastos-formulario-panel {
+  flex: 1 !important;
+  padding: 1rem !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+}
+
+/* Título grande sobre fondo oscuro */
+.titulo-fondo-oscurito {
+  font-size: clamp(2rem, 5vw, 3rem) !important;
+  font-weight: 700 !important;
+  color: white !important;
+  font-family: 'Arapey', serif !important;
+  margin: 0 0 2rem 0 !important;
+}
+
+/* ==========================================================================
+   Tarjeta blanca que contiene el formulario
+   ========================================================================== */
+.gastos-formulario-wrapper {
+  background-color: white !important;
+  padding: 2.5rem 2rem !important;
+  border-radius: 15px !important;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3) !important;
+  font-family: 'Arapey', serif !important;
+  width: 100% !important;
+  max-width: 1100px !important;
+  margin: 0 auto !important;
+  color: black !important;
+}
+
+/* ==========================================================================
+   Botones superiores (ver gastos) y CTA de envío
+   ========================================================================== */
+.btn-ver-gastos-container {
+  display: flex !important;
+  justify-content: flex-end !important;
+  margin-bottom: 1.5rem !important;
+}
+
+.btn-ver-gastos {
+  background-color: #D35400 !important;
+  color: black !important;
+  font-weight: bold !important;
+  border: none !important;
+  border-radius: 10px !important;
+  padding: 0.6rem 1.5rem !important;
+  font-family: 'Arapey', serif !important;
+  font-size: 1rem !important;
+  cursor: pointer !important;
+  transition: background-color 0.3s ease !important;
+}
+.btn-ver-gastos:hover {
+  background-color: #b84300 !important;
+  color: white !important;
+}
+
+/* Contenedor del botón de enviar (alineado a la derecha) */
+.btn-agregar-container {
+  display: flex !important;
+  justify-content: flex-end !important;
+}
+
+/* Botón principal de envío */
+.btn-agregar-registro {
+  background-color: #D35400 !important;
+  color: black !important;
+  font-weight: 600 !important;
+  border: none !important;
+  padding: 0.6rem 2rem !important;
+  font-family: 'Arapey', serif !important;
+  font-size: 1rem !important;
+  border-radius: 10px !important;
+  transition: background-color 0.3s ease !important;
+  margin-top: 1.5rem !important;
+}
+.btn-agregar-registro:hover {
+  background-color: #b84300 !important;
+  color: white !important;
+}
+
+/* Botón para agregar nueva categoría (cuando se despliega el campo) */
+.btn-agregar-categoria {
+  background-color: #D35400 !important;
+  color: black !important;
+  border: none !important;
+  font-weight: 600 !important;
+  padding: 0.6rem 1.5rem !important;
+  border-radius: 10px !important;
+  font-family: 'Arapey', serif !important;
+  margin-top: 0.8rem !important;
+  font-size: 1rem !important;
+  transition: background-color 0.3s ease !important;
+  align-items: end !important;
+}
+.btn-agregar-categoria:hover {
+  background-color: #b84300 !important;
+  color: white !important;
+}
+.btn-agregar-categoria-container {
+  display: flex !important;
+  justify-content: flex-end !important;
+  margin-top: 0.5rem !important;
+}
+
+/* ==========================================================================
+   Campos del formulario (labels, inputs y selects)
+   ========================================================================== */
+.form-label {
+  font-weight: bold !important;
+  font-size: 1.1rem !important;
+  margin-top: 1rem !important;
+}
+
+/* Inputs/selects estilo “Arapey + borde naranja” */
+.form-control,
+.form-select {
+  border: 2px solid #D35400 !important;
+  border-radius: 8px !important;
+  background-color: #fffaf3 !important; /* diferencia visual respecto a fondo blanco */
+  font-family: 'Arapey', serif !important;
+  font-size: 1rem !important;
+  padding: 0.5rem 1rem !important;
+  margin-top: 0.4rem !important;
+}
+
+/* Input de archivo con padding ajustado */
+input[type="file"].form-control {
+  padding: 0.4rem !important;
+}
+
+/* Enfoque sin sombras de Bootstrap, con borde más cálido */
+.form-select:focus,
+.form-control:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: #f3873e !important;
+  background-color: #fffaf3 !important;
+}
+
+/* ==========================================================================
+   Responsive
+   ========================================================================== */
+@media (max-width: 768px) {
+  .layout-formulario-gasto {
+    /* En móvil el sidebar suele colapsar: reducir padding lateral */
+    padding-left: var(--layout-padding-mobile) !important;
+    padding-right: var(--layout-padding-mobile) !important;
+  }
+
+  .btn-ver-gastos-container {
+    justify-content: center !important;
+  }
+
+  .btn-agregar-container {
+    justify-content: center !important;
+  }
+}
+
+/* Nombre del proyecto (cuando se muestra en el formulario) */
+.nombre-proyecto-gasto {
+  font-size: 3rem !important;
+  font-weight: 700 !important;
+  color: rgb(0, 0, 0) !important;
+  font-family: 'Arapey', serif !important;
+  margin-bottom: 1rem !important;
+}

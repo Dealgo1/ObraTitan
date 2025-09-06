@@ -1,0 +1,237 @@
+@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+
+/* ==========================================================================
+   Variables de layout y límites
+   ========================================================================== */
+:root {
+  --max-content-width: 1200px;     /* Ancho máximo de la tarjeta principal */
+  --layout-padding: 2rem;          /* Padding general del layout */
+  --layout-padding-mobile: 1rem;   /* Padding en dispositivos pequeños */
+  --sidebar-width: 120px;          /* Ancho reservado para el sidebar fijo */
+}
+
+/* ==========================================================================
+   Layout general (fondo oscuro + espacio para sidebar)
+   ========================================================================== */
+.layout-gastos {
+  background-color: #2f2f2f;
+  min-height: 100vh;
+  padding: var(--layout-padding);
+  padding-left: calc(var(--sidebar-width) + var(--layout-padding) + 1rem); /* deja espacio al sidebar */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   Título principal del módulo
+   ========================================================================== */
+.titulo-fondo-oscuro {
+  font-family: 'Arapey', serif;
+  font-weight: 700;
+  color: #fff;
+  font-size: clamp(2rem, 6vw, 5rem);  /* fluido entre móvil y desktop */
+  margin-bottom: 1rem;
+  width: 100%;
+  text-align: left;
+  transition: all 0.3s ease;
+}
+
+/* ==========================================================================
+   Contenedor vertical del contenido
+   ========================================================================== */
+.gastos-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centra la tarjeta */
+}
+
+/* ==========================================================================
+   Tarjeta blanca que envuelve el contenido de la lista
+   ========================================================================== */
+.gastos-card {
+  font-family: 'Arapey', serif;
+  background-color: #fff;
+  border-radius: 20px;
+  width: 100%;
+  max-width: var(--max-content-width);
+  margin: 1rem auto;
+  padding: 2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  color: #333;
+}
+
+/* Título del proyecto mostrado dentro de la tarjeta */
+.titulo-proyecto {
+  font-size: clamp(1.8rem, 5vw, 3rem);
+  margin-bottom: 2rem;
+  color: #000;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   Lista de gastos (usa ListGroup, se eliminan bordes para estilo personalizado)
+   ========================================================================== */
+.lista-gastos {
+  border: none;
+  background-color: transparent;
+}
+
+/* Cada item de la lista (grid: nombre | fecha | flecha) */
+.gasto-item {
+  display: grid;
+  grid-template-columns: 1fr clamp(100px, 15vw, 160px) clamp(30px, 5vw, 50px);
+  grid-column-gap: 1rem;
+  align-items: center;
+
+  background-color: #fff;
+  border: 2px solid #D35400;
+  border-radius: 8px;
+
+  /* doble sombra: sombra suave + halo naranja fino */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.6), 0 0 0 2px #D35400;
+
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  color: #333;
+}
+
+/* Hover: invierte colores al color de acento */
+.gasto-item:hover {
+  background-color: #D35400;
+  color: #fff;
+}
+
+/* Columna: nombre o categoría */
+.gasto-nombre {
+  font-size: clamp(1.2rem, 3vw, 2.1rem);
+  font-weight: 600;
+}
+
+/* Columna: fecha (centrada y con tamaño adaptable) */
+.gasto-fecha {
+  font-size: clamp(0.9rem, 2.5vw, 1.5rem);
+  text-align: center;
+  display: flex;
+  justify-content: center;
+}
+
+/* Columna: flecha de navegación */
+.gasto-arrow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Icono de flecha con tamaño fluido */
+.flecha-derecha {
+  width: clamp(20px, 6vw, 50px);
+}
+
+/* ==========================================================================
+   Responsive: tablets y laptops medianas
+   ========================================================================== */
+@media (max-width: 1280px) {
+  .layout-gastos {
+    padding-left: var(--layout-padding-mobile);
+    padding-right: var(--layout-padding-mobile);
+  }
+
+  .titulo-fondo-oscuro {
+    text-align: left;
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .gastos-card {
+    padding: 1.5rem;
+    width: 95%;
+  }
+}
+
+/* ==========================================================================
+   Responsive: móviles
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* reduce las columnas para ahorrar espacio horizontal */
+  .gasto-item {
+    grid-template-columns: 1fr clamp(80px, 20vw, 100px) clamp(20px, 10vw, 30px);
+  }
+
+  .gasto-nombre {
+    font-size: clamp(1rem, 5vw, 1.4rem);
+  }
+
+  .gasto-fecha {
+    font-size: clamp(0.8rem, 4vw, 1rem);
+  }
+
+  .flecha-derecha {
+    width: clamp(20px, 8vw, 30px);
+  }
+}
+
+/* ==========================================================================
+   Responsive: móviles pequeños (≤ 480px)
+   ========================================================================== */
+@media (max-width: 480px) {
+  .gasto-item {
+    grid-template-columns: 1fr 70px 30px; /* fuerza anchos mínimos */
+    padding: 0.5rem 0.7rem;
+  }
+
+  .gasto-nombre {
+    font-size: 1rem;
+    word-break: break-word; /* evita overflow en nombres largos */
+  }
+
+  .gasto-fecha {
+    font-size: 0.8rem;
+  }
+
+  .flecha-derecha {
+    width: 25px;
+  }
+
+  .gastos-card {
+    padding: 1rem;
+    width: 100%;
+  }
+
+  .titulo-proyecto {
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .titulo-fondo-oscuro {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+}
+
+/* ==========================================================================
+   Pantallas grandes (Full HD o más)
+   ========================================================================== */
+@media (min-width: 1600px) {
+  .gastos-card {
+    max-width: 1300px;
+  }
+}
+
+@media (min-width: 1920px) {
+  .layout-gastos {
+    padding: 4rem;
+    padding-left: calc(var(--sidebar-width) + 4rem); /* compensa sidebar en 1080p+ */
+  }
+
+  .gastos-card {
+    max-width: 1500px;
+    padding: 3rem;
+  }
+
+  .titulo-fondo-oscuro {
+    font-size: clamp(3rem, 6vw, 6rem); /* título más protagonista */
+  }
+}
