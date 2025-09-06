@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+
+/* ────────────────────────────────────────────
+   🎨 Estilo global
+   - Define el fondo general oscuro
+   - Aplica la tipografía principal
+──────────────────────────────────────────── */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #1E1E1E; /* gris oscuro general */
+  font-family: 'Arapey', serif;
+}
+
+/* ────────────────────────────────────────────
+   📦 Contenedor principal del dashboard
+   - Desplazado a la derecha para dejar espacio al sidebar
+   - Color de texto en blanco para contraste
+──────────────────────────────────────────── */
+.kpi-dashboard-container {
+  margin-left: 152px; /* 120px sidebar + 2rem margen aprox. */
+  padding: 2rem;
+  background-color: #1E1E1E;
+  color: white;
+  min-height: 100vh; /* ocupa toda la altura de la ventana */
+  box-sizing: border-box;
+}
+
+/* ────────────────────────────────────────────
+   🧾 Título principal
+   - Centrado y con tipografía grande
+──────────────────────────────────────────── */
+.kpi-dashboard-container h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2.5rem;
+  color: white;
+}
+
+/* ────────────────────────────────────────────
+   📘 Descripción introductoria
+   - Texto más claro (gris suave) para diferenciarlo
+   - Máximo ancho para legibilidad
+──────────────────────────────────────────── */
+.kpi-dashboard-container p {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+  text-align: center;
+  color: #D1D7DE;
+}
+
+/* ────────────────────────────────────────────
+   🧱 Grid de KPIs
+   - Usa grid responsivo que se ajusta al ancho
+   - Cada tarjeta ocupa mínimo 330px
+──────────────────────────────────────────── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  gap: 2rem;          /* espacio entre tarjetas */
+  margin-top: 3rem;
+}
+
+/* ────────────────────────────────────────────
+   📊 Tarjeta base de KPI
+   - Fondo blanco con borde naranja
+   - Bordes redondeados y padding interno
+──────────────────────────────────────────── */
+.kpi-card {
+  background-color: white;
+  border: 2px solid #D35400; /* naranja corporativo */
+  border-radius: 15px;
+  padding: 1.5rem;
+  color: black;
+}
+
+/* ────────────────────────────────────────────
+   📌 Tarjeta de resumen bajo los gráficos
+   - Recuadro con borde naranja
+   - Texto centrado y resaltado con strong
+──────────────────────────────────────────── */
+.kpi-summary {
+  margin-top: 1.5rem;
+  border: 2px solid #D35400;
+  border-radius: 10px;
+  padding: 1rem;
+  text-align: center;
+  font-size: 1.3rem;
+  color: black;
+}
+
+.kpi-summary strong {
+  font-size: 1.6rem;
+  color: #D35400;
+}
+
+/* ────────────────────────────────────────────
+   📍 Ajustes para librería Chart.js
+   - Fuerza los textos de los gráficos a negro
+──────────────────────────────────────────── */
+.chartjs-render-monitor text,
+.chartjs-render-monitor tspan {
+  fill: black !important;
+}
+
+/* ────────────────────────────────────────────
+   📊 Canvas de gráficos
+   - Fondo blanco y bordes redondeados
+──────────────────────────────────────────── */
+canvas {
+  background-color: white;
+  border-radius: 10px;
+}
+
+/* ────────────────────────────────────────────
+   📱 Responsive (pantallas <= 768px)
+   - Elimina margen izquierdo (sidebar colapsado)
+   - Grid pasa a 1 columna
+──────────────────────────────────────────── */
+@media screen and (max-width: 768px) {
+  .kpi-dashboard-container {
+    margin-left: 0;
+    padding: 1rem;
+  }
+
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* ────────────────────────────────────────────
+   🔧 Ajuste global para altura/fondo
+   - Garantiza fondo gris oscuro en todo el viewport
+──────────────────────────────────────────── */
+html, body, #root {
+  background-color: #1E1E1E;
+  height: 100%;
+}
