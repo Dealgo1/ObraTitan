@@ -1,0 +1,212 @@
+/* ==========================================================================
+   Presupuesto del Proyecto – Hoja de estilos
+   Tipografía base: Arapey
+   Objetivo: Estilos para layout, tarjeta de presupuesto y comportamiento responsive.
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+
+/* Reseteo útil: que todos los tamaños consideren padding/border */
+* {
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Layout principal (fondo oscuro con sidebar a la izquierda)
+   ========================================================================== */
+.dashboard-container {
+  display: flex;               /* Sidebar + contenido a la par */
+  min-height: 100vh;           /* Toma alto completo de la ventana */
+  background-color: #3A3A3A;   /* Gris oscuro corporativo */
+  font-family: 'Arapey', serif;
+  width: 100%;
+}
+
+/* Área de contenido a la derecha del sidebar */
+.contenido-principal {
+  flex: 1;                     /* Ocupa el resto del ancho */
+  padding: 2rem;               /* Respiración interna general */
+  background-color: #3A3A3A;   /* Fondo consistente con dashboard */
+  width: 100%;
+}
+
+/* Título superior alineado a la izquierda */
+.titulo-modulo-izquierda {
+  font-size: 2.8rem;           /* Grande en desktop */
+  margin-bottom: 1rem;
+  color: white;
+  width: 100%;
+  max-width: 900px;            /* Ancho legible */
+  padding-left: 2rem;          /* Alineación visual */
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   Card principal (resumen de presupuesto)
+   ========================================================================== */
+.presupuesto-card {
+  background-color: white;
+  border: 3px solid #D35400;   /* Borde naranja de marca */
+  border-radius: 20px;         /* Tarjeta suave */
+  padding: 1.2rem 2rem;        /* Espaciado interno */
+  max-width: 900px;            /* No crece demasiado en pantallas grandes */
+  width: 100%;
+  margin: 0 auto;              /* Centrada horizontalmente */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Profundidad */
+  color: black;
+}
+
+/* Encabezado de la card: nombre del proyecto + botones de acción */
+.nombre-y-botones {
+  display: flex;
+  justify-content: space-between; /* Botones a la derecha en desktop */
+  align-items: center;
+  flex-wrap: wrap;                 /* Evita desbordes en tablet */
+  margin-bottom: 1rem;
+}
+
+.nombre-proyecto {
+  font-size: 1.9rem;
+  font-weight: bold;
+}
+
+/* Contenedor de botones (Gastos / Gastos +) */
+.botones-superiores {
+  display: flex;
+  gap: 0.5rem;           /* Separación entre botones */
+  white-space: nowrap;   /* Evita cortes abruptos en desktop */
+  flex-wrap: wrap;       /* Permite bajar a otra línea si falta espacio */
+}
+
+/* Botón de acción principal (naranja de marca) */
+.btn-naranja {
+  background-color: #D35400 !important;
+  color: black !important;          /* Alto contraste con el naranja */
+  font-family: 'Arapey', serif;
+  border: none !important;
+  padding: 0.6rem 1.5rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s ease; /* Feedback visual */
+  box-shadow: none;
+  min-width: 100px;                 /* Área táctil cómoda */
+}
+
+.btn-naranja:hover {
+  background-color: #b34700 !important; /* Oscurece al pasar el mouse */
+}
+
+/* ==========================================================================
+   Bloques de datos (labels + valores en cajas)
+   ========================================================================== */
+.presupuesto-label {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.2rem;
+}
+
+/* Contenedor de los tres bloques: Monto inicial, (Ingresos + Saldo), Gastado */
+.presupuesto-datos {
+  display: flex;
+  justify-content: space-between;   /* Separación en desktop */
+  flex-wrap: wrap;                  /* Adaptación en tablets */
+  margin-bottom: 0.8rem;
+}
+
+/* Caja visual para números (C$) */
+.presupuesto-box {
+  border: 2px solid #D35400;  /* Acento visual */
+  padding: 0.6rem 1.2rem;
+  font-weight: bold;
+  font-size: 1.6rem;
+  background-color: #fff;
+  color: #000;
+  display: inline-block;
+  margin-top: 0.2rem;
+  min-width: 140px;           /* Evita cajas demasiado angostas */
+  text-align: center;
+  border-radius: 8px;
+}
+
+/* Bloque opcional por si se quiere resaltar saldo centralizado */
+.presupuesto-saldo {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* ==========================================================================
+   Responsive fino para móviles (300px–550px)
+   Objetivo: apilar contenido, centrar botones y ajustar tipografías/cajas
+   ========================================================================== */
+@media (max-width: 550px) {
+  .contenido-principal {
+    padding: 1rem;              /* Menos padding en pantallas estrechas */
+  }
+
+  .titulo-modulo-izquierda {
+    text-align: center;         /* Centrado para mejor simetría */
+    font-size: 2rem;            /* Reduce el tamaño del título */
+    padding-left: 0;            /* Elimina sangría */
+  }
+
+  .presupuesto-card {
+    width: 100%;
+    max-width: 100%;            /* Ocupa todo el ancho disponible */
+    padding: 1rem;
+    margin: 0 auto;
+  }
+
+  .nombre-y-botones {
+    flex-direction: column;     /* Apila nombre y botones */
+    align-items: center;
+    gap: 0.8rem;
+    text-align: center;
+  }
+
+  .botones-superiores {
+    display: flex;
+    flex-direction: column;     /* Botones uno debajo del otro */
+    gap: 0.7rem;
+    width: 100%;
+    max-width: 250px;
+    margin: 0 auto;             /* Centra el bloque de botones */
+  }
+
+  .btn-naranja {
+    width: 100%;                /* Botón al ancho para facilidad táctil */
+    min-width: unset;
+    font-size: 1.1rem;
+    padding: 0.5rem 1.2rem;
+  }
+
+  .nombre-proyecto {
+    font-size: 1.5rem;          /* Mantiene jerarquía sin desbordar */
+  }
+
+  /* En móvil no usamos space-between: apilamos y centramos datos */
+  .presupuesto-datos {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;         /* Uniformidad visual */
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .presupuesto-box {
+    min-width: 110px;           /* Cajas más compactas en móvil */
+    font-size: 1.3rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .presupuesto-label {
+    font-size: 1.3rem;
+  }
+
+  .presupuesto-saldo {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
+}

@@ -14,9 +14,9 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 // Estilos globales (orden importa: primero resets/base, luego frameworks, luego CSS propios)
-import './index.css';                                 // Estilos base/globales de tu proyecto
+import '../styles/index.css';                                 // Estilos base/globales de tu proyecto
 import 'bootstrap/dist/css/bootstrap.min.css';        // Framework CSS (Bootstrap)
-import './GastosCss/GastosForm.css';                  // Estilos específicos del módulo de gastos
+import '../features/auth/gastos/ui/GastosForm.css';                  // Estilos específicos del módulo de gastos
 
 // Raíz de la app
 import App from './App.jsx';

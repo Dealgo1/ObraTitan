@@ -17,7 +17,7 @@ import "../PresupuestoCss/PresupuestoCalculator.css";
  * Requiere un proyecto seleccionado (via ProjectContext). Si no existe projectId,
  * se muestra un mensaje de error.
  */
-const PresupuestoView = () => {
+const CalculadoraPresupuestoView = () => {
   const { project } = useProject(); // ✅ Proyecto activo vía contexto
   const projectId = project?.id;    // ✅ ID del proyecto actual (si existe)
 
@@ -111,4 +111,4 @@ const PresupuestoView = () => {
   );
 };
 
-export default PresupuestoView;
+export default CalculadoraPresupuestoView;

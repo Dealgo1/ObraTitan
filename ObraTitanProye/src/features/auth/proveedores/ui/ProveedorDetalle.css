@@ -1,0 +1,231 @@
+@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+
+/* 🎨 Variables de color */
+:root {
+  --naranja: #D35400;
+  --naranja-hover: #b34700;
+  --blanco: #fff;
+  --negro: #000;
+  --gris-claro: #f5f5f5;
+}
+
+/* ==============================
+   📌 LAYOUT GENERAL DE LA VISTA
+   ============================== */
+.layout-proveedores {
+  background-color: #2f2f2f;
+  min-height: 100vh;
+  padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+
+.titulo-fondo-oscuro {
+  font-family: 'Arapey', serif;
+  font-weight: 700;
+  color: var(--blanco);
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  margin-bottom: 1rem;
+  margin-left: clamp(3rem, 12vw, 200px); /* ➡ margen lateral para desktop */
+}
+
+/* Contenedor central */
+.proveedores-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* ==============================
+   📦 CARD DE DETALLE
+   ============================== */
+.proveedor-detalle-card {
+  font-family: 'Arapey', serif;
+  background-color: var(--blanco);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 1000px;
+  padding: 2rem;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.25);
+  color: var(--negro);
+}
+
+.titulo-proyecto {
+  font-size: clamp(2.3rem, 5vw, 4rem);
+  margin-bottom: 2rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+/* ==============================
+   🔝 ENCABEZADO DEL CARD
+   ============================== */
+.encabezado-detalle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.botones-superiores {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.botones-superiores button {
+  background-color: transparent;
+  border: 2px solid var(--naranja);
+  border-radius: 8px;
+  padding: 0.5rem 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.botones-superiores button:hover {
+  background-color: var(--gris-claro);
+}
+
+.botones-superiores img {
+  width: 22px;
+  height: 22px;
+}
+
+/* ==============================
+   📝 FORMULARIO DE DETALLE
+   ============================== */
+.fila-detalle-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.campo-horizontal {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.campo-horizontal label {
+  font-weight: bold;
+  font-size: 1.3rem;
+  min-width: 200px; /* Asegura alineación de etiquetas */
+}
+
+/* Inputs y selects */
+.input-nombre,
+.input-empresa,
+.input-servicios,
+.input-telefono,
+.input-monto,
+.input-fecha,
+.input-estado {
+  border: 2px solid var(--naranja);
+  border-radius: 10px;
+  padding: 0.9rem;
+  font-size: 1.2rem;
+  font-family: 'Arapey', serif;
+  color: var(--negro);
+  background-color: var(--blanco);
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+}
+
+/* Textarea servicios */
+textarea.input-servicios {
+  height: 70px;
+  resize: none;
+}
+
+/* ==============================
+   📱 RESPONSIVIDAD
+   ============================== */
+@media (max-width: 768px) {
+  .proveedor-detalle-card {
+    padding: 1rem;
+  }
+
+  .titulo-fondo-oscuro {
+    margin-left: 0;
+    text-align: center;
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+
+  .encabezado-detalle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .botones-superiores {
+    align-self: flex-end;
+  }
+
+  .campo-horizontal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* Inputs ocupan todo el ancho en móvil */
+  .input-nombre,
+  .input-empresa,
+  .input-servicios,
+  .input-telefono,
+  .input-monto,
+  .input-fecha,
+  .input-estado {
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* ==============================
+   🚫 FIXES DE OVERFLOW GLOBAL
+   ============================== */
+body {
+  overflow-x: hidden; /* Previene scroll horizontal */
+}
+
+@media (max-width: 768px) {
+  .proveedor-detalle-card {
+    padding: 1rem;
+  }
+
+  .titulo-fondo-oscuro {
+    margin-left: 0;
+    text-align: center;
+    font-size: clamp(1.8rem, 8vw, 3rem);
+  }
+
+  .encabezado-detalle {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .botones-superiores {
+    align-self: flex-end;
+  }
+
+  .campo-horizontal {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  /* ✅ Asegura que los inputs no causen overflow */
+  .input-nombre,
+  .input-empresa,
+  .input-servicios,
+  .input-telefono,
+  .input-monto,
+  .input-fecha,
+  .input-estado,
+  .box-historial {
+    margin-left: 0 !important;
+    width: 100%;
+    max-width: 100%;
+  }
+}

@@ -1,0 +1,54 @@
+/* 🎯 CONTENEDOR PRINCIPAL de la vista "No Autorizado" */
+.no-autorizado {
+    display: flex; /* Centrado con flexbox */
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    min-height: 100vh; /* Ocupa toda la pantalla */
+    background-color: #121212; /* Fondo oscuro elegante */
+    font-family: 'Arapey', serif; /* Tipografía consistente */
+}
+  
+/* 📦 TARJETA central con mensaje */
+.no-autorizado-card {
+    background-color: white; /* Fondo claro para resaltar el contenido */
+    color: #2c3e50; /* Texto gris oscuro */
+    border-radius: 20px; /* Bordes redondeados */
+    padding: 2.5rem;
+    text-align: center; /* Centrar texto */
+    max-width: 500px;
+    width: 90%; /* Adaptable en pantallas pequeñas */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4); /* Sombra elegante */
+    animation: fadeSlide 0.5s ease; /* Animación al entrar */
+}
+  
+/* 🚨 Icono de alerta */
+.icono-alerta {
+    color: #e74c3c; /* Rojo de advertencia */
+    margin-bottom: 1rem;
+}
+  
+/* 📝 Título principal */
+.no-autorizado-card h1 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+    color: #d35400; /* Naranja para resaltar */
+}
+  
+/* 📄 Texto secundario */
+.no-autorizado-card p {
+    font-size: 1.2rem;
+    color: #555; /* Gris medio */
+}
+  
+/* 🎬 Animación de aparición */
+@keyframes fadeSlide {
+    from {
+      opacity: 0;
+      transform: translateY(30px); /* Comienza desplazado hacia abajo */
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0); /* Termina en posición original */
+    }
+}

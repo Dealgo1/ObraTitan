@@ -19,40 +19,40 @@ import React, { useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 
 // Providers / Contextos de la aplicación
-import { AuthProvider } from "./database/authcontext";
-import ProtectedRoute from "./components/ProtectedRoute";
-import { ProjectProvider } from './context/ProjectContext';
+import { AuthProvider } from "../context/authcontext";
+import ProtectedRoute from "../context/ProtectedRoute";
+import { ProjectProvider } from '../context/ProjectContext';
 
 // Utilidades de sincronización offline
-import { syncOfflineProjects } from "./utils/offlineSync";
-import { syncOfflineProjectChanges } from "./utils/syncProjectChanges"; // Maneja edición y eliminación
+import { syncOfflineProjects } from "../utils/offlineSync";
+import { syncOfflineProjectChanges } from "../utils/syncProjectChanges"; // Maneja edición y eliminación
 
 // ====== Vistas y Componentes usados en rutas ======
-import Login from "./views/Login";
-import Encabezado from "./components/Encabezado";
-import Inicio from "./views/Inicio";
-import ProjectDashboard from "./views/ProjectDashboard";
-import ActividadesList from "./components/actividadeslist/ActividadesList";
-import BudgetVisualization from "./views/BudgetVisualization";
-import GastosManagement from "./views/GastosManagement";
-import GastosOverview from "./views/GastosOverview";
-import GastoDetail from "./views/GastoDetail";
-import ProveedoresOverview from "./views/ProveedoresOverview";
-import Detalleproveedor from "./views/DetalleProveedor";
-import CalculadoraPresupuestoView from "./views/CalculadoraPresupuestoView";
-import FormularioProveedor from "./components/Proveedores/FormularioProveedor";
-import AgregarPago from "./views/AgregarPago";
-import PagosListView from "./views/PagosListView";
-import ProyectosOverview from "./views/ProyectosOverview";
-import CreateProjectView from "./views/CreateProjectView";
-import GestionUsuariosView from "./views/GestionUsuariosView";
-import RegistrarUsuario from "./components/usuarios/RegistrarUsuario";
-import ListaUsuarios from "./components/usuarios/ListaUsuarios";
-import NoAutorizado from "./views/NoAutorizado";
-import DocumentosYPlanosView from "./views/DocumentosYPlanosView";
-import ArchivosOverview from "./views/ArchivosOverview";
-import KPIDashboard from "./components/estadisticas/KPIDashboard";
-import ResumenGastosView from "./views/ResumenGastosView";
+import Login from "../features/auth/ui/Login";
+import Inicio from "../features/auth/Inicio/ui/Inicio";
+import ProjectDashboard from "../features/auth/proyectos/ui/ProjectDashboard";
+import ActividadesList from "../features/auth/ListaActividades/ui/ActividadesList";
+import BudgetVisualization from "../features/auth/gastos/ui/BudgetVisualization";
+import GastosManagement from "../features/auth/gastos/ui/GastosManagement";
+import GastosOverview from "../features/auth/gastos/ui/GastosOverview";
+import GastoDetail from "../features/auth/gastos/ui/GastoDetail";
+import ProveedoresOverview from "../features/auth/proveedores/ui/ProveedoresOverview";
+import Detalleproveedor from "../features/auth/proveedores/ui/DetalleProveedor";
+import CalculadoraPresupuestoView from "../features/auth/presupuesto/ui/CalculadoraPresupuestoView";
+import FormularioProveedor from "../features/auth/proveedores/ui/FormularioProveedor";
+import AgregarPago from "../features/auth/pagos/ui/AgregarPago";
+import PagosListView from "../features/auth/pagos/ui/PagosListView";
+import ProyectosOverview from "../features/auth/proyectos/ui/ProyectosOverview";
+import CreateProjectView from "../features/auth/proyectos/ui/CreateProjectView";
+import GestionUsuariosView from "../features/auth/usuarios/ui/GestionUsuariosView";
+import RegistrarUsuario from "../features/auth/usuarios/ui/RegistrarUsuario";
+import ListaUsuarios from "../features/auth/usuarios/ui/ListaUsuarios";
+
+import NoAutorizado from "../features/auth/usuarios/ui/NoAutorizado";
+import DocumentosYPlanosView from "../features/auth/documentos/ui/DocumentosYPlanosView";
+import ArchivosOverview from "../features/auth/documentos/ui/ArchivosOverview";
+import KPIDashboard from "../features/auth/estadisticas/ui/KPIDashboard";
+
 
 /**
  * AppContent

@@ -1,0 +1,321 @@
+/* Importación de tipografía desde Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+
+/* 🌆 Fondo base de toda la aplicación */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background-color: #3A3A3A; /* Fondo gris oscuro uniforme */
+}
+
+/* 🎯 CONTENEDOR PRINCIPAL de Gestión de Usuarios */
+.usuarios-container {
+  padding: 3rem 2rem;
+  min-height: 100vh;
+  background-color: #3A3A3A;
+  font-family: 'Arapey', serif;
+  color: white;
+  box-sizing: border-box;
+}
+
+/* Estilo de los títulos */
+.usuarios-container h1 {
+  font-size: clamp(2rem, 4vw, 40px);
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+/* 🔘 BOTÓN CREAR nuevo usuario */
+.usuarios-container .btn-crear {
+  background-color: #D35400;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  float: right;
+  margin-bottom: 1.5rem;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.usuarios-container .btn-crear:hover {
+  background-color: #27ae60; /* Verde en hover */
+  transform: scale(1.05);
+}
+
+/* 📦 TARJETA contenedora de la tabla */
+.usuarios-container .tabla-contenedor {
+  background-color: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  max-width: 1100px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  overflow-x: auto; /* Scroll horizontal si se desborda */
+}
+
+/* 📊 TABLA de usuarios estilo caja */
+.usuarios-container .usuarios-tabla {
+  width: 100%;
+  min-width: 1000px; /* Asegura estructura en pantallas grandes */
+  border-collapse: collapse;
+  font-family: 'Arapey', serif;
+  background-color: white;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  white-space: nowrap; /* Evita saltos de línea */
+}
+
+/* Celdas */
+.usuarios-container .usuarios-tabla th,
+.usuarios-container .usuarios-tabla td {
+  border: 1px solid #ccc;
+  padding: 12px;
+  font-size: 18px;
+  text-align: center;
+  vertical-align: middle;
+  color: #000000;
+  white-space: nowrap;
+}
+
+/* Encabezado */
+.usuarios-container .usuarios-tabla th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+/* 🧾 Alternancia y hover en filas */
+.usuarios-container .usuarios-tabla tr:nth-child(even),
+.usuarios-container .usuarios-tabla tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.usuarios-container .usuarios-tabla tr:hover {
+  background-color: #f9f9f9;
+}
+
+/* 🛠️ ICONOS de acción (editar, eliminar) */
+.usuarios-container .usuarios-iconos {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.usuarios-container .usuarios-iconos button {
+  background: #f0f0f0;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  padding: 7px;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+
+.usuarios-container .usuarios-iconos button:hover {
+  transform: scale(1.1);
+  background-color: #D35400;
+}
+
+.usuarios-container .usuarios-iconos img {
+  width: 22px;
+  height: 22px;
+}
+
+/* 🛠️ ESPACIADO de columnas (proporciones) */
+.usuarios-container .usuarios-tabla th:nth-child(1),
+.usuarios-container .usuarios-tabla td:nth-child(1) {
+  width: 15%;
+}
+.usuarios-container .usuarios-tabla th:nth-child(2),
+.usuarios-container .usuarios-tabla td:nth-child(2) {
+  width: 15%;
+}
+.usuarios-container .usuarios-tabla th:nth-child(3),
+.usuarios-container .usuarios-tabla td:nth-child(3) {
+  width: 28%;
+}
+.usuarios-container .usuarios-tabla th:nth-child(4),
+.usuarios-container .usuarios-tabla td:nth-child(4) {
+  width: 12%;
+}
+.usuarios-container .usuarios-tabla th:nth-child(5),
+.usuarios-container .usuarios-tabla td:nth-child(5) {
+  width: 15%;
+}
+.usuarios-container .usuarios-tabla th:nth-child(6),
+.usuarios-container .usuarios-tabla td:nth-child(6) {
+  width: 15%;
+}
+
+/* 📄 FORMULARIO en modal */
+.usuarios-container .modal-form {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75); /* Oscurece el fondo */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+/* Caja del formulario */
+.usuarios-container .formulario-usuario {
+  background-color: white;
+  padding: 2.5rem;
+  border-radius: 25px;
+  width: 95%;
+  max-width: 700px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  animation: fadeIn 0.3s ease;
+  font-family: 'Arapey', serif;
+  min-height: 550px;
+}
+
+.usuarios-container .formulario-usuario h2 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: #333;
+}
+
+/* 🧾 Inputs organizados en grid */
+.usuarios-container .formulario-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Labels */
+.usuarios-container .formulario-usuario label {
+  margin-bottom: 0.4rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Inputs y selects */
+.usuarios-container .formulario-usuario input,
+.usuarios-container .formulario-usuario select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 2px solid #D35400;
+  border-radius: 10px;
+  font-size: 1rem;
+}
+
+/* ⬅️ Input que ocupa todo el ancho */
+.usuarios-container .input-full {
+  grid-column: span 2;
+}
+
+/* ✅ Botones del formulario */
+.formulario-botones {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+.botonguardarsexy,
+.cancelarsexy {
+  max-width: 250px;
+  height: 60px;
+  width: 100%;
+  font-size: 1.1rem;
+  font-family: 'Arapey', serif;
+  font-weight: bold;
+  border-radius: 15px;
+  border: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Botón guardar */
+.botonguardarsexy {
+  background-color: #bdc3c7;
+  color: black;
+}
+.botonguardarsexy:hover {
+  background-color: #b15013;
+  color: white;
+}
+
+/* Botón cancelar */
+.cancelarsexy {
+  background-color: #bdc3c7;
+  color: black;
+}
+.cancelarsexy:hover {
+  background-color: #b15013;
+  color: white;
+}
+
+/* 🎬 Animación de entrada */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* 📱 RESPONSIVE para móviles */
+@media screen and (max-width: 768px) {
+  .usuarios-container .formulario-usuario {
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 95vw;
+    min-height: auto;
+  }
+
+  /* Inputs en columna */
+  .usuarios-container .formulario-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .formulario-botones {
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  .botonguardarsexy,
+  .cancelarsexy {
+    height: 50px;
+    font-size: 1rem;
+  }
+
+  /* Ajuste de tabla e íconos */
+  .usuarios-container .usuarios-tabla th,
+  .usuarios-container .usuarios-tabla td {
+    font-size: 0.95rem;
+    padding: 10px;
+  }
+
+  .usuarios-container .usuarios-iconos {
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .usuarios-container h1 {
+    font-size: 26px;
+  }
+
+  .usuarios-container .tabla-contenedor {
+    padding: 15px;
+  }
+}
