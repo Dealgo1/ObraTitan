@@ -20,7 +20,7 @@
  *   ejecutar `syncOfflineProjects()` para sincronizar automáticamente.
  */
 
-import { createProject } from "../../../../services/projectsService";
+import { createProject } from "../services/projectsService";
 
 /**
  * Sincroniza proyectos almacenados localmente al recuperar conexión.

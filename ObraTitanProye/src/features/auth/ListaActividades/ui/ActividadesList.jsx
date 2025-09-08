@@ -23,7 +23,7 @@
  */
 
 import React, { useState, useEffect } from "react";
-import { db } from "../../assets/database/firebaseconfig";
+import { db } from "../../../../services/firebaseconfig";
 import {
   collection,
   addDoc,
@@ -34,14 +34,14 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { useProject } from "../../context/ProjectContext";
-import Sidebar from "../../components/Sidebar";
+import { useProject } from "../../../../context/ProjectContext";
+import Sidebar from "../../../../components/Sidebar";
 
 // Iconografía UI
-import editIcon from "../../assets/iconos/edit.png";
-import deleteIcon from "../../assets/iconos/delete.png";
-import checkIcon from "../../assets/iconos/check.png";
-import closeIcon from "../../assets/iconos/close.png";
+import editIcon from "../../../../assets/iconos/edit.png";
+import deleteIcon from "../../../../assets/iconos/delete.png";
+import checkIcon from "../../../../assets/iconos/check.png";
+import closeIcon from "../../../../assets/iconos/close.png";
 
 import "./ActividadesList.css";
 

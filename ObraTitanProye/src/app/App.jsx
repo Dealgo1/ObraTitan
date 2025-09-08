@@ -358,16 +358,7 @@ const AppContent = () => {
             }
           />
 
-          {/* Resumen de gastos (solo administrador) */}
-          <Route
-            path="/resumen-gastos"
-            element={
-              <ProtectedRoute
-                element={<ResumenGastosView />}
-                roles={["administrador"]}
-              />
-            }
-          />
+          
         </Routes>
       </main>
     </>

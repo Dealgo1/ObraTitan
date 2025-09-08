@@ -1,6 +1,6 @@
 // src/utils/offlineProjectSync.js
 
-import { updateProject, deleteProject } from "../../../../services/projectsService";
+import { updateProject, deleteProject } from "../services/projectsService";
 
 /**
  * Utilidad: Sincronización de cambios en proyectos mientras el usuario estaba offline

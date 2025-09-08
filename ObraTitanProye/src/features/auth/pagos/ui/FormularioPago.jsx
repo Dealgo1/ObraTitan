@@ -33,7 +33,7 @@
 
 import React, { useState, useEffect } from "react";
 import "../ui/FormularioPago.css";
-import { obtenerProveedores } from "../../../../services/pagosService";
+import { obtenerProveedores } from "../../../../services/firebaseProveedores";
 
 const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
   // === Estado de formulario ===

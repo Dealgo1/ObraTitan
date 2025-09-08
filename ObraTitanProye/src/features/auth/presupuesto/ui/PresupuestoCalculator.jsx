@@ -2,11 +2,11 @@
 import React, { useEffect, useState } from "react";
 import MaterialForm from "./MaterialForm";
 import MaterialList from "./MaterialList";
-import { db } from "../../database/firebaseconfig";
+import { db } from "../../../../services/firebaseconfig";
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { useProject } from "../../context/ProjectContext"; // ✅
+import { useProject } from "../../../../context/ProjectContext"; // ✅
 
 /**
  * 🧮 PresupuestoCalculator
