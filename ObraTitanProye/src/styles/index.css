@@ -24,10 +24,10 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  display: block;       /* ✅ nada de flex/grid global */
+  background: #1a1a1a;  /* si quieres fondo oscuro general */
 }
 
 h1 {
