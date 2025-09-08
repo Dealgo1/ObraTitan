@@ -25,12 +25,12 @@
 
 import React, { useState, useEffect } from "react";
 import { Form, Button, Alert } from "react-bootstrap";
-import { createGasto } from "../../services/gastosService";
+import { createGasto } from "../../../../services/gastosService";
 import {
   getCategoriasPorProyecto,
   guardarNuevaCategoria,
-} from "../../services/categoriasService";
-import "../../GastosCss/GastosForm.css";
+} from "../../../../services/categoriasService";
+import "../ui/GastosForm.css";
 
 /** Convierte un File a Base64 (data URL) */
 const toBase64 = (file) => {

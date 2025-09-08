@@ -19,11 +19,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 // Estilos
-import "../Iniciocss/Inicio.css";
+import "../ui/Inicio.css";
 
 // Animación (Lottie)
 import Lottie from "lottie-react";
-import GruaAnimacion from "../assets/iconos/animaciongrua.json";
+import GruaAnimacion from "../../../../assets/iconos/animaciongrua.json";
 
 const Inicio = () => {
   const navigate = useNavigate();

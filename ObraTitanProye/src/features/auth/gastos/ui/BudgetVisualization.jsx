@@ -1,4 +1,3 @@
-// src/views/BudgetVisualization.jsx
 /**
  * Vista: BudgetVisualization
  * ---------------------------------------------------------------------------
@@ -23,8 +22,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getGastos } from '../services/gastosService';
-import Sidebar from '../components/Sidebar';
+import { getGastos } from '../../../../services/gastosService';
+import Sidebar from "../../../../components/Sidebar";
 import '../ui/BudgetVisualization.css';
 
 const BudgetVisualization = () => {

@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 
 // Contextos globales
 import { useProject } from "../context/ProjectContext";
-import { useAuth } from "../database/authcontext"; // provee logout()
+import { useAuth } from "../context/authcontext"; // provee logout()
 
 // Estilos y librerías
 import "./Sidebar.css";

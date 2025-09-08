@@ -1,4 +1,3 @@
-// src/views/GastosManagement.jsx
 /**
  * Vista: GastosManagement
  * ------------------------------------------------------------
@@ -24,10 +23,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../components/Sidebar";
-import GastosForm from "../components/Gastos/GastosForm";
-import "../GastosCss/GastosForm.css";
-import { useProject } from "../context/ProjectContext"; // Contexto de proyecto
+import Sidebar from "../../../../components/Sidebar";
+import GastosForm from "../ui/GastosForm";
+import "../ui/GastosForm.css";
+import { useProject } from "../../../../context/ProjectContext"; // Contexto de proyecto
 
 const GastosManagement = () => {
   // ⛏️ Toma el proyecto activo del contexto global

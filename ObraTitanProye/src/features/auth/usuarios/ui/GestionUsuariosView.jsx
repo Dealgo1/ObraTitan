@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { getFirestore, collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 import FormularioUsuario from "../../usuarios/ui/FormularioUsuario";
 import Sidebar from "../../../../components/Sidebar";
-import editIcon from "../assets/iconos/edit.png";
-import deleteIcon from "../assets/iconos/delete.png";
+import editIcon from "../../../../assets/iconos/edit.png";
+import deleteIcon from "../../../../assets/iconos/delete.png";
 import "../ui/GestionUsuariosView.css";
 
 // 🏗️ Vista principal de gestión de usuarios

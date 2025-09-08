@@ -10,14 +10,14 @@ import {
 } from "firebase/firestore";
 import { useProject } from "../../../../context/ProjectContext";
 import { useNavigate } from "react-router-dom";
-import "../../documentos";
-import editIcon from "../assets/iconos/edit.png";
-import deleteIcon from "../assets/iconos/delete.png";
-import downloadIcon from "../assets/iconos/archivo.png";
-import eyeIcon from "../assets/iconos/ojo.png";
-import checkIcon from "../assets/iconos/check.png";
+import "../ui/ArchivosOverview.css";
+import editIcon from "../../../../assets/iconos/edit.png";
+import deleteIcon from "../../../../assets/iconos/delete.png";
+import downloadIcon from "../../../../assets/iconos/archivo.png";
+import eyeIcon from "../../../../assets/iconos/ojo.png";
+import checkIcon from "../../../../assets/iconos/check.png";
 import mammoth from "mammoth";
-import iconoBuscar from "../assets/iconos/search.png";
+import iconoBuscar from "../../../../assets/iconos/search.png";
 
 /**
  * 📌 Vista: ArchivoOverview

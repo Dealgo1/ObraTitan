@@ -2,8 +2,8 @@ import React from "react";
 import KPI2Presupuesto from "./KPI2Presupuesto";
 import KPI3EstadoCaja from "./KPI3EstadoCaja";
 import KPI4PagosMensuales from "./KPI4PagosMensuales";
-import Sidebar from "../Sidebar";
-import "../../EstadisticasCss/KPIDashboard.css";
+import Sidebar from "../../../../components/Sidebar";
+import "../ui/KPIDashboard.css";
 
 /**
  * 📊 Componente: KPIDashboard

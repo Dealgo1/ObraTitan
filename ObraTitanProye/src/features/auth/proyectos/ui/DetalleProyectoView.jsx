@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useProject } from "../../../../context/ProjectContext";
-import editarIcono from "../assets/iconos/edit.png";
-import eliminarIcono from "../assets/iconos/delete.png";
-import checkIcon from "../assets/iconos/check.png";
+import editarIcono from "../../../../assets/iconos/edit.png";
+import eliminarIcono from "../../../../assets/iconos/delete.png";
+import checkIcon from "../../../../assets/iconos/check.png";
 import { updateProject, deleteProject } from "../../../../services/projectsService";
 import "../../proyectos/ui/DetalleProyecto.css";
 import { useNavigate } from "react-router-dom";

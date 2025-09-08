@@ -30,17 +30,17 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card, Button, Modal } from "react-bootstrap";
-import Sidebar from "../components/Sidebar";
-import { updateGasto, deleteGasto } from "../services/gastosService";
+import Sidebar from "../../../../components/Sidebar";
+import { updateGasto, deleteGasto } from "../../../../services/gastosService";
 import {
   getCategoriasPorProyecto,
   guardarNuevaCategoria,
-} from "../services/categoriasService";
-import "../GastosCss/GastoDetail.css";
+} from "../../../../services/categoriasService";
+import "../ui/GastoDetail.css";
 
-import editIcon from "../assets/iconos/edit.png";
-import checkIcon from "../assets/iconos/check.png";
-import deleteIcon from "../assets/iconos/delete.png";
+import editIcon from "../../../../assets/iconos/edit.png";
+import checkIcon from "../../../../assets/iconos/check.png";
+import deleteIcon from "../../../../assets/iconos/delete.png";
 
 /** Normaliza a 'YYYY-MM-DD' para inputs de fecha */
 const formatFechaParaInput = (fecha) => {

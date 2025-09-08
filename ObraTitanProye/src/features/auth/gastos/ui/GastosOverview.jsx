@@ -17,14 +17,14 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ListGroup } from "react-bootstrap";
-import { getGastos } from "../services/gastosService";
-import Sidebar from "../components/Sidebar";
-import "../GastosCss/GastosOverview.css";
-import { useProject } from "../context/ProjectContext";
+import { getGastos } from "../../../../services/gastosService";
+import Sidebar from "../../../../components/Sidebar";
+import "../ui/GastosOverview.css";
+import { useProject } from "../../../../context/ProjectContext";
 
 // Íconos
-import arrowIcon from "../assets/iconos/flecha.png";
-import iconoBuscar from "../assets/iconos/search.png"; // ✅ Ícono de búsqueda
+import arrowIcon from "../../../../assets/iconos/flecha.png";
+import iconoBuscar from "../../../../assets/iconos/search.png"; // ✅ Ícono de búsqueda
 
 const GastosOverview = () => {
   const navigate = useNavigate();

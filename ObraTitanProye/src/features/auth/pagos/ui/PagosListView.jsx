@@ -35,10 +35,10 @@ import '../ui/ListaPagos.css';
 import { format } from 'date-fns';
 
 // Íconos locales
-import editIcon from '../assets/iconos/edit.png';
-import checkIcon from '../assets/iconos/check.png';
-import deleteIcon from '../assets/iconos/delete.png';
-import iconoBuscar from '../assets/iconos/search.png';
+import editIcon from '../../../../assets/iconos/edit.png';
+import checkIcon from '../../../../assets/iconos/check.png';
+import deleteIcon from '../../../../assets/iconos/delete.png';
+import iconoBuscar from '../../../../assets/iconos/search.png';
 
 const PagosListView = () => {
   // Proyecto provisto vía navegación (state)

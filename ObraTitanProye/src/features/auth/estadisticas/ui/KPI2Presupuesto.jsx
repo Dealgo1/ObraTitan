@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
-import { db } from "../../database/firebaseconfig";
+import { db } from "../../../../services/firebaseconfig";
 import { collection, getDocs, query, where } from "firebase/firestore";
-import { useProject } from "../../context/ProjectContext";
+import { useProject } from "../../../../context/ProjectContext";
 import { Bar } from "react-chartjs-2";
 import html2canvas from "html2canvas";
 

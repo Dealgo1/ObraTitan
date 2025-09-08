@@ -27,8 +27,8 @@ import {
   createUserWithEmailAndPassword
 } from "firebase/auth";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
-import { appfirebase } from "../database/firebaseconfig";
-import "../logincss/LoginRegister.css";
+import { appfirebase } from "../../../services/firebaseconfig";
+import "./Login.css";
 
 const Login = () => {
   // === Estado de UI ===

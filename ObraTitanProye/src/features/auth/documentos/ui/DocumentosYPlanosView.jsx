@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import { db } from "../assets/database/firebaseconfig";
+import Sidebar from "../../../../components/Sidebar";
+import { db } from "../../../../services/firebaseconfig";
 import { addDoc, collection, serverTimestamp, doc } from "firebase/firestore";
-import { useProject } from "../context/ProjectContext";
-import "../DocumentosYPlanosViewCSS/DocumentosYPlanosView.css";
+import { useProject } from "../../../../context/ProjectContext";
+import "../ui/DocumentosYPlanosView.css";
 
 /**
  * 📄 Vista: DocumentosYPlanosView
