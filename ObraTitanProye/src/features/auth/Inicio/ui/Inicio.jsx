@@ -27,67 +27,46 @@ import GruaAnimacion from "../../../../assets/iconos/animaciongrua.json";
 
 const Inicio = () => {
   const navigate = useNavigate();
-
-  // === Estado ===
-  const [deferredPrompt, setDeferredPrompt] = useState(null); // evento 'beforeinstallprompt' almacenado
-  const [isIOS, setIsIOS] = useState(false);                  // detección de iOS
-  const [showIOSMessage, setShowIOSMessage] = useState(false); // controla visibilidad del tip de iOS
+  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const [isIOS, setIsIOS] = useState(false);
+  const [showIOSMessage, setShowIOSMessage] = useState(false);
 
   useEffect(() => {
-    // Detección simple por userAgent (suficiente para hint de instalación)
     const userAgent = window.navigator.userAgent.toLowerCase();
     const isiOS = /iphone|ipad|ipod/.test(userAgent);
     setIsIOS(isiOS);
 
-    // Si es iOS, mostrar tip temporal de instalación
     if (isiOS) {
       setShowIOSMessage(true);
-      const t = setTimeout(() => setShowIOSMessage(false), 10000); // Ocultar después de 10s
-      // Limpieza por si el componente desmonta antes
-      return () => clearTimeout(t);
+      setTimeout(() => {
+        setShowIOSMessage(false);
+      }, 10000); // Ocultar después de 10s
     }
 
-    // Escucha el evento que permite controlar cuándo mostrar el prompt PWA (Android/desktop)
-    const handleBeforeInstall = (e) => {
-      e.preventDefault();       // Evita que el navegador muestre el prompt automáticamente
-      setDeferredPrompt(e);     // Guardamos el evento para usarlo bajo interacción del usuario
-    };
-
-    window.addEventListener("beforeinstallprompt", handleBeforeInstall);
-
-    // Limpieza
-    return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstall);
-    };
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    });
   }, []);
 
-  /**
-   * handleGoToProjects
-   * ----------------------------------------------------------
-   * 1) Si hay un deferredPrompt (Android/desktop), lanza el prompt de instalación.
-   * 2) Independientemente del resultado, resetea el evento y navega a /proyecto.
-   */
   const handleGoToProjects = async () => {
     if (deferredPrompt) {
-      deferredPrompt.prompt(); // Muestra el prompt nativo de instalación
-      const result = await deferredPrompt.userChoice; // { outcome: 'accepted' | 'dismissed', platform: ... }
+      deferredPrompt.prompt();
+      const result = await deferredPrompt.userChoice;
       console.log("Instalación:", result.outcome);
-      setDeferredPrompt(null); // Se debe limpiar, el evento no es reutilizable
+      setDeferredPrompt(null);
     }
 
-    // Ir a la vista de proyectos
     navigate("/proyecto");
   };
 
   return (
     <div className="inicio-container">
       <div className="inicio-contenido-vertical">
-        {/* Animación principal */}
         <div className="inicio-animacion">
           <Lottie animationData={GruaAnimacion} loop={true} />
         </div>
 
-        {/* Título y descripción */}
         <h1 className="inicio-titulo">Bienvenido a ObraTitan</h1>
 
         <p className="inicio-descripcion">
@@ -95,13 +74,12 @@ const Inicio = () => {
           Accede rápidamente a tus proyectos, revisa el progreso y administra documentos.
         </p>
 
-        {/* CTA principal */}
         <button className="btn-principal" onClick={handleGoToProjects}>
           Ir a Gestión de Proyectos
         </button>
       </div>
 
-      {/* Mensaje flotante para iOS con indicaciones de instalación manual */}
+      {/* ✅ Mensaje flotante solo en iOS con animación */}
       {isIOS && showIOSMessage && (
         <div
           style={{
@@ -117,7 +95,7 @@ const Inicio = () => {
             boxShadow: "0 4px 12px rgba(0,0,0,0.35)",
             maxWidth: "260px",
             zIndex: 1000,
-            animation: "fadeinout 10s forwards" // define en CSS global si quieres suavizar
+            animation: "fadeinout 10s forwards"
           }}
         >
           Para instalar esta app en iOS:<br />

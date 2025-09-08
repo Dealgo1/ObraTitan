@@ -47,7 +47,6 @@ import CreateProjectView from "../features/auth/proyectos/ui/CreateProjectView";
 import GestionUsuariosView from "../features/auth/usuarios/ui/GestionUsuariosView";
 import RegistrarUsuario from "../features/auth/usuarios/ui/RegistrarUsuario";
 import ListaUsuarios from "../features/auth/usuarios/ui/ListaUsuarios";
-
 import NoAutorizado from "../features/auth/usuarios/ui/NoAutorizado";
 import DocumentosYPlanosView from "../features/auth/documentos/ui/DocumentosYPlanosView";
 import ArchivosOverview from "../features/auth/documentos/ui/ArchivosOverview";
