@@ -29,9 +29,9 @@ import {
   updateDoc,
   getDoc
 } from 'firebase/firestore';
-import { db } from '../assets/database/firebaseconfig';
-import Sidebar from '../components/Sidebar';
-import '../PagosCss/ListaPagos.css';
+import { db } from '../../../../services/firebaseconfig';
+import Sidebar from '../../../../components/Sidebar';
+import '../ui/ListaPagos.css';
 import { format } from 'date-fns';
 
 // Íconos locales

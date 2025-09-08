@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../ui/ProyectosOverview.css";
 import { useNavigate } from "react-router-dom";
-import { getProjects } from "../services/projectsService";
-import { useProject } from "../context/ProjectContext";
+import { getProjects } from "../../../../services/projectsService";
+import { useProject } from "../../../../context/ProjectContext";
 import flechaIcon from "../assets/iconos/Flech.png";
 import estrellaIcon from "../assets/iconos/star.png";
 import iconoBuscar from "../assets/iconos/search.png";

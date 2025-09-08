@@ -1,11 +1,11 @@
 // src/views/PresupuestoView.jsx
 import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import PresupuestoCalculator from "../components/Presupuesto/PresupuestoCalculator";
-import EstructuraForm from "../components/Presupuesto/EstructuraForm";
-import ListaEstructuras from "../components/Presupuesto/ListaEstructuras";
-import { useProject } from "../context/ProjectContext"; // ✅ contexto del proyecto activo
-import "../PresupuestoCss/PresupuestoCalculator.css";
+import Sidebar from "../../../../components/Sidebar";
+import PresupuestoCalculator from "../ui/PresupuestoCalculator";
+import EstructuraForm from "../ui/EstructuraForm";
+import ListaEstructuras from "../ui/ListaEstructuras";
+import { useProject } from "../../../../context/ProjectContext"; // ✅ contexto del proyecto activo
+import "../ui/PresupuestoCalculator.css";
 
 /**
  * 🧮 Vista: PresupuestoView

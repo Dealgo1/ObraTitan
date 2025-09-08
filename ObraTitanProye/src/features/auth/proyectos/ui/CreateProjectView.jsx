@@ -1,7 +1,7 @@
 // Importaciones necesarias de React y componentes
 import React from "react";
 // Importamos el formulario de proyecto (lógica del formulario está en este componente)
-import ProjectForm from "../components/ProyectoFuncionalidad/ProjectForm";
+import ProjectForm from "../../proyectos/ui/ProjectForm";
 // Importamos los estilos específicos para esta vista
 import "../ui/CrearProyecto.css"; 
 

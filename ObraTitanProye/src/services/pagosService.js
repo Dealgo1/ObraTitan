@@ -1,6 +1,6 @@
 // src/services/pagosService.js
 import { collection, addDoc, doc, Timestamp } from "firebase/firestore";
-import { db } from "../database/firebaseconfig";
+import { db } from "../services/firebaseconfig";
 
 /**
  * 📌 registrarPagoComoGasto

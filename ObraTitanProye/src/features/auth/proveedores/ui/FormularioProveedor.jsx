@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { guardarProveedor } from "../../services/firebaseProveedores";
+import { guardarProveedor } from "../../../../services/proveedoresService";
 import { useNavigate, useLocation } from "react-router-dom";
-import Sidebar from "../Sidebar";
-import "../../Proveedorcss/FormularioProveedor.css";
+import Sidebar from "../../../../components/Sidebar";
+import "../../proveedores/ui/FormularioProveedor.css";
 
 /**
  * 📌 Componente: FormularioProveedor

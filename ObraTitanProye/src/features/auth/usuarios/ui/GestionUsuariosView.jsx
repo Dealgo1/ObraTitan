@@ -1,9 +1,8 @@
 // 📦 Importaciones de librerías y componentes necesarios
 import React, { useEffect, useState } from "react";
 import { getFirestore, collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
-import FormularioUsuario from "../components/usuarios/FormularioUsuario";
-import Sidebar from "../components/Sidebar";
-import ConfirmPopup from "../components/ConfirmPopup/ConfirmPopup";
+import FormularioUsuario from "../../usuarios/ui/FormularioUsuario";
+import Sidebar from "../../../../components/Sidebar";
 import editIcon from "../assets/iconos/edit.png";
 import deleteIcon from "../assets/iconos/delete.png";
 import "../ui/GestionUsuariosView.css";

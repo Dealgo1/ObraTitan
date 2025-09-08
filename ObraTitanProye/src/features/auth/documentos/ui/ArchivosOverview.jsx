@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import Sidebar from "../components/Sidebar";
-import { db } from "../assets/database/firebaseconfig";
+import Sidebar from "../../../../components/Sidebar";
+import { db } from "../../../../services/firebaseconfig";
 import {
   collection,
   doc,
@@ -8,9 +8,9 @@ import {
   deleteDoc,
   updateDoc,
 } from "firebase/firestore";
-import { useProject } from "../context/ProjectContext";
+import { useProject } from "../../../../context/ProjectContext";
 import { useNavigate } from "react-router-dom";
-import "../DocumentosYPlanosViewCSS/ArchivosOverview.css";
+import "../../documentos";
 import editIcon from "../assets/iconos/edit.png";
 import deleteIcon from "../assets/iconos/delete.png";
 import downloadIcon from "../assets/iconos/archivo.png";

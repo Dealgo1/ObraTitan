@@ -25,9 +25,9 @@
 
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { actualizarProveedor, eliminarProveedor } from "../services/firebaseProveedores";
+import { actualizarProveedor, eliminarProveedor } from "../../../../services/proveedoresService";
 import { doc, updateDoc } from "firebase/firestore"; // Para actualización directa (ruta alternativa)
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../../../../components/Sidebar";
 import editIcon from "../assets/iconos/edit.png";
 import checkIcon from "../assets/iconos/check.png";
 import deleteIcon from "../assets/iconos/delete.png";

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { registrarPagoComoGasto } from "../services/firebasePagos"; // 🔗 Servicio que guarda pagos en Firestore y los vincula como gasto
-import FormularioPago from '../components/pagos/FormularioPago'; // 🧾 Componente que contiene el formulario de pago
-import Sidebar from '../components/Sidebar'; // 📌 Sidebar lateral
+import { registrarPagoComoGasto } from "../../../../services/pagosService"; // 🔗 Servicio que guarda pagos en Firestore y los vincula como gasto
+import FormularioPago from '../ui/FormularioPago'; // 🧾 Componente que contiene el formulario de pago
+import Sidebar from '../../../../components/Sidebar'; // 📌 Sidebar lateral
 import "../ui/FormularioPago.css"; // 🎨 Estilos del formulario de pago
 
 /**

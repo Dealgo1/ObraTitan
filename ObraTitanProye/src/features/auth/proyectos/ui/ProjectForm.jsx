@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import "../../ProveedoresCss/CrearProyecto.css";
-import { createProject } from "../../services/projectsService";
+import "../../proyectos/ui/ProjectForm.css";
+import { createProject } from "../../../../services/projectsService";
 import { useNavigate } from "react-router-dom";
 
 const ProjectForm = () => {

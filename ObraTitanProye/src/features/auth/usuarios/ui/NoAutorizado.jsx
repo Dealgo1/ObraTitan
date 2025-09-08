@@ -1,6 +1,6 @@
 // 📦 Importaciones necesarias
 import React from "react";
-import Sidebar from "../components/Sidebar"; // Barra lateral de navegación
+import Sidebar from "../../../../components/Sidebar"; // Barra lateral de navegación
 import { AlertCircle } from "lucide-react"; // Icono de alerta de la librería lucide-react
 import "../ui/NoAutorizado.css"; // Estilos específicos de esta vista
 

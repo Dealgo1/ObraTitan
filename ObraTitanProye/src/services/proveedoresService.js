@@ -1,5 +1,5 @@
 // src/services/proveedoresService.js
-import { db } from "../database/firebaseconfig";
+import { db } from "../services/firebaseconfig";
 import {
   collection,
   addDoc,

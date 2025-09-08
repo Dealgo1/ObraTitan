@@ -1,0 +1,225 @@
+@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+
+/* 🎯 Tarjeta principal que envuelve todo el detalle del proyecto */
+.dpv-card {
+  background-color: white;              /* Fondo blanco */
+  border: 3px solid #D35400;           /* Borde naranja */
+  border-radius: 20px;                 /* Bordes redondeados */
+  padding: 2rem;                       /* Espaciado interno */
+  font-family: 'Arapey', serif;        /* Fuente */
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); /* Sombra */
+  margin: 2rem 0 2rem 120px;           /* Espaciado con sidebar */
+  width: calc(85vw - 140px);           /* Ocupa 85% del viewport restando sidebar */
+  max-width: 100%;
+}
+
+/* 📱 Versión tablet: más centrado y reducido */
+@media (max-width: 991px) {
+  .dpv-card {
+    padding: 1.5rem;
+    width: 92vw;
+    margin: 2rem auto;
+  }
+}
+
+/* 📱 Versión móvil */
+@media (max-width: 600px) {
+  .dpv-card {
+    padding: 1rem;
+    width: 90vw;
+  }
+
+  .dpv-header {
+    justify-content: center; /* Botones al centro */
+  }
+
+  .dpv-campo-imagen {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* 🎯 Cabecera de iconos (editar, eliminar) */
+.dpv-header {
+  display: flex;
+  justify-content: flex-end; /* Alinea a la derecha */
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.dpv-icono {
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.dpv-icono:hover {
+  transform: scale(1.1); /* Pequeño zoom */
+}
+
+/* 📸 Imagen del proyecto */
+.dpv-imagen {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;       /* Que no se deforme */
+  border-radius: 15px;
+  margin-bottom: 2rem;
+  cursor: pointer;         /* Para abrir en modal */
+}
+
+/* 🖼️ Modal cuando se amplía la imagen */
+.modal-imagen-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background-color: rgba(0,0,0,0.85);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 9999;
+}
+
+.modal-imagen {
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 15px;
+  box-shadow: 0 0 25px #D35400; /* Brillo naranja */
+}
+
+/* 📂 Campo para subir imagen */
+.dpv-campo-imagen {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.dpv-campo-imagen label {
+  font-weight: bold;
+  min-width: 140px;
+}
+
+.dpv-campo-imagen input[type="file"] {
+  border: 2px solid #D35400;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background-color: #fffdfc;
+  font-size: 1rem;
+  width: 100%;
+  text-overflow: ellipsis; /* Si el nombre del archivo es largo */
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* 📝 Sección de textos principales */
+.dpv-nombre {
+  font-size: 2.5rem;
+  margin: 0;
+  color: #000;
+}
+.dpv-cliente {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #222;
+}
+.dpv-descripcion {
+  border: 2px solid #D35400;
+  padding: 1rem;
+  border-radius: 10px;
+  background-color: #fffdfc;
+  margin-bottom: 1rem;
+}
+.dpv-presupuesto {
+  border: 2px solid #D35400;
+  padding: 0.8rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+}
+
+/* 🧾 Inputs editables */
+.dpv-input,
+.dpv-textarea {
+  border: 2px solid #D35400;
+  padding: 0.7rem;
+  border-radius: 8px;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+.dpv-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+/* 📅 Fechas */
+.dpv-fechas-estado {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin: 1.5rem 0;
+  flex-wrap: wrap;
+}
+.dpv-fecha-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.dpv-fecha-item label {
+  font-weight: bold;
+  margin-bottom: 0.4rem;
+}
+.dpv-fecha-item input {
+  border: 2px solid #D35400;
+  padding: 0.6rem;
+  border-radius: 8px;
+}
+
+/* 🔘 Estado del proyecto (En progreso, Finalizado, Cancelado) */
+.dpv-estado {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 2rem;
+  font-weight: bold;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.dpv-estado label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.dpv-estado span {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+.dpv-activo {
+  background-color: #ce5f15;
+  border: 2px solid #D35400;
+}
+
+/* 🖥️ Ajustes en pantallas medianas (más pegada a la izquierda) */
+@media (min-width: 992px) and (max-width: 1280px) {
+  .dpv-card {
+    margin-left: 1px;
+    width: calc(90vw - 80px);
+  }
+}
+
+/* ✅ Toast de éxito (cuando se guarda proveedor/proyecto) */
+.toast-exito-proveedor {
+  position: fixed;
+  bottom: 30px; right: 30px;
+  background-color: #27ae60; /* Verde éxito */
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 10px;
+  z-index: 3000;
+  animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(20px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(20px); }
+}

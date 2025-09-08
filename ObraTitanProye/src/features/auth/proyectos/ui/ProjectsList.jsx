@@ -1,12 +1,12 @@
 // src/components/ProjectsList.jsx
 import React, { useEffect, useState, useCallback } from "react";
 import { Table, Button, Modal } from "react-bootstrap";
-import { getProjects, deleteProject } from "../../services/projectsService";
+import { getProjects, deleteProject } from "../../../../services/projectsService";
 import mammoth from "mammoth";
-import EditProjectModal from "./EditProjectModal";
+import EditProjectModal from "../../proyectos/ui/EditProjectModal";
 import { useNavigate } from "react-router-dom";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
-import { useProject } from "../../context/ProjectContext";
+import { useProject } from "../../../../context/ProjectContext";
 
 /* ================================
    Modal: Vista previa de documentos Word

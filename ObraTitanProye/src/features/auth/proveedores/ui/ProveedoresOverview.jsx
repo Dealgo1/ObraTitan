@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { db } from "../../src/assets/database/firebaseconfig"; // Configuración de Firebase
+import { db } from "../../../../services/firebaseconfig"; // Configuración de Firebase
 import { collection, onSnapshot, query, where } from "firebase/firestore";
-import Sidebar from "../components/Sidebar";
+import Sidebar from "../../../../components/Sidebar";
 import flecha from "../assets/iconos/flecha.png";
 import iconoBuscar from "../assets/iconos/search.png";
-import {  } from "../../src/services/firebaseProveedores"; // Reservado por si necesitas servicios extra
-import "../Proveedorcss/ProveedorOverview.css";
+import {  } from "../../../../services/proveedoresService"; // Reservado por si necesitas servicios extra
+import "../../proveedores/ui/ProveedoresOverview.css";
 
 /**
  * 📌 Componente: ProveedoresOverview

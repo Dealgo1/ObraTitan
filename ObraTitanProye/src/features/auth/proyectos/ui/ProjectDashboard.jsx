@@ -1,6 +1,6 @@
 import React from "react";
-import Sidebar from "../components/Sidebar";
-import DetalleProyectoView from "./DetalleProyectoView";
+import Sidebar from "../../../../components/Sidebar";
+import DetalleProyectoView from "../../proyectos/ui/DetalleProyectoView";
 
 /**
  * 📌 Componente: ProjectDashboard
