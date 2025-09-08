@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../../database/firebaseconfig";
+import { db } from "../../../../services/firebaseconfig";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import ConfirmPopup from "../ConfirmPopup/ConfirmPopup";
+
 
 const ListaEstructuras = ({ setEstructuraEnEdicion }) => {
   // 📌 Estado que guarda la lista de estructuras obtenidas de Firestore

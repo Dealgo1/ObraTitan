@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { db } from "../../database/firebaseconfig";
+import { db } from "../../../../services/firebaseconfig";
 import { addDoc, collection, updateDoc, doc } from "firebase/firestore";
-import MaterialForm from "./MaterialForm";
-import MaterialList from "./MaterialList";
-import "../../PresupuestoCss/PresupuestoCalculator.css";
+import MaterialForm from "../ui/MaterialForm";
+import MaterialList from "../ui/MaterialList";
+import "../ui/PresupuestoCalculator.css";
 
 const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
   // Estado para el nombre de la estructura
