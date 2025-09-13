@@ -2,7 +2,6 @@
 
 ![Status](https://img.shields.io/badge/Status-En%20Desarrollo-orange)
 ![Hackathon](https://img.shields.io/badge/Event-Hackatón%202025-blueviolet)
-![License](https://img.shields.io/badge/Licencia-Privada-red)
 
 > **ObraTitan** es un sistema web desarrollado durante el **Hackatón 2025**...
 
@@ -35,7 +34,8 @@
   <img src="https://img.shields.io/badge/Vite-5+-646CFF?logo=vite&labelColor=1a1a1a" />
   <img src="https://img.shields.io/badge/Firebase-Auth%20%7C%20Firestore-FFCA28?logo=firebase&labelColor=20232a" />
   <img src="https://img.shields.io/badge/PWA-Ready-5A0FC8?logo=pwa&labelColor=1a1a1a" />
-  <img src="https://img.shields.io/badge/License-MIT-2ea44f?labelColor=1a1a1a" />
+<img src="https://img.shields.io/badge/Licencia-Privada-red?labelColor=1a1a1a" />
+
 </p>
 
 ---
