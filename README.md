@@ -16,16 +16,16 @@
 - [✨ Características principales](#-características-principales)
 - [🧩 Arquitectura & Stack](#-arquitectura--stack)
 - [📂 Estructura del proyecto](#-estructura-del-proyecto)
-- [⚙️ Instalación local](#️-instalación-local)
-- [☁️ Despliegue (Hosting)](#️-despliegue-hosting)
+- [⚙️ Instalación local](#-instalación-local)
+- [☁️ Despliegue (Hosting)](#-despliegue-hosting)
 - [📲 Instalación como App (PWA)](#-instalación-como-app-pwa)
-- [⚙️ Configuración técnica de PWA](#️-configuración-técnica-de-pwa)
+- [⚙️ Configuración técnica de PWA](#-configuración-técnica-de-pwa)
 - [📄 Ejemplo de manifest.webmanifest](#-ejemplo-de-manifestwebmanifest)
-- [🛠️ Troubleshooting](#️-troubleshooting)
+- [🛠️ Troubleshooting](#-troubleshooting)
 - [🧪 Evidencia de control de versiones](#-evidencia-de-control-de-versiones)
 - [👥 Equipo de desarrollo](#-equipo-de-desarrollo)
-- [🗺️ Roadmap](#️-roadmap)
-- [🖊️ Licencia](#️-licencia)
+- [🗺️ Roadmap](#-roadmap)
+- [🖊️ Licencia](#-licencia)
 
 ---
 
