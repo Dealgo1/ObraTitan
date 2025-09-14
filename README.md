@@ -17,8 +17,8 @@
 - [Arquitectura & Stack](#arquitectura--stack)
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Instalación local](#instalación-local)
-- [Despliegue (Hosting)](#despliegue-hosting)
-- [Instalación como App (PWA)](#instalación-como-app-pwa)
+- [Despliegue (hosting)](#despliegue-hosting)
+- [Instalación como App (pwa)](#instalación-como-app-pwa)
 - [Configuración técnica de PWA](#configuración-técnica-de-pwa)
 - [Ejemplo de manifest.webmanifest](#ejemplo-de-manifestwebmanifest)
 - [Troubleshooting](#troubleshooting)
@@ -26,6 +26,7 @@
 - [Equipo de desarrollo](#equipo-de-desarrollo)
 - [Roadmap](#roadmap)
 - [Licencia](#licencia)
+
 
 
 ---
