@@ -3,7 +3,6 @@
 ![Status](https://img.shields.io/badge/Status-En%20Desarrollo-orange)
 ![Hackathon](https://img.shields.io/badge/Event-Hackatón%202025-blueviolet)
 
-> **ObraTitan** es un sistema web desarrollado durante el **Hackatón 2025**...
 
 > **ObraTitan** es un sistema web desarrollado durante el **Hackatón 2025** para la **gestión integral de proyectos de construcción**.  
 > Permite administrar **presupuestos, gastos, pagos, proveedores, usuarios y KPIs** en una sola plataforma.  
@@ -13,7 +12,7 @@
 
 ## 📑 Tabla de Contenidos
 
-- [Características principales](#características-principales)
+- [Características principales](#-características-principales)
 - [Arquitectura & Stack](#arquitectura--stack)
 - [Estructura del proyecto](#estructura-del-proyecto)
 - [Instalación local](#instalación-local)
