@@ -101,7 +101,7 @@ ObraTitanProye/
 └─ package.json
 ```
 ---
-⚙️ Instalación local
+## ⚙️ Instalación local
 Requisitos
 
 Node.js 18+
@@ -120,7 +120,7 @@ cp .env.example .env
 # Edita .env con tus claves de Firebase
 ```
 ---
-.env.example
+## .env.example
 ```jsx
 VITE_APIKEY=xxxxx
 VITE_AUTHDOMAIN=xxxxx.firebaseapp.com
@@ -130,7 +130,7 @@ VITE_MESSAGINGSENDERID=xxxxx
 VITE_APPID=1:xxxx:web:xxxx
 ```
 ---
-Ejecutar en desarrollo
+## Ejecutar en desarrollo
 ```
 npm run dev
 ```
@@ -143,7 +143,7 @@ npm run build
 npm run preview
 ```
 ---
-☁️ Despliegue (Hosting)
+## ☁️ Despliegue (Hosting)
 
 La app puede desplegarse en cualquier servicio con HTTPS (requisito PWA).
 
