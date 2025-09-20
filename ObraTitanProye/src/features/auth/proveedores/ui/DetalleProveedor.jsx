@@ -1,4 +1,4 @@
-// src/views/DetalleProveedorView.jsx
+//DetalleProveedorView.jsx
 /**
  * Vista: DetalleProveedorView
  * ----------------------------------------------------------------------------

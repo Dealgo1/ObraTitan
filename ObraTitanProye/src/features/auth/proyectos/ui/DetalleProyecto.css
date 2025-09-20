@@ -223,3 +223,119 @@
   90% { opacity: 1; }
   100% { opacity: 0; transform: translateY(20px); }
 }
+
+
+/* Borde rojo en inputs con error */
+.dpv-input-error,
+.dpv-input-error:focus,
+.dpv-textarea.dpv-input-error {
+  border: 1px solid #e53935 !important;
+  box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.1);
+}
+
+/* Mensaje de error */
+.dpv-error {
+  color: #e53935;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* File input */
+.dpv-file-label {
+  display: inline-block;
+  margin-top: 8px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.dpv-file-label input[type="file"] {
+  display: block;
+  margin-top: 6px;
+}
+
+
+/* ============================
+   🔘 Botones de acción proyecto
+   ============================ */
+.dpv-btn-icon {
+  --size: 45px;
+  width: var(--size);
+  height: var(--size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--naranja);
+  border-radius: 10px;
+  background: var(--blanco);
+  cursor: pointer;
+  padding: 6px;
+  transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease, transform .1s ease;
+}
+
+.dpv-btn-icon img {
+  width: 22px;
+  height: 22px;
+  transition: filter .2s ease;
+}
+
+/* Hover → botón naranja completo, ícono blanco */
+.dpv-btn-icon:hover {
+  background: var(--naranja);
+  border-color: var(--naranja);
+  box-shadow: 0 0 0 3px rgba(211, 84, 0, 0.12);
+  transform: translateY(-1px);
+}
+
+.dpv-btn-icon:hover img {
+  filter: brightness(0) invert(1); /* ícono blanco */
+}
+
+/* Click feedback */
+.dpv-btn-icon:active {
+  transform: scale(0.95);
+}
+
+/* 🚫 Botón eliminar con rojo */
+.dpv-btn-eliminar {
+  border-color: #c0392b;
+}
+.dpv-btn-eliminar:hover {
+  background: #c0392b;
+  border-color: #c0392b;
+}
+.dpv-btn-eliminar:hover img {
+  filter: brightness(0) invert(1);
+}
+
+/* ❌ Botón cancelar (igual que normal, pero separado por claridad) */
+.dpv-btn-cancelar {
+  border-color: var(--naranja);
+}
+.dpv-btn-cancelar:hover {
+  background: var(--naranja);
+  border-color: var(--naranja);
+}
+
+
+
+/* ✅ Toast de éxito (Proyectos) */
+.dpv-toast-exito {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #D35400; /* Verde éxito */
+  color: #fff;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  z-index: 3000;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+  font-family: 'Arapey', serif;
+  font-weight: 700;
+  animation: dpvFadeInOut 3s ease-in-out;
+}
+
+@keyframes dpvFadeInOut {
+  0%   { opacity: 0; transform: translateY(20px); }
+  10%  { opacity: 1; transform: translateY(0); }
+  90%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(20px); }
+}
