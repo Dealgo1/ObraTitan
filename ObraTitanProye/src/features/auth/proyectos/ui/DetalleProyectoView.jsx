@@ -33,6 +33,7 @@ const DetalleProyectoView = () => {
     cliente: project?.cliente || "",
     descripcion: project?.descripcion || "",
     presupuesto: project?.presupuesto ?? "",
+    moneda: project?.moneda || "CORD", // ✅ nueva propiedad
     estado: project?.estado || "En progreso",
     fechaInicio: formatFechaParaInput(project?.fechaInicio),
     fechaFin: formatFechaParaInput(project?.fechaFin),
@@ -64,20 +65,16 @@ const DetalleProyectoView = () => {
     };
   }, []);
 
+  // ✅ Toast de éxito para proyectos
+  const [dpvToastMsg, setDpvToastMsg] = useState("");
+  const [dpvShowToast, setDpvShowToast] = useState(false);
 
-
-// ✅ Toast de éxito para proyectos
-const [dpvToastMsg, setDpvToastMsg] = useState("");
-const [dpvShowToast, setDpvShowToast] = useState(false);
-
-const dpvShowSuccessToast = (msg = "✅ Proyecto actualizado con éxito") => {
-  setDpvToastMsg(msg);
-  setDpvShowToast(true);
-  // Oculta automáticamente a los 3s
-  setTimeout(() => setDpvShowToast(false), 3000);
-};
-
-
+  const dpvShowSuccessToast = (msg = "✅ Proyecto actualizado con éxito") => {
+    setDpvToastMsg(msg);
+    setDpvShowToast(true);
+    // Oculta automáticamente a los 3s
+    setTimeout(() => setDpvShowToast(false), 3000);
+  };
 
   /** 📅 Convierte fechas (Firestore o string) al formato válido para inputs <date> */
   function formatFechaParaInput(fecha) {
@@ -159,6 +156,13 @@ const dpvShowSuccessToast = (msg = "✅ Proyecto actualizado con éxito") => {
         // Validación se hace en change del input:file, aquí solo placeholder
         return "";
       }
+
+      case "moneda": {
+        const permitidas = ["CORD", "USD", "EUR"];
+        if (!permitidas.includes(v)) return "Moneda inválida";
+        return "";
+      }
+
       default:
         return "";
     }
@@ -177,6 +181,7 @@ const dpvShowSuccessToast = (msg = "✅ Proyecto actualizado con éxito") => {
       fechaInicio: data.fechaInicio,
     });
     nuevosErrores.estado = validaCampo("estado", data.estado);
+    nuevosErrores.moneda = validaCampo("moneda", data.moneda);
 
     // Limpia mensajes vacíos
     Object.keys(nuevosErrores).forEach((k) => {
@@ -218,6 +223,7 @@ const dpvShowSuccessToast = (msg = "✅ Proyecto actualizado con éxito") => {
           cliente: datosEditables.cliente.trim(),
           descripcion: datosEditables.descripcion?.trim() || "",
           presupuesto: Number(datosEditables.presupuesto),
+          moneda: datosEditables.moneda, // ✅ se guarda la moneda
           fechaInicio: fechaInicioValida,
           fechaFin: fechaFinValida,
           imagen: base64Imagen,
@@ -231,12 +237,12 @@ const dpvShowSuccessToast = (msg = "✅ Proyecto actualizado con éxito") => {
           );
           alert("Estás offline. Los cambios se guardaron localmente.");
           setProject({ ...project, ...datosActualizados }); // refleja cambios en UI
-           dpvShowSuccessToast("✅ Cambios guardados localmente (offline)");
+          dpvShowSuccessToast("✅ Cambios guardados localmente (offline)");
         } else {
           // Guardar directamente en Firestore
           await updateProject(project.id, datosActualizados);
           setProject({ ...project, ...datosActualizados });
-           dpvShowSuccessToast("✅ Proyecto actualizado con éxito");
+          dpvShowSuccessToast("✅ Proyecto actualizado con éxito");
         }
       } catch (error) {
         console.error("Error al actualizar el proyecto:", error);
@@ -400,6 +406,33 @@ const dpvShowSuccessToast = (msg = "✅ Proyecto actualizado con éxito") => {
     return <PantallaCarga mensaje="Cargando proyecto..." />;
   }
 
+  // 🔹 Añade esto dentro de tu componente, antes del return
+  const CONVERSION_RATES = {
+    USD: 37, // 1 USD ≈ 37 Córdobas
+    EUR: 43, // 1 EUR ≈ 43 Córdobas
+    CORD: 1, // 1 Córdobas = 1 Córdobas
+  };
+
+  // Formatea número con 2 decimales y agrega moneda
+  const formatCurrency = (value, currency) => {
+    if (value === null || value === undefined || isNaN(value))
+      return `0.00 ${currency}`;
+    return (
+      Number(value).toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }) + ` ${currency}`
+    );
+  };
+
+  // Convierte cualquier moneda a cualquier otra usando CONVERSION_RATES
+  const convertCurrency = (amount, fromCurrency, toCurrency) => {
+    if (!amount || isNaN(amount)) return 0;
+    const amountInCord = Number(amount) * (CONVERSION_RATES[fromCurrency] ?? 1); // pasa a Córdobas primero
+    const rateToTarget = CONVERSION_RATES[toCurrency] ?? 1;
+    return amountInCord / rateToTarget;
+  };
+
   return (
     <div className="dpv-wrapper">
       <div className="dpv-card">
@@ -496,27 +529,40 @@ const dpvShowSuccessToast = (msg = "✅ Proyecto actualizado con éxito") => {
               <p className="dpv-error">{errores.descripcion}</p>
             )}
 
-            <input
-              name="presupuesto"
-              type="number"
-              value={datosEditables.presupuesto}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              className={`dpv-input ${
-                errores.presupuesto ? "dpv-input-error" : ""
-              }`}
-              placeholder="Presupuesto"
-              step="0.01"
-              min="0"
-              onKeyDown={(e) => {
-                if (["e", "E", "+", "-"].includes(e.key)) {
-                  e.preventDefault(); // bloquea exponentes, signos negativos y +
-                }
-              }}
-            />
-            {errores.presupuesto && (
-              <p className="dpv-error">{errores.presupuesto}</p>
-            )}
+            <div className="dpv-presupuesto-moneda">
+  <input
+    name="presupuesto"
+    type="number"
+    value={datosEditables.presupuesto}
+    onChange={handleChange}
+    onBlur={handleBlur}
+    className={`dpv-input ${errores.presupuesto ? "dpv-input-error" : ""}`}
+    placeholder="Presupuesto"
+    step="0.01"
+    min="0"
+    onKeyDown={(e) => {
+      if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+    }}
+  />
+
+  <div className="dpv-moneda">
+    <select
+      name="moneda"
+      value={datosEditables.moneda}
+      onChange={handleChange}
+      onBlur={handleBlur}
+    >
+      <option value="CORD">Córdobas (C$)</option>
+      <option value="USD">Dólar (USD)</option>
+      <option value="EUR">Euro (EUR)</option>
+    </select>
+  </div>
+</div>
+
+{/* Mensajes de error separados */}
+{errores.presupuesto && <p className="dpv-error">{errores.presupuesto}</p>}
+{errores.moneda && <p className="dpv-error">{errores.moneda}</p>}
+
 
             <div className="dpv-fechas-estado">
               <div className="dpv-fecha-item">
@@ -584,8 +630,29 @@ const dpvShowSuccessToast = (msg = "✅ Proyecto actualizado con éxito") => {
             <p className="dpv-cliente">Cliente : {project?.cliente}</p>
             <div className="dpv-descripcion">{project?.descripcion}</div>
             <div className="dpv-presupuesto">
-              Presupuesto : $
-              {Number(project?.presupuesto || 0).toLocaleString()}
+              Presupuesto base:{" "}
+              {formatCurrency(
+                datosEditables.presupuesto,
+                datosEditables.moneda
+              )}
+              <div className="dpv-conversiones">
+                {["USD", "EUR", "CORD"].map((moneda) => {
+                  if (moneda === datosEditables.moneda) return null;
+                  return (
+                    <div key={moneda}>
+                      ≈{" "}
+                      {formatCurrency(
+                        convertCurrency(
+                          datosEditables.presupuesto,
+                          datosEditables.moneda,
+                          moneda
+                        ),
+                        moneda
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             <div className="dpv-fechas-estado">
@@ -631,17 +698,13 @@ const dpvShowSuccessToast = (msg = "✅ Proyecto actualizado con éxito") => {
         </div>
       )}
 
-
       {dpvShowToast && (
-  <div className="dpv-toast-exito" role="status" aria-live="polite">
-    {dpvToastMsg}
-  </div>
-)}
-
+        <div className="dpv-toast-exito" role="status" aria-live="polite">
+          {dpvToastMsg}
+        </div>
+      )}
     </div>
-    
   );
-  
 };
 
 export default DetalleProyectoView;

@@ -200,3 +200,58 @@
     gap: 1rem;
   }
 }
+
+/* Presupuesto + selector */
+.fila-presupuesto .presupuesto-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.presupuesto-row input[type="text"] {
+  flex: 1;
+  padding: 0.6rem 0.8rem;
+  border: 2px solid #D35400;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.select-moneda {
+  padding: 0.8rem 0.6rem;
+  border-radius: 8px;
+  border: 2px solid #D35400;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
+/* Preview de conversión (muted) */
+.preview-conversion {
+  margin-top: 0.5rem;
+  font-weight: 700;
+  color: #222;
+}
+.preview-conversion .muted {
+  font-weight: 400;
+  color: #666;
+  margin-left: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Imagen preview */
+.preview-imagen {
+  margin-top: 0.75rem;
+  max-width: 220px;
+  max-height: 140px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+/* Error */
+.error-texto {
+  display: block;
+  color: #e53935;
+  margin-top: 0.35rem;
+  font-size: 0.95rem;
+}
+

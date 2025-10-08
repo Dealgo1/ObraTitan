@@ -339,3 +339,51 @@
   90%  { opacity: 1; }
   100% { opacity: 0; transform: translateY(20px); }
 }
+
+
+
+/* Contenedor horizontal de presupuesto + moneda */
+.dpv-presupuesto-moneda {
+  display: flex;
+  gap: 8px; /* espacio entre input y select */
+  align-items: center; /* alinea verticalmente input y select */
+}
+
+/* Input de presupuesto */
+.dpv-input {
+  flex: 1; /* ocupa todo el espacio disponible */
+  padding: 8px 12px;
+  font-size: 1rem;
+  border: 2px solid #D35400;
+  border-radius: 6px;
+  outline: none;
+}
+
+.dpv-input:focus {
+  border-color: #D35400;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+
+.dpv-input-error {
+  border-color: #ef4444;
+}
+
+/* Selector de moneda */
+.dpv-moneda {
+  flex: 0 0 150px; /* ancho fijo */
+}
+
+.dpv-moneda select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 2px solid #D35400;
+  border-radius: 6px;
+  outline: none;
+  margin-bottom: 16px; /* ajusta el valor a tu gusto */
+}
+
+.dpv-moneda select:focus {
+  border-color: #D35400;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}

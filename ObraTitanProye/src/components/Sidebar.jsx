@@ -2,14 +2,14 @@
  * Sidebar.jsx
  * ------------------------------------------------------------
  * Componente de barra lateral (sidebar) para navegación principal.
- * 
+ *
  * Características:
  * - Diseño responsivo: se abre/cierra con un botón (hamburguesa / X).
  * - Acceso a vistas clave del sistema: actividades, presupuesto, pagos, etc.
  * - Usa contexto de proyectos (ProjectContext) para pasar el proyecto activo.
  * - Usa contexto de autenticación (AuthContext) para cerrar sesión.
  * - SweetAlert2 para confirmación elegante al cerrar sesión.
- * 
+ *
  * Dependencias:
  * - react-router-dom → useNavigate para redirección SPA.
  * - lucide-react → íconos (Menu, X).
@@ -32,7 +32,6 @@ import Swal from "sweetalert2";
 import logo from "../assets/iconos/Logo.png";
 import calculatorIcon from "../assets/iconos/calculator.png";
 import checkIcon from "../assets/iconos/Chek.png";
-import codigo from "../assets/iconos/codigo.png";
 import estadisticaIcon from "../assets/iconos/estadistica.png";
 import gmailIcon from "../assets/iconos/gmail.png";
 import moneyIcon from "../assets/iconos/money.png";
@@ -40,6 +39,7 @@ import shoppingIcon from "../assets/iconos/shopping.png";
 import sesion from "../assets/iconos/user-interface.png";
 import Documento from "../assets/iconos/documento.png";
 import Logaut from "../assets/iconos/logout.png";
+import GestProy from "../assets/iconos/GestProy.png";
 
 const Sidebar = () => {
   /** Estado local que controla si la barra lateral está abierta o cerrada */
@@ -47,7 +47,7 @@ const Sidebar = () => {
 
   const navigate = useNavigate();
   const { project } = useProject(); // proyecto seleccionado en contexto
-  const { logout } = useAuth();     // función para cerrar sesión
+  const { logout } = useAuth(); // función para cerrar sesión
 
   /** Alterna la visibilidad de la sidebar */
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -131,10 +131,26 @@ const Sidebar = () => {
         <div className="sidebar-nav">
           <div
             className="sidebar-item"
+            data-tooltip="Gest_Proy"
+            onClick={() => goTo("/project-dashboard")}
+          >
+            <img
+              src={GestProy}
+              alt="Gestion Proyecto"
+              className="sidebar-icon icon-GestProy"
+            />
+          </div>
+
+          <div
+            className="sidebar-item"
             data-tooltip="Actividades"
             onClick={() => goTo("/actividades")}
           >
-            <img src={checkIcon} alt="Tareas" className="sidebar-icon icon-check" />
+            <img
+              src={checkIcon}
+              alt="Tareas"
+              className="sidebar-icon icon-actividades"
+            />
           </div>
 
           <div
@@ -142,7 +158,11 @@ const Sidebar = () => {
             data-tooltip="Calculadora"
             onClick={() => goTo("/Calculadora_presupuesto")}
           >
-            <img src={calculatorIcon} alt="Calculadora" className="sidebar-icon icon-calc" />
+            <img
+              src={calculatorIcon}
+              alt="Calculadora"
+              className="sidebar-icon icon-calculadora"
+            />
           </div>
 
           <div
@@ -150,7 +170,11 @@ const Sidebar = () => {
             data-tooltip="Presupuesto"
             onClick={() => goTo("/budget-visualization")}
           >
-            <img src={moneyIcon} alt="Budget" className="sidebar-icon icon-money" />
+            <img
+              src={moneyIcon}
+              alt="Budget"
+              className="sidebar-icon icon-presupuesto"
+            />
           </div>
 
           <div
@@ -158,7 +182,11 @@ const Sidebar = () => {
             data-tooltip="Caja"
             onClick={() => goTo("/listar-pagos")}
           >
-            <img src={shoppingIcon} alt="Pagos" className="sidebar-icon icon-shop" />
+            <img
+              src={shoppingIcon}
+              alt="Pagos"
+              className="sidebar-icon icon-caja"
+            />
           </div>
 
           <div
@@ -166,7 +194,11 @@ const Sidebar = () => {
             data-tooltip="Proveedores"
             onClick={() => goTo("/proveedores")}
           >
-            <img src={gmailIcon} alt="Proveedores" className="sidebar-icon icon-mail" />
+            <img
+              src={gmailIcon}
+              alt="Proveedores"
+              className="sidebar-icon icon-proveedores"
+            />
           </div>
 
           <div
@@ -174,7 +206,11 @@ const Sidebar = () => {
             data-tooltip="Estadistica"
             onClick={() => goTo("/kpi-dashboard")}
           >
-            <img src={estadisticaIcon} alt="Estadísticas" className="sidebar-icon icon-stats" />
+            <img
+              src={estadisticaIcon}
+              alt="Estadísticas"
+              className="sidebar-icon icon-estadistica"
+            />
           </div>
 
           <div
@@ -182,15 +218,11 @@ const Sidebar = () => {
             data-tooltip="Archivos"
             onClick={() => goTo("/listar-archivos")}
           >
-            <img src={Documento} alt="Archivos" className="sidebar-icon icon-sesion" />
-          </div>
-
-          <div
-            className="sidebar-item"
-            data-tooltip="Resumen de Gastos"
-            onClick={() => goTo("/resumen-gastos")}
-          >
-            <img src={codigo} alt="Resumen de Gastos" className="sidebar-icon icon-sesion" />
+            <img
+              src={Documento}
+              alt="Archivos"
+              className="sidebar-icon icon-archivos"
+            />
           </div>
 
           <div
@@ -198,7 +230,11 @@ const Sidebar = () => {
             data-tooltip="Usuarios"
             onClick={() => goTo("/gestion-usuarios")}
           >
-            <img src={sesion} alt="Usuarios" className="sidebar-icon icon-sesion" />
+            <img
+              src={sesion}
+              alt="Usuarios"
+              className="sidebar-icon icon-usuarios"
+            />
           </div>
 
           <div
@@ -206,7 +242,11 @@ const Sidebar = () => {
             data-tooltip="Cerrar sesión"
             onClick={handleLogout}
           >
-            <img src={Logaut} alt="Cerrar sesión" className="sidebar-icon icon-sesion" />
+            <img
+              src={Logaut}
+              alt="Cerrar sesión"
+              className="sidebar-icon icon-logout"
+            />
           </div>
         </div>
       </div>

@@ -48,7 +48,6 @@
   background: linear-gradient(180deg, #e3a008, #c88000);
   border-radius: 25px;
 
-  /* Flex vertical para logo + items */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -57,13 +56,11 @@
   z-index: 1000;
   padding-bottom: 2rem;
 
-  /* Animaciones de apertura/cierre */
   transition: transform 0.35s ease, width 0.3s ease-in-out;
 }
 
 /* ==============================
-   Logo del sidebar
-   - Posición cambia según abierto/cerrado.
+   Logo del sideba
    ============================== */
 .sidebar-logo {
   width: 100%;
@@ -73,7 +70,7 @@
 }
 
 .logo-arriba {
-  padding-top: 3rem;
+  padding-top: 2rem;
 }
 
 .logo-abajo {
@@ -90,16 +87,15 @@
 }
 
 .sidebar-logo:hover .sidebar-logo-img {
-  transform: scale(1.05); /* Zoom suave */
+  transform: scale(1.05);
   transition: transform 0.2s ease;
 }
 
 /* ==============================
    Navegación (contenedor de ítems)
-   - Scroll interno sin barra visible.
    ============================== */
 .sidebar-nav {
-  flex: 1; /* Ocupa el espacio restante */
+  flex: 1;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -111,22 +107,19 @@
 }
 
 .sidebar-nav::-webkit-scrollbar {
-  width: 0; /* Oculta el scrollbar */
+  width: 0;
 }
 
 /* ==============================
    Ítems de navegación
-   - Cada icono clickable con efecto hover.
    ============================== */
 .sidebar-item {
-  position: relative; /* Necesario para tooltip */
+  position: relative;
   width: 85%;
   text-align: center;
   padding: 0.8rem 0;
   cursor: pointer;
   border-radius: 10px;
-
-  /* Transiciones suaves */
   transition: background-color 0.25s, transform 0.2s;
 }
 
@@ -142,44 +135,44 @@
 }
 
 /* ==============================
-   Íconos generales
+   Íconos individuales
    ============================== */
-.sidebar-icon {
-  width: 30px;
-  height: 30px;
-  transition: transform 0.2s ease;
-}
-
-.sidebar-item:hover .sidebar-icon {
-  transform: scale(1.1);
-}
-
-/* Íconos más grandes (personalización) */
-.icon-check,
-.icon-calc,
-.icon-money,
-.icon-shop,
-.icon-mail,
-.icon-stats {
+.icon-actividades,
+.icon-calculadora,
+.icon-presupuesto,
+.icon-caja,
+.icon-proveedores,
+.icon-estadistica,
+.icon-archivos,
+.icon-usuarios,
+.icon-logout,
+.icon-GestProy{
   width: 42px;
   height: 42px;
+  transition: transform 0.2s ease;
+  object-fit: contain;
 }
 
-/* Ícono de sesión (usuarios/logout) */
-.icon-sesion {
-  width: 42px !important;
-  height: 42px !important;
-  object-fit: contain;
+.sidebar-item:hover .icon-actividades,
+.sidebar-item:hover .icon-calculadora,
+.sidebar-item:hover .icon-presupuesto,
+.sidebar-item:hover .icon-caja,
+.sidebar-item:hover .icon-proveedores,
+.sidebar-item:hover .icon-estadistica,
+.sidebar-item:hover .icon-archivos,
+.sidebar-item:hover .icon-usuarios,
+.sidebar-item:hover .icon-logout,
+.sidebar-item:hover .icon-GestProy {
+  transform: scale(1.1);
 }
 
 /* ==============================
    Tooltip de cada ítem
-   - Usa data-tooltip en HTML.
    ============================== */
 .sidebar-item::after {
   content: attr(data-tooltip);
   position: absolute;
-  left: 8%;  /* Cerca del icono */
+  left: 8%;
   top: 50%;
   transform: translate(-50%, -50%);
   background: #D35400;
@@ -188,33 +181,27 @@
   border-radius: 5px;
   white-space: nowrap;
 
-  /* Oculto por defecto */
   opacity: 0;
   pointer-events: none;
 
-  /* Animaciones */
   transition: opacity 0.3s ease, transform 0.3s ease;
   font-size: 12px;
   z-index: 10;
 
-  /* Dimensiones */
   width: 75px;
   height: 30px;
   text-align: center;
   line-height: 30px;
 
-  /* Control de overflow de texto */
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Visible al hover */
 .sidebar-item:hover::after {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1.1);
 }
 
-/* Animación de desplazamiento suave */
 .sidebar-item::after {
   transform: translateY(-50%) translateX(10px);
 }
@@ -226,8 +213,6 @@
 
 /* ==============================
    Responsive: Tablets/Laptops (≤1280px)
-   - Sidebar ocupa toda la altura lateral.
-   - Se oculta por defecto (translateX).
    ============================== */
 @media (max-width: 1280px) {
   .sidebar {
@@ -236,16 +221,16 @@
     width: 100px;
     height: 100vh;
     border-radius: 0;
-    transform: translateX(-100%); /* Oculta */
+    transform: translateX(-100%);
     padding: 2rem 0;
   }
 
   .sidebar.open {
-    transform: translateX(0); /* Muestra */
+    transform: translateX(0);
   }
 
   .sidebar-toggle {
-    display: flex; /* Visible toggle */
+    display: flex;
     width: 36px;
     height: 36px;
   }
@@ -261,7 +246,6 @@
 
 /* ==============================
    Responsive: Móviles (≤480px)
-   - Ajuste de tamaños para pantalla reducida.
    ============================== */
 @media (max-width: 480px) {
   .sidebar-toggle {
@@ -277,8 +261,21 @@
     gap: 1.2rem;
   }
 
-  .sidebar-icon {
+  .icon-actividades,
+  .icon-calculadora,
+  .icon-presupuesto,
+  .icon-caja,
+  .icon-proveedores,
+  .icon-estadistica,
+  .icon-archivos,
+  .icon-usuarios,
+  .icon-logout,
+  .icon-GestProy {
     width: 26px;
     height: 26px;
   }
 }
+
+
+
+

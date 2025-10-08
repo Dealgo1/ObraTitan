@@ -11,6 +11,7 @@ const ProjectForm = () => {
   const [descripcion, setDescripcion] = useState("");
   const [cliente, setCliente] = useState("");
   const [presupuesto, setPresupuesto] = useState("");
+  const [moneda, setMoneda] = useState("CORD"); // "CORD" | "USD" | "EUR"
   const [estado, setEstado] = useState("En progreso");
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
@@ -21,9 +22,9 @@ const ProjectForm = () => {
 
   const navigate = useNavigate();
 
-  // ==========================================================
-  // 🌐 Detección de conexión y sincronización offline → online
-  // ==========================================================
+  // ==========================================
+  // 🌐 Detección de conexión y sincronización
+  // ==========================================
   useEffect(() => {
     const handleOnline = () => {
       setIsOffline(false);
@@ -46,6 +47,28 @@ const ProjectForm = () => {
   }, []);
 
   // ==========================================
+  // 💱 Tasas / Función conversión
+  // ==========================================
+  // 1 USD = 37 córdobas, 1 EUR = 43 córdobas, 1 CORD = 1
+  const CONVERSION_RATES = {
+    USD: 37,
+    EUR: 43,
+    CORD: 1,
+  };
+
+  const convertToCordobas = (amount, currency) => {
+    const n = Number(amount);
+    if (isNaN(n)) return 0;
+    const rate = CONVERSION_RATES[currency] ?? 1;
+    return n * rate;
+  };
+
+  const formatCurrency = (value) => {
+    if (value === null || value === undefined || isNaN(value)) return "C$ 0.00";
+    return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  // ==========================================
   // ✅ Validación de campos del formulario
   // ==========================================
   const validar = () => {
@@ -56,10 +79,10 @@ const ProjectForm = () => {
     if (!descripcion.trim()) nuevosErrores.descripcion = "Campo requerido";
     if (!cliente.trim()) nuevosErrores.cliente = "Campo requerido";
 
-    if (!presupuesto.trim()) {
+    if (!presupuesto.toString().trim()) {
       nuevosErrores.presupuesto = "Campo requerido";
     } else if (!regexPresupuesto.test(presupuesto)) {
-      nuevosErrores.presupuesto = "Debe ser un número positivo válido";
+      nuevosErrores.presupuesto = "Debe ser un número positivo válido (hasta 2 decimales)";
     } else if (parseFloat(presupuesto) < 0) {
       nuevosErrores.presupuesto = "No puede ser negativo";
     }
@@ -92,8 +115,6 @@ const ProjectForm = () => {
 
   // ==========================================
   // 🗜️ Compresión de imagen en el navegador
-  // - Redimensiona si excede maxWidth/Height
-  // - Exporta como JPEG con 'quality'
   // ==========================================
   const compressImage = (file, maxWidth = 800, maxHeight = 800, quality = 0.6) => {
     return new Promise((resolve) => {
@@ -105,7 +126,6 @@ const ProjectForm = () => {
           let width = img.width;
           let height = img.height;
 
-          // Mantiene proporción y ajusta a límites
           if (width > maxWidth || height > maxHeight) {
             const scale = Math.min(maxWidth / width, maxHeight / height);
             width *= scale;
@@ -118,7 +138,6 @@ const ProjectForm = () => {
           const ctx = canvas.getContext("2d");
           ctx.drawImage(img, 0, 0, width, height);
 
-          // Exporta a DataURL base64
           const compressedDataUrl = canvas.toDataURL("image/jpeg", quality);
           resolve(compressedDataUrl);
         };
@@ -129,11 +148,7 @@ const ProjectForm = () => {
   };
 
   // ==========================================
-  // 📤 Envío del formulario
-  // - Valida
-  // - Comprime imagen (si hay)
-  // - Verifica tamaño final (~1MB)
-  // - Crea proyecto (online) o guarda en localStorage (offline)
+  // 📤 Envío del formulario (creación)
   // ==========================================
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -149,8 +164,6 @@ const ProjectForm = () => {
       if (imagen) {
         base64Image = await compressImage(imagen);
 
-        // ⚖️ Estimar tamaño real del base64 (sin encabezado data:)
-        // Nota: la estimación base64Length = (longitud * 3 / 4) es aproximada
         const base64Body = base64Image.split(",")[1] || "";
         const base64Length = base64Body.length * (3 / 4);
 
@@ -161,12 +174,18 @@ const ProjectForm = () => {
         }
       }
 
-      // 🧱 Payload para la creación
+      // Conversión a córdobas según la moneda seleccionada
+      const presupuestoNum = Number(presupuesto);
+      const presupuestoCordobas = convertToCordobas(presupuestoNum, moneda);
+
+      // 🧱 Payload para la creación (incluye moneda y conversión)
       const projectData = {
         nombre,
         descripcion,
         cliente,
-        presupuesto: Number(presupuesto),
+        presupuesto: presupuestoNum,       // valor tal como lo ingresó el usuario
+        moneda,                            // "CORD" | "USD" | "EUR"
+        presupuestoCordobas,               // convertido a córdobas
         estado,
         fechaInicio: fechaInicio ? new Date(fechaInicio) : null,
         fechaFin: fechaFin ? new Date(fechaFin) : null,
@@ -184,13 +203,13 @@ const ProjectForm = () => {
       }
     } catch (error) {
       console.error("Error al crear proyecto:", error);
+      alert("Ocurrió un error al crear el proyecto.");
     }
   };
 
-  // ======================================================
-  // 🔁 Sincronizar proyecto guardado localmente al volver
-  //    la conexión. Si sube con éxito, limpia el local.
-  // ======================================================
+  // ==========================================
+  // 🔁 Sincronizar proyecto guardado localmente
+  // ==========================================
   const syncOfflineProjects = () => {
     const offlineProject = localStorage.getItem("offlineProject");
     if (offlineProject) {
@@ -204,6 +223,11 @@ const ProjectForm = () => {
         });
     }
   };
+
+  // ==========================================
+  // 👀 Valor convertido para mostrar en UI
+  // ==========================================
+  const presupuestoCordobasPreview = convertToCordobas(Number(presupuesto || 0), moneda);
 
   // ==========================
   // 🧩 Render del formulario
@@ -241,30 +265,49 @@ const ProjectForm = () => {
           {errores.cliente && <span className="error-texto">{errores.cliente}</span>}
         </div>
 
-        {/* Presupuesto con validación de input */}
-        <div className="fila-formulario">
+        {/* Presupuesto con moneda */}
+        <div className="fila-formulario fila-presupuesto">
           <label>Presupuesto:</label>
-          <input
-            type="text"
-            inputMode="decimal"
-            value={presupuesto}
-            onChange={(e) => setPresupuesto(e.target.value)}
-            onBeforeInput={(e) => {
-              
-              const char = e.data;
-              const current = e.target.value;
-              if (!char) return; 
 
-              
-              const isValid = /^[0-9.]$/.test(char);
-              const alreadyHasDot = current.includes(".");
-              if (!isValid || (char === "." && alreadyHasDot)) {
-                e.preventDefault();
-              }
-            }}
-            placeholder="Ingrese un monto válido"
-          />
+          <div className="presupuesto-row">
+            <input
+              type="text"
+              inputMode="decimal"
+              value={presupuesto}
+              onChange={(e) => setPresupuesto(e.target.value)}
+              onBeforeInput={(e) => {
+                const char = e.data;
+                const current = e.target.value;
+                if (!char) return;
+                // permitir solo 0-9 y punto; solo un punto
+                const isValid = /^[0-9.]$/.test(char);
+                const alreadyHasDot = current.includes(".");
+                if (!isValid || (char === "." && alreadyHasDot)) {
+                  e.preventDefault();
+                }
+              }}
+              placeholder="Ingrese un monto válido"
+            />
+
+            <select
+              value={moneda}
+              onChange={(e) => setMoneda(e.target.value)}
+              className="select-moneda"
+              aria-label="Seleccionar moneda"
+            >
+              <option value="CORD">Córdoba</option>
+              <option value="USD">Dólar (USD)</option>
+              <option value="EUR">Euro (EUR)</option>
+            </select>
+          </div>
+
           {errores.presupuesto && <span className="error-texto">{errores.presupuesto}</span>}
+
+          {/* Preview conversión */}
+          <div className="preview-conversion">
+            ≈ C$ {formatCurrency(presupuestoCordobasPreview)}
+            <span className="muted"> ({presupuesto || 0} {moneda})</span>
+          </div>
         </div>
 
         {/* Estado (radio) */}
