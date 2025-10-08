@@ -11,6 +11,7 @@ import {
 import "../../proyectos/ui/DetalleProyecto.css";
 import { useNavigate } from "react-router-dom";
 import PantallaCarga from "../../../../components/PantallaCarga"; // ✅ Componente de carga
+import { getProjectById } from "../../../../services/projectsService";
 
 const DetalleProyectoView = () => {
   const navigate = useNavigate();
@@ -25,6 +26,45 @@ const DetalleProyectoView = () => {
 
   // 👉 Estado de errores por campo
   const [errores, setErrores] = useState({});
+
+
+  useEffect(() => {
+  if (!project?.id) return;
+  let mounted = true;
+  const fetchAndNormalize = async () => {
+    try {
+      const fresh = await getProjectById(project.id);
+      if (!mounted || !fresh) return;
+
+      // Actualiza contexto (opcional, útil para mantener todo consistente)
+      setProject((prev) => ({ ...(prev || {}), ...fresh }));
+
+      // Normaliza fechas a formato para inputs (YYYY-MM-DD)
+      setDatosEditables((prev) => ({
+        ...prev,
+        nombre: fresh.nombre ?? prev?.nombre ?? "",
+        cliente: fresh.cliente ?? prev?.cliente ?? "",
+        descripcion: fresh.descripcion ?? prev?.descripcion ?? "",
+        presupuesto: fresh.presupuesto ?? prev?.presupuesto ?? "",
+        moneda: fresh.moneda ?? prev?.moneda ?? "CORD",
+        estado: fresh.estado ?? prev?.estado ?? "En progreso",
+        fechaInicio: formatFechaParaInput(fresh.fechaInicio),
+        fechaFin: formatFechaParaInput(fresh.fechaFin),
+        imagen: fresh.imagen ?? prev?.imagen ?? null,
+      }));
+
+      if (fresh.imagen) setPreview(fresh.imagen);
+    } catch (err) {
+      console.error("Error obteniendo proyecto desde BD:", err);
+    }
+  };
+
+  fetchAndNormalize();
+  return () => {
+    mounted = false;
+  };
+}, [project?.id, setProject]); // se ejecuta cuando cambia el id del proyecto
+
 
   // Estado local editable del proyecto (inicializado con los datos del contexto)
   const [datosEditables, setDatosEditables] = useState(() => ({

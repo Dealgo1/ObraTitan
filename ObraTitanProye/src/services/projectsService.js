@@ -1,5 +1,5 @@
 import { db } from "../services/firebaseconfig";
-import {collection,addDoc,getDocs,doc,updateDoc,deleteDoc,} from "firebase/firestore";
+import {collection,addDoc,getDocs,doc,updateDoc,deleteDoc,getDoc } from "firebase/firestore";
 
 /**
  * Crea un nuevo proyecto en Firestore, guardando las imágenes como cadenas Base64.
@@ -52,4 +52,13 @@ export const updateProject = async (projectId, projectData, base64Files) => {
 export const deleteProject = async (projectId) => {
   const projectDocRef = doc(db, "projects", projectId);
   await deleteDoc(projectDocRef);
+};
+
+
+export const getProjectById = async (projectId) => {
+  if (!projectId) return null;
+  const ref = doc(db, "projects", projectId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) return null;
+  return { id: snap.id, ...snap.data() };
 };
