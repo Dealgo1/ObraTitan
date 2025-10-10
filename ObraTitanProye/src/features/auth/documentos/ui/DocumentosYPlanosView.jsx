@@ -9,7 +9,7 @@ import "../ui/DocumentosYPlanosView.css";
  * 📄 Vista: DocumentosYPlanosView
  * Permite subir un archivo (Documento o Plano) asociado al proyecto activo.
  * Guarda el archivo como dataURL (base64) en una subcolección `proyectos/{id}/documentos`.
- * Muestra un toast de éxito y un estado de "subiendo..." durante la carga.
+ * Muestra un toast visual de éxito o error, y un estado de "subiendo..." durante la carga.
  */
 const DocumentosYPlanosView = () => {
   const { project } = useProject();
@@ -17,11 +17,21 @@ const DocumentosYPlanosView = () => {
   // =========================
   // 📦 Estados del formulario
   // =========================
-  const [file, setFile] = useState(null);               // Archivo seleccionado (File)
-  const [tipoDocumento, setTipoDocumento] = useState("Documento"); // "Documento" | "Plano"
-  const [nombre, setNombre] = useState("");             // Nombre visible del documento
-  const [subiendo, setSubiendo] = useState(false);      // Flag para deshabilitar durante upload
-  const [showToast, setShowToast] = useState(false);    // Toast de confirmación
+  const [file, setFile] = useState(null);
+  const [tipoDocumento, setTipoDocumento] = useState("Documento");
+  const [nombre, setNombre] = useState("");
+  const [subiendo, setSubiendo] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+  const [showToast, setShowToast] = useState(false);
+
+  // =========================
+  // 🔔 Toast control
+  // =========================
+  const triggerToast = (mensaje) => {
+    setToastMsg(mensaje);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
   // =========================
   // 📝 Handlers de inputs
@@ -34,14 +44,19 @@ const DocumentosYPlanosView = () => {
    * - Valida campos requeridos
    * - Convierte el archivo a base64 (dataURL)
    * - Crea un documento en la subcolección `proyectos/{id}/documentos`
-   * - Limpia el formulario y muestra un toast de éxito
+   * - Muestra toasts visuales en vez de alert()
    */
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Validación mínima
+    // Validaciones previas
     if (!file || !nombre || !project) {
-      alert("Por favor completa todos los campos.");
+      triggerToast("⚠️ Por favor completa todos los campos.");
+      return;
+    }
+
+    if (/\d/.test(nombre)) {
+      triggerToast("🚫 El nombre no puede contener números.");
       return;
     }
 
@@ -55,40 +70,35 @@ const DocumentosYPlanosView = () => {
       const base64String = reader.result;
 
       try {
-        const fechaSubida = new Date().toISOString(); // Fecha legible para UI
+        const fechaSubida = new Date().toISOString();
+        const proyectoRef = doc(db, "proyectos", project.id);
+        const documentosRef = collection(proyectoRef, "documentos");
 
-        // 📚 Subcolección: proyectos/{project.id}/documentos
-        const proyectoRef = doc(db, "proyectos", project.id);            // Documento del proyecto
-        const documentosRef = collection(proyectoRef, "documentos");     // Subcolección "documentos"
-
-        // Guarda metadatos + archivo como base64 (dataURL)
         await addDoc(documentosRef, {
           nombre,
           proyecto: project.nombre,
           tipoDocumento,
-          fechaSubida,                  // útil para mostrar en tablas
-          archivoBase64: base64String,  // ⚠️ base64 (dataURL) para previsualizar y descargar
-          timestamp: serverTimestamp(), // fecha de servidor para ordenar en Firestore
+          fechaSubida,
+          archivoBase64: base64String,
+          timestamp: serverTimestamp(),
         });
 
-        // ✅ Feedback de éxito
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000);
+        triggerToast("✅ Archivo cargado correctamente.");
 
-        // 🔄 Reset del formulario
+        // Reset del formulario
         setNombre("");
         setFile(null);
         setTipoDocumento("Documento");
       } catch (error) {
-        console.error("Error al cargar el archivo:", error);
-        alert("Hubo un error al cargar el archivo. Inténtalo de nuevo.");
+        console.error("❌ Error al cargar el archivo:", error);
+        triggerToast("❌ Error al cargar el archivo. Intenta de nuevo.");
       } finally {
         setSubiendo(false);
       }
     };
 
     reader.onerror = () => {
-      alert("Error al leer el archivo.");
+      triggerToast("❌ Error al leer el archivo.");
       setSubiendo(false);
     };
   };
@@ -98,24 +108,20 @@ const DocumentosYPlanosView = () => {
   // =========================
   return (
     <div className="doc-plan-app-container">
-      {/* Sidebar de navegación */}
       <Sidebar />
 
-      {/* Contenido central */}
       <div className="doc-plan-content-wrapper">
         <div className="doc-plan-container">
           <h2 className="doc-plan-title">Subir Documento o Plano</h2>
 
-          {/* Formulario de carga */}
           <form onSubmit={handleSubmit} className="doc-plan-form-upload">
-            {/* Nombre del proyecto activo (si está en contexto) */}
             {project && (
               <div className="doc-plan-project-name">
                 <strong>{project.nombre}</strong>
               </div>
             )}
 
-            {/* Tipo de archivo (Documento / Plano) */}
+            {/* Tipo de archivo */}
             <div className="doc-plan-form-group">
               <label htmlFor="tipoDocumento" className="doc-plan-label">
                 Tipo de Archivo
@@ -140,13 +146,27 @@ const DocumentosYPlanosView = () => {
                 id="nombre"
                 type="text"
                 value={nombre}
-                onChange={(e) => setNombre(e.target.value)}
+                onChange={(e) => setNombre(e.target.value.replace(/\d/g, ""))}
+                onKeyDown={(e) => {
+                  if (/\d/.test(e.key)) e.preventDefault();
+                }}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const texto = (e.clipboardData || window.clipboardData).getData("text");
+                  const limpio = texto.replace(/\d/g, "");
+                  const target = e.target;
+                  const start = target.selectionStart ?? 0;
+                  const end = target.selectionEnd ?? 0;
+                  const nuevoValor =
+                    target.value.slice(0, start) + limpio + target.value.slice(end);
+                  setNombre(nuevoValor);
+                }}
                 required
                 className="doc-plan-input"
               />
             </div>
 
-            {/* Selector de archivo con validación por tipo */}
+            {/* Selector de archivo */}
             <div className="doc-plan-form-group">
               <label htmlFor="file" className="doc-plan-label">
                 Seleccionar Archivo
@@ -156,7 +176,6 @@ const DocumentosYPlanosView = () => {
                 type="file"
                 className="doc-plan-input"
                 accept={
-                  // Define qué extensiones se permiten según "tipoDocumento"
                   tipoDocumento === "Plano"
                     ? ".pdf,.gbl,.dwg"
                     : "application/pdf,.doc,.docx,.txt"
@@ -166,7 +185,7 @@ const DocumentosYPlanosView = () => {
               />
             </div>
 
-            {/* Botón de acción (deshabilitado durante la subida) */}
+            {/* Botón principal */}
             <button
               type="submit"
               className="doc-plan-submit-btn"
@@ -176,11 +195,9 @@ const DocumentosYPlanosView = () => {
             </button>
           </form>
 
-          {/* Toast de éxito (desaparece a los 3s) */}
+          {/* Toast visual (estilo unificado) */}
           {showToast && (
-            <div className="doc-plan-toast-success">
-              ✅ Archivo cargado correctamente.
-            </div>
+            <div className="toast-exito-pago">{toastMsg}</div>
           )}
         </div>
       </div>

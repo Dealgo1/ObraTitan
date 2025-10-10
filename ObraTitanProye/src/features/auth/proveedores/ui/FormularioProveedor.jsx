@@ -79,6 +79,12 @@ const FormularioProveedor = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validación extra: prevenir envío si nombre o empresa contienen números
+    if (/\d/.test(formulario.nombre) || /\d/.test(formulario.empresa)) {
+      alert("El nombre y la empresa no pueden contener números.");
+      return;
+    }
+
     // Se construye el objeto proveedor listo para almacenar
     const proveedor = {
       ...formulario,
@@ -121,7 +127,26 @@ const FormularioProveedor = () => {
                 name="nombre"
                 className="input-nombre"
                 value={formulario.nombre}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setFormulario((prev) => ({
+                    ...prev,
+                    nombre: e.target.value.replace(/\d/g, ""), // ❌ elimina números
+                  }))
+                }
+                onKeyDown={(e) => {
+                  if (/\d/.test(e.key)) e.preventDefault(); // ❌ bloquea números
+                }}
+                onPaste={(e) => {
+                  e.preventDefault(); // ❌ bloquea pegar números
+                  const texto = (e.clipboardData || window.clipboardData).getData("text");
+                  const limpio = texto.replace(/\d/g, "");
+                  const target = e.target;
+                  const start = target.selectionStart ?? 0;
+                  const end = target.selectionEnd ?? 0;
+                  const nuevoValor =
+                    target.value.slice(0, start) + limpio + target.value.slice(end);
+                  setFormulario((prev) => ({ ...prev, nombre: nuevoValor }));
+                }}
                 required
               />
             </div>
@@ -134,7 +159,26 @@ const FormularioProveedor = () => {
                 name="empresa"
                 className="input-empresa"
                 value={formulario.empresa}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setFormulario((prev) => ({
+                    ...prev,
+                    empresa: e.target.value.replace(/\d/g, ""), // ❌ elimina números
+                  }))
+                }
+                onKeyDown={(e) => {
+                  if (/\d/.test(e.key)) e.preventDefault(); // ❌ bloquea números
+                }}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const texto = (e.clipboardData || window.clipboardData).getData("text");
+                  const limpio = texto.replace(/\d/g, "");
+                  const target = e.target;
+                  const start = target.selectionStart ?? 0;
+                  const end = target.selectionEnd ?? 0;
+                  const nuevoValor =
+                    target.value.slice(0, start) + limpio + target.value.slice(end);
+                  setFormulario((prev) => ({ ...prev, empresa: nuevoValor }));
+                }}
                 required
               />
             </div>
@@ -146,7 +190,26 @@ const FormularioProveedor = () => {
                 name="servicios"
                 className="input-servicios"
                 value={formulario.servicios}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setFormulario((prev) => ({
+                    ...prev,
+                    servicios: e.target.value.replace(/\d/g, ""), // ❌ elimina números
+                  }))
+                }
+                onKeyDown={(e) => {
+                  if (/\d/.test(e.key)) e.preventDefault(); // ❌ bloquea números
+                }}
+                onPaste={(e) => {
+                  e.preventDefault();
+                  const texto = (e.clipboardData || window.clipboardData).getData("text");
+                  const limpio = texto.replace(/\d/g, "");
+                  const target = e.target;
+                  const start = target.selectionStart ?? 0;
+                  const end = target.selectionEnd ?? 0;
+                  const nuevoValor =
+                    target.value.slice(0, start) + limpio + target.value.slice(end);
+                  setFormulario((prev) => ({ ...prev, servicios: nuevoValor }));
+                }}
                 required
               />
             </div>

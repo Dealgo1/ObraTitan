@@ -97,7 +97,21 @@ const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
       <input
         list="proveedores"
         value={proveedorEmpleado}
-        onChange={(e) => setProveedorEmpleado(e.target.value)}
+        onChange={(e) => setProveedorEmpleado(e.target.value.replace(/\d/g, ""))} // ❌ elimina números
+        onKeyDown={(e) => {
+          if (/\d/.test(e.key)) e.preventDefault(); // ❌ bloquea números
+        }}
+        onPaste={(e) => {
+          e.preventDefault(); // ❌ evita pegar números
+          const texto = (e.clipboardData || window.clipboardData).getData("text");
+          const limpio = texto.replace(/\d/g, "");
+          const target = e.target;
+          const start = target.selectionStart ?? 0;
+          const end = target.selectionEnd ?? 0;
+          const nuevoValor =
+            target.value.slice(0, start) + limpio + target.value.slice(end);
+          setProveedorEmpleado(nuevoValor);
+        }}
       />
       <datalist id="proveedores">
         {proveedores.map((p) => (

@@ -38,6 +38,15 @@ const ArchivoOverview = () => {
   const [loading, setLoading] = useState(true);       // Loader
   const [searchTerm, setSearchTerm] = useState("");   // Búsqueda por texto
 
+  // 🔔 Toast/alarma de acción
+  const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+  const triggerToast = (msg) => {
+    setToastMsg(msg);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
   const navigate = useNavigate();
 
   // Ref para contenedor de preview Word (evita manipular DOM por id)
@@ -91,6 +100,12 @@ const ArchivoOverview = () => {
 
   const guardarCambios = async (id) => {
     try {
+      // 🚫 Validación: el nombre no admite números
+      if (/\d/.test(formEdit.nombre || "")) {
+        alert("El nombre del documento no puede contener números.");
+        return;
+      }
+
       const ref = doc(db, "proyectos", project.id, "documentos", id);
       await updateDoc(ref, formEdit);
 
@@ -99,6 +114,7 @@ const ArchivoOverview = () => {
       );
       setDocumentos(actualizados);
       cancelarEdicion();
+      triggerToast("✅ Documento actualizado con éxito");
     } catch (error) {
       console.error("❌ Error actualizando documento:", error);
     }
@@ -109,6 +125,7 @@ const ArchivoOverview = () => {
       try {
         await deleteDoc(doc(db, "proyectos", project.id, "documentos", id));
         setDocumentos((prev) => prev.filter((d) => d.id !== id));
+        triggerToast("🗑️ Documento eliminado");
       } catch (error) {
         console.error("❌ Error al eliminar documento:", error);
       }
@@ -120,6 +137,13 @@ const ArchivoOverview = () => {
   // =========================
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    // Solo campo 'nombre' debe bloquear números
+    if (name === "nombre") {
+      setFormEdit((prev) => ({ ...prev, [name]: value.replace(/\d/g, "") }));
+      return;
+    }
+
     setFormEdit((prev) => ({ ...prev, [name]: value }));
   };
 
@@ -354,6 +378,20 @@ const ArchivoOverview = () => {
                                 name="nombre"
                                 value={formEdit.nombre}
                                 onChange={handleChange}
+                                onKeyDown={(e) => {
+                                  if (/\d/.test(e.key)) e.preventDefault();
+                                }}
+                                onPaste={(e) => {
+                                  e.preventDefault();
+                                  const texto = (e.clipboardData || window.clipboardData).getData("text");
+                                  const limpio = texto.replace(/\d/g, "");
+                                  const target = e.target;
+                                  const start = target.selectionStart ?? 0;
+                                  const end = target.selectionEnd ?? 0;
+                                  const nuevoValor =
+                                    target.value.slice(0, start) + limpio + target.value.slice(end);
+                                  setFormEdit((prev) => ({ ...prev, nombre: nuevoValor }));
+                                }}
                                 className="archivo-overview-input"
                               />
                             </td>
@@ -469,6 +507,11 @@ const ArchivoOverview = () => {
           </button>
         </div>
       </div>
+
+      {/* 🔔 Toast / Alarma de acción */}
+      {showToast && (
+        <div className="toast-exito-pago">{toastMsg || "✅ Acción realizada con éxito"}</div>
+      )}
     </div>
   );
 };

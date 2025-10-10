@@ -47,36 +47,37 @@ import "./ActividadesList.css";
 
 const ActividadesList = () => {
   // --- Estados UI / control ---
-  const [leyendaVisible, setLeyendaVisible] = useState({}); // mapa de {actividadId: bool}
-  const [actividades, setActividades] = useState([]);       // lista de actividades para el proyecto
-  const [nuevaActividad, setNuevaActividad] = useState(""); // nombre de la nueva actividad
-  const [fechaInicio, setFechaInicio] = useState("");       // fecha inicio para creación
-  const [fechaFin, setFechaFin] = useState("");             // fecha fin para creación
+  const [leyendaVisible, setLeyendaVisible] = useState({});
+  const [actividades, setActividades] = useState([]);
+  const [nuevaActividad, setNuevaActividad] = useState("");
+  const [fechaInicio, setFechaInicio] = useState("");
+  const [fechaFin, setFechaFin] = useState("");
 
-  const [editandoId, setEditandoId] = useState(null);       // actividad actualmente en edición
-  const [editDatos, setEditDatos] = useState({});           // campos editables de actividad
+  const [editandoId, setEditandoId] = useState(null);
+  const [editDatos, setEditDatos] = useState({});
 
-  const [subtareaInput, setSubtareaInput] = useState({});   // texto nueva subtarea por actividadId
-  const [editandoSubtarea, setEditandoSubtarea] = useState({});   // {actividadId: indexEnEdicion}
-  const [nuevoNombreSubtarea, setNuevoNombreSubtarea] = useState({}); // {actividadId: texto}
+  const [subtareaInput, setSubtareaInput] = useState({});
+  const [editandoSubtarea, setEditandoSubtarea] = useState({});
+  const [nuevoNombreSubtarea, setNuevoNombreSubtarea] = useState({});
 
-  const [menuAbierto, setMenuAbierto] = useState(null);     // (si tu CSS lo usa) id de actividad con menú abierto
-  const [visibles, setVisibles] = useState({});             // {actividadId: bool} para expandir/cerrar subtareas
+  const [menuAbierto, setMenuAbierto] = useState(null);
+  const [visibles, setVisibles] = useState({});
 
-  // Contadores por estado
   const [contadores, setContadores] = useState({
     finalizado: 0,
     enProceso: 0,
     cancelado: 0,
   });
 
-  const { project } = useProject(); // proyecto activo desde contexto
+  // 🔔 Toast de éxito (como en PagosListView)
+  const [showToast, setShowToast] = useState(false);
+  const triggerToast = () => {
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
-  /**
-   * Al montar/cambiar el proyecto:
-   * - Asegura un projectId (contexto o localStorage).
-   * - Carga actividades del proyecto.
-   */
+  const { project } = useProject();
+
   useEffect(() => {
     const storedProject = JSON.parse(localStorage.getItem("project"));
     if (!project?.id && storedProject) project.id = storedProject.id; // fallback de id (⚠ mutación directa)
@@ -134,6 +135,12 @@ const ActividadesList = () => {
       project?.id || JSON.parse(localStorage.getItem("project"))?.id;
     if (!nuevaActividad.trim() || !projectId) return;
 
+    // Validación: no permitir números en el nombre
+    if (/\d/.test(nuevaActividad)) {
+      alert("El nombre de la tarea no puede contener números.");
+      return;
+    }
+
     await addDoc(collection(db, "actividades"), {
       nombre: nuevaActividad,
       subtareas: [],
@@ -148,6 +155,7 @@ const ActividadesList = () => {
     setFechaInicio("");
     setFechaFin("");
     obtenerActividades(projectId);
+    triggerToast(); // 🔔
   };
 
   /** Activa modo edición para una actividad */
@@ -173,6 +181,12 @@ const ActividadesList = () => {
    * - Si la actividad está en "finalizado" sin fechaFinalizado, la setea a hoy.
    */
   const guardarEdicion = async () => {
+    // Validación defensiva: no permitir números al guardar
+    if (/\d/.test(editDatos.nombre || "")) {
+      alert("El nombre de la tarea no puede contener números.");
+      return;
+    }
+
     const act = actividades.find((a) => a.id === editandoId);
 
     await updateDoc(doc(db, "actividades", editandoId), {
@@ -187,6 +201,7 @@ const ActividadesList = () => {
 
     setEditandoId(null);
     obtenerActividades(project?.id);
+    triggerToast(); // 🔔
   };
 
   /**
@@ -207,6 +222,7 @@ const ActividadesList = () => {
     setSubtareaInput({ ...subtareaInput, [id]: "" });
     setMenuAbierto(null); // si se usa un menú contextual
     obtenerActividades(project?.id);
+    triggerToast(); // 🔔
   };
 
   /**
@@ -227,6 +243,7 @@ const ActividadesList = () => {
     setEditandoSubtarea({ ...editandoSubtarea, [actividadId]: null });
     setNuevoNombreSubtarea({ ...nuevoNombreSubtarea, [actividadId]: "" });
     obtenerActividades(project?.id);
+    triggerToast(); // 🔔
   };
 
   /** Cancela edición de subtarea */
@@ -252,6 +269,7 @@ const ActividadesList = () => {
       subtareas: nuevasSubtareas,
     });
     obtenerActividades(project?.id);
+    triggerToast(); // 🔔
   };
 
   /**
@@ -280,6 +298,7 @@ const ActividadesList = () => {
       subtareas: nuevasSubtareas,
     });
     obtenerActividades(project?.id);
+    triggerToast(); // 🔔
   };
 
   /** Elimina una subtarea por índice */
@@ -290,12 +309,14 @@ const ActividadesList = () => {
 
     await updateDoc(doc(db, "actividades", actividadId), { subtareas: nuevas });
     obtenerActividades(project?.id);
+    triggerToast(); // 🔔
   };
 
   /** Elimina una actividad completa */
   const eliminarActividad = async (id) => {
     await deleteDoc(doc(db, "actividades", id));
     obtenerActividades(project?.id);
+    triggerToast(); // 🔔
   };
 
   /**
@@ -319,6 +340,7 @@ const ActividadesList = () => {
 
     await updateDoc(doc(db, "actividades", actividad.id), updateData);
     obtenerActividades(project?.id);
+    triggerToast(); // 🔔
   };
 
   /** Colores de botón de estado */
@@ -377,7 +399,18 @@ const ActividadesList = () => {
             type="text"
             placeholder="Nombre de la tarea"
             value={nuevaActividad}
-            onChange={(e) => setNuevaActividad(e.target.value)}
+            onChange={(e) =>
+              // Elimina cualquier número al escribir o pegar
+              setNuevaActividad(e.target.value.replace(/\d/g, ""))
+            }
+            onKeyDown={(e) => {
+              if (/\d/.test(e.key)) e.preventDefault(); // bloquea números
+            }}
+            onPaste={(e) => {
+              e.preventDefault();
+              const texto = (e.clipboardData || window.clipboardData).getData("text");
+              setNuevaActividad((prev) => prev + texto.replace(/\d/g, ""));
+            }}
           />
           <input
             type="date"
@@ -480,8 +513,27 @@ const ActividadesList = () => {
                         type="text"
                         value={editDatos.nombre}
                         onChange={(e) =>
-                          setEditDatos({ ...editDatos, nombre: e.target.value })
+                          setEditDatos({
+                            ...editDatos,
+                            // elimina números mientras escribe
+                            nombre: e.target.value.replace(/\d/g, ""),
+                          })
                         }
+                        onKeyDown={(e) => {
+                          if (/\d/.test(e.key)) e.preventDefault(); // bloquea números
+                        }}
+                        onPaste={(e) => {
+                          e.preventDefault();
+                          const texto = (e.clipboardData || window.clipboardData).getData("text");
+                          // Inserta el texto pegado sin dígitos en la posición del cursor
+                          const target = e.target;
+                          const start = target.selectionStart ?? 0;
+                          const end = target.selectionEnd ?? 0;
+                          const limpio = texto.replace(/\d/g, "");
+                          const nuevoValor =
+                            target.value.slice(0, start) + limpio + target.value.slice(end);
+                          setEditDatos({ ...editDatos, nombre: nuevoValor });
+                        }}
                       />
                       <input
                         type="date"
@@ -608,9 +660,7 @@ const ActividadesList = () => {
                               >
                                 <img src={checkIcon} alt="guardar" />
                               </button>
-                              <button
-                                onClick={() => cancelarEdicionSubtarea(act.id)}
-                              >
+                              <button onClick={() => cancelarEdicionSubtarea(act.id)}>
                                 <img src={closeIcon} alt="cancelar" />
                               </button>
                             </>
@@ -626,9 +676,7 @@ const ActividadesList = () => {
                               >
                                 <img src={editIcon} alt="editar" />
                               </button>
-                              <button
-                                onClick={() => eliminarSubtarea(act.id, idx)}
-                              >
+                              <button onClick={() => eliminarSubtarea(act.id, idx)}>
                                 <img src={deleteIcon} alt="eliminar" />
                               </button>
                             </>
@@ -643,6 +691,9 @@ const ActividadesList = () => {
           </div>
         </div>
       </div>
+
+      {/* 🔔 Toast de éxito (reusa estilos de PagosListView si los tienes) */}
+      {showToast && <div className="toast-exito-pago">✅ Acción realizada con éxito</div>}
     </div>
   );
 };

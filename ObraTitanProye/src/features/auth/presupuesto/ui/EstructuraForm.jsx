@@ -19,19 +19,13 @@ const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
     }
   }, [estructuraEnEdicion]);
 
-  // 📌 Función para agregar un material a la lista
-  const agregarMaterial = (material) => {
-    setMateriales([...materiales, material]);
-  };
+  // 📌 Agregar/eliminar material
+  const agregarMaterial = (material) => setMateriales((prev) => [...prev, material]);
+  const eliminarMaterial = (index) =>
+    setMateriales((prev) => prev.filter((_, i) => i !== index));
 
-  // 📌 Función para eliminar un material de la lista según el índice
-  const eliminarMaterial = (index) => {
-    setMateriales(materiales.filter((_, i) => i !== index));
-  };
-
-  // 📌 Función para guardar o actualizar la estructura en Firestore
+  // 📌 Guardar/actualizar estructura en Firestore
   const guardarEstructura = async () => {
-    // Validación: nombre y al menos un material
     if (!nombre.trim() || materiales.length === 0) {
       alert("Nombre de la estructura y al menos un material son obligatorios.");
       return;
@@ -44,21 +38,21 @@ const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
         await updateDoc(ref, {
           nombre,
           materiales,
-          actualizado: new Date() // Fecha de actualización
+          actualizado: new Date(), // Fecha de actualización
         });
         alert("✅ Estructura actualizada correctamente");
-        setEstructuraEnEdicion(null); // Salimos del modo edición
+        setEstructuraEnEdicion(null);
       } else {
         // ➕ Crear nueva estructura
         await addDoc(collection(db, "estructuras"), {
           nombre,
           materiales,
-          creado: new Date() // Fecha de creación
+          creado: new Date(), // Fecha de creación
         });
         alert("✅ Estructura guardada correctamente");
       }
 
-      // Limpiar campos después de guardar
+      // Limpieza
       setNombre("");
       setMateriales([]);
     } catch (err) {
@@ -69,30 +63,52 @@ const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
 
   return (
     <div className="calculadora-container">
-      {/* Título dinámico: cambia si estamos editando o creando */}
-      <h2>{estructuraEnEdicion ? "Editar Estructura" : "Crear Nueva Estructura"}</h2>
+      {/* ════════════════════════
+          🔹 ENCABEZADO
+          ════════════════════════ */}
+      <h2 style={{ margin: 0 }}>
+        {estructuraEnEdicion ? "Editar Estructura" : "Crear Nueva Estructura"}
+      </h2>
 
-      {/* Input para el nombre de la estructura */}
-      <input
-        className="input"
-        placeholder="Nombre de la estructura"
-        value={nombre}
-        onChange={(e) => setNombre(e.target.value)}
-      />
+      {/* ════════════════════════
+          🔹 NOMBRE DE ESTRUCTURA
+          ════════════════════════ */}
+      <div className="bloque-titulo">Nombre de la estructura</div>
+      <div className="fila-form">
+        <input
+          className="input"
+          placeholder="Nombre de la estructura"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+        />
+      </div>
 
-      {/* Formulario para agregar materiales */}
-      <MaterialForm onAgregar={agregarMaterial} />
+      {/* ════════════════════════
+          🔹 AGREGAR MATERIALES
+          ════════════════════════ */}
+      <div className="bloque-titulo materiales">Agregar materiales a la estructura</div>
+      <div className="fila-form">
+        <MaterialForm onAgregar={agregarMaterial} />
+      </div>
 
-      {/* Lista de materiales agregados */}
-      <MaterialList materiales={materiales} onEliminar={eliminarMaterial} />
+      {/* ════════════════════════
+          🔹 LISTA DE MATERIALES
+          ════════════════════════ */}
+      {materiales.length > 0 && (
+        <>
+          <h3 className="seccion-titulo">📋 Materiales agregados</h3>
+          <MaterialList materiales={materiales} onEliminar={eliminarMaterial} />
+        </>
+      )}
 
-      {/* Botones de acción */}
+      {/* ════════════════════════
+          🔹 ACCIONES
+          ════════════════════════ */}
       <div className="acciones">
         <button onClick={guardarEstructura} className="btn-guardar-estructura-unica">
           {estructuraEnEdicion ? "Actualizar Estructura" : "Guardar Estructura"}
         </button>
 
-        {/* Botón para cancelar si estamos editando */}
         {estructuraEnEdicion && (
           <button
             onClick={() => {
@@ -100,7 +116,7 @@ const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
               setNombre("");
               setMateriales([]);
             }}
-            className="btn-pdf"
+            className="btn-cancelar"
           >
             Cancelar
           </button>

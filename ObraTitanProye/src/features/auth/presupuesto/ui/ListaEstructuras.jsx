@@ -2,43 +2,69 @@ import React, { useEffect, useState } from "react";
 import { db } from "../../../../services/firebaseconfig";
 import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 
+/* Popup mínimo (si ya tienes uno, puedes quitar este) */
+const ConfirmPopup = ({ mensaje, onConfirmar, onCancelar, loading }) => (
+  <div className="popup-backdrop" onClick={onCancelar}>
+    <div className="popup-card" onClick={(e) => e.stopPropagation()}>
+      <p>{mensaje}</p>
+      <div style={{ display: "flex", gap: "0.5rem", justifyContent: "flex-end" }}>
+        <button type="button" className="btn-cancelar" onClick={onCancelar}>Cancelar</button>
+        <button
+          type="button"
+          className="btn-guardar-estructura-unica"
+          onClick={onConfirmar}
+          disabled={loading}
+        >
+          {loading ? "Eliminando..." : "Eliminar"}
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 const ListaEstructuras = ({ setEstructuraEnEdicion }) => {
-  // 📌 Estado que guarda la lista de estructuras obtenidas de Firestore
   const [estructuras, setEstructuras] = useState([]);
-  // 📌 Estado temporal para almacenar la estructura seleccionada para eliminar
   const [estructuraAEliminar, setEstructuraAEliminar] = useState(null);
+  const [eliminando, setEliminando] = useState(false);
 
-  // 📌 Función para cargar todas las estructuras desde Firestore
   const cargarEstructuras = async () => {
     const snapshot = await getDocs(collection(db, "estructuras"));
-    setEstructuras(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+    setEstructuras(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
   };
 
-  // 📌 Abre el popup de confirmación de eliminación
-  const confirmarEliminar = (estructura) => {
+  const confirmarEliminar = (estructura, e) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     setEstructuraAEliminar(estructura);
   };
 
-  // 📌 Elimina una estructura seleccionada de Firestore y actualiza el estado local
   const eliminarEstructura = async () => {
-    await deleteDoc(doc(db, "estructuras", estructuraAEliminar.id));
-    setEstructuras(prev => prev.filter(e => e.id !== estructuraAEliminar.id));
-    setEstructuraAEliminar(null); // cerrar popup
+    if (!estructuraAEliminar) return;
+    try {
+      setEliminando(true);
+      await deleteDoc(doc(db, "estructuras", estructuraAEliminar.id));
+      setEstructuras((prev) => prev.filter((e) => e.id !== estructuraAEliminar.id));
+    } catch (err) {
+      console.error("Error eliminando estructura:", err);
+      alert("No se pudo eliminar. Intenta de nuevo.");
+    } finally {
+      setEliminando(false);
+      setEstructuraAEliminar(null);
+    }
   };
 
-  // 📌 Cargar estructuras al montar el componente
   useEffect(() => {
     cargarEstructuras();
   }, []);
 
   return (
     <div className="lista-estructuras">
-      <h2 className="subtitulo">Estructuras guardadas</h2>
+      <h2 className="subtitulo">Lista de Estructuras</h2>
 
-      {/* ✅ Si no hay estructuras, mostrar mensaje */}
       {estructuras.length === 0 ? (
-        <p style={{ color: "#ccc" }}>No hay estructuras registradas.</p>
+        <div className="estado-vacio">
+          <p>No hay estructuras registradas.</p>
+        </div>
       ) : (
         <div className="tabla-container">
           <table className="tabla-estructuras">
@@ -53,20 +79,23 @@ const ListaEstructuras = ({ setEstructuraEnEdicion }) => {
               {estructuras.map((est) => (
                 <tr key={est.id}>
                   <td>{est.nombre}</td>
-                  {/* Cantidad de materiales en esa estructura */}
-                  <td>{est.materiales.length}</td>
+                  <td>{est.materiales?.length ?? 0}</td>
                   <td>
-                    {/* Botón para editar una estructura */}
                     <button
+                      type="button"                           /* 🔒 evita submit */
                       className="btn-editar"
-                      onClick={() => setEstructuraEnEdicion(est)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setEstructuraEnEdicion(est);
+                      }}
                     >
                       Editar
                     </button>
-                    {/* Botón para abrir confirmación de eliminación */}
                     <button
+                      type="button"                           /* 🔒 evita submit */
                       className="btn-eliminar"
-                      onClick={() => confirmarEliminar(est)}
+                      onClick={(e) => confirmarEliminar(est, e)}
                     >
                       Eliminar
                     </button>
@@ -78,12 +107,12 @@ const ListaEstructuras = ({ setEstructuraEnEdicion }) => {
         </div>
       )}
 
-      {/* ✅ Popup de confirmación para eliminar una estructura */}
       {estructuraAEliminar && (
         <ConfirmPopup
           mensaje={`¿Seguro que deseas eliminar "${estructuraAEliminar.nombre}"?`}
           onConfirmar={eliminarEstructura}
           onCancelar={() => setEstructuraAEliminar(null)}
+          loading={eliminando}
         />
       )}
     </div>

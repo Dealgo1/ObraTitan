@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
 
 /* ───────────────────────────────────────────
-   Variables de tema (colores, layout)
+   Variables globales
 ──────────────────────────────────────────── */
 :root {
   --max-content-width: 1200px;
@@ -14,10 +14,15 @@
   --gris-fondo: #2f2f2f;
   --blanco: #fff;
   --negro: #000;
+  --azul-oscuro: #1e293b;
+
+  --card-radius: 18px;
+  --card-shadow: 0 8px 28px rgba(0,0,0,.16);
+  --divider: 1px solid rgba(0,0,0,.06);
 }
 
 /* ───────────────────────────────────────────
-   Base / Reset mínimo
+   Base
 ──────────────────────────────────────────── */
 body {
   font-family: 'Arapey', serif;
@@ -26,7 +31,7 @@ body {
 }
 
 /* ───────────────────────────────────────────
-   Layout principal de la vista Presupuesto
+   Layout principal
 ──────────────────────────────────────────── */
 .layout-presupuesto {
   display: flex;
@@ -37,16 +42,15 @@ body {
 .contenido-presupuesto {
   flex: 1;
   padding: var(--layout-padding);
-  margin-left: clamp(70px, 10vw, 120px); /* margen para dejar espacio al sidebar */
+  margin-left: clamp(70px, 10vw, 120px);
   box-sizing: border-box;
   animation: fadeIn 0.5s ease;
 }
 
 /* ───────────────────────────────────────────
-   Títulos
+   Títulos generales visibles
 ──────────────────────────────────────────── */
-.titulo,
-.subtitulo {
+.titulo {
   color: var(--blanco);
   font-weight: bold;
   font-size: clamp(2rem, 6vw, 3.5rem);
@@ -54,255 +58,337 @@ body {
   animation: slideIn 0.6s ease;
 }
 
+.subtitulo {
+  color: var(--azul-oscuro);
+  font-size: 1.8rem;
+  font-weight: 700;
+  border-bottom: 2px solid var(--azul-oscuro);
+  padding-bottom: .6rem;
+  margin: 0 0 1.2rem 0;
+}
+
 /* ───────────────────────────────────────────
-   Switch de vistas (Materiales / Estructuras)
+   Títulos internos del formulario
+──────────────────────────────────────────── */
+.formulario-estructura .bloque-titulo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--azul-oscuro);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-top: 1rem;
+  margin-bottom: 0.6rem;
+  border-left: 3px solid var(--naranja);
+  padding-left: 0.5rem;
+  text-shadow: 0 0 0.5px rgba(0, 0, 0, 0.2);
+}
+
+/* Íconos decorativos */
+.formulario-estructura .bloque-titulo::before {
+  content: "✏️";
+  font-size: 1.1rem;
+  color: var(--naranja);
+}
+.formulario-estructura .bloque-titulo.materiales::before {
+  content: "🧱";
+}
+
+/* ───────────────────────────────────────────
+   Switch de vistas (botones superiores)
 ──────────────────────────────────────────── */
 .switch-vista {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
   margin-bottom: 1.5rem;
-  animation: fadeIn 0.6s ease;
 }
 
+/* Tamaño y estilo base (uniforme) */
 .switch-btn {
-  background-color: #eee;
-  padding: 0.7rem 1.3rem;
-  border-radius: 8px;
+  /* 🔧 Tamaño por defecto (aplica a todos) */
+  --btn-w: 180px; /* ancho */
+  --btn-h: 44px;  /* alto */
+  --btn-radius: 10px;
+
+  min-width: var(--btn-w);
+  height: var(--btn-h);
+  padding: 0 1rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: var(--naranja);
+  color: #fff;
   border: none;
+  border-radius: var(--btn-radius);
   font-weight: bold;
-  cursor: pointer;
   font-family: 'Arapey', serif;
-  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+  cursor: pointer;
+  transition: transform .15s ease, filter .15s ease, background-color .2s ease;
 }
 
-.switch-btn.activo {
-  background-color: var(--verde);
-  color: white;
-  border: 2px solid #1e8449;
+.switch-btn:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+}
+
+/* Estado activo (clicado) */
+.switch-btn.activo,
+.switch-btn.is-active {
+  background-color: var(--azul-oscuro);
+  color: #fff;
+  margin-left: 0.5rem;
+  
+}
+
+/* ── Utilidades opcionales de tamaño ── */
+.switch-btn.--sm { --btn-w: 150px; --btn-h: 40px; }
+.switch-btn.--md { --btn-w: 180px; --btn-h: 44px; } /* default */
+.switch-btn.--lg { --btn-w: 210px; --btn-h: 48px; }
+
+/* ───────────────────────────────────────────
+   Layout de estructura + lista
+──────────────────────────────────────────── */
+.formulario-estructura {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 2.2rem;
+}
+
+/* Tarjetas contenedoras */
+.calculadora-container,
+.lista-estructuras {
+  background: var(--blanco);
+  padding: 2.2rem 2.4rem;
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  border: 1px solid rgba(0,0,0,.05);
+  width: 92%;
+  max-width: 620px;
+  flex: 1 1 520px;
 }
 
 /* ───────────────────────────────────────────
-   Tarjetas de formulario (Materiales / Estructura)
+   Título “Agregar Material”
 ──────────────────────────────────────────── */
-.formulario-material,
-.formulario-estructura {
-  background-color: var(--blanco);
-  padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+.calculadora-container h2 {
+  margin: 0 0 1.2rem 0;
+  padding-bottom: .6rem;
+  border-bottom: 2px solid var(--azul-oscuro);
+  color: var(--azul-oscuro);
+  font-size: 1.6rem;
+  font-weight: 700;
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  color: #333;
-  margin-bottom: 2rem;
-  animation: fadeInUp 0.6s ease;
+  align-items: center;
+  gap: .5rem;
+}
+.calculadora-container h2::before {
+  content: "➕";
+  color: var(--naranja);
+  font-size: 1.2rem;
 }
 
-/* Inputs / Selects / Botones dentro de los formularios */
+/* ───────────────────────────────────────────
+   Formulario (bloque materiales)
+──────────────────────────────────────────── */
+.calculadora-container .formulario-material {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: .8rem 1rem;
+  align-items: center;
+  background: rgba(0,0,0,.02);
+  border: 1.5px solid var(--azul-oscuro);
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.calculadora-container .formulario-material button {
+  grid-column: 1 / -1;
+  justify-self: start;
+}
+
 .formulario-material input,
 .formulario-estructura input,
 .formulario-material select,
 .formulario-estructura select,
 .formulario-material button,
 .formulario-estructura button {
-  padding: 0.6rem 1rem;
+  padding: 0.7rem 1rem;
   font-size: 1rem;
-  border-radius: 8px;
-  border: 1px solid #ccc;
-  min-width: 160px;
+  border-radius: 10px;
+  border: 1px solid #cfcfcf;
   font-family: 'Arapey', serif;
-  transition: all 0.2s ease;
+  transition: box-shadow .2s ease, border-color .2s ease, transform .08s ease;
 }
 
-input[type="file"] {
-  padding: 0.3rem;
-  background-color: transparent;
-  color: #000;
+.formulario-material input:focus,
+.formulario-estructura input:focus,
+.formulario-material select:focus,
+.formulario-estructura select:focus {
+  outline: none;
+  border-color: #b6b6b6;
+  box-shadow: 0 0 0 3px rgba(211,84,0,.12);
 }
 
-button { cursor: pointer; }
-
-/* Botones de acción en formularios */
+/* Botones base */
 .formulario-material button,
 .formulario-estructura button {
   background-color: var(--naranja);
-  color: white;
+  color: #fff;
   font-weight: bold;
   border: none;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
 }
-
 .formulario-material button:hover,
 .formulario-estructura button:hover {
   background-color: #e67e22;
+  transform: translateY(-1px);
+}
+
+/* ✅ Botón Guardar Estructura */
+button.btn-guardar-estructura-unica,
+.formulario-estructura .btn-guardar-estructura-unica {
+  background-color: var(--azul-oscuro) !important;
+  color: white !important;
+  font-weight: bold;
+  border: none !important;
+  padding: 0.9rem 1.5rem;
+  border-radius: 10px;
+  font-family: 'Arapey', serif;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 1.3rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
+}
+.formulario-estructura .btn-guardar-estructura-unica:hover {
+  background-color: #1e293b !important;
+  transform: translateY(-1px);
 }
 
 /* ───────────────────────────────────────────
-   Listado de materiales (ítems)
+   Lista de materiales
 ──────────────────────────────────────────── */
 .lista-materiales { width: 100%; }
 
 .material-item {
   background-color: var(--blanco);
   border-radius: 12px;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  padding: 0.9rem 1rem;
+  margin-bottom: 0.9rem;
   display: flex;
   align-items: center;
   gap: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,.05);
 }
 
-.imagen-mini {
-  width: 60px;
-  height: 60px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-}
-
-/* Botón eliminar (consolidado) */
 .btn-eliminar {
   margin-left: auto;
-  background-color: #c0392b;
-  color: white;
-  padding: 0.5rem 0.8rem;
-  border-radius: 6px;
+  background-color: var(--naranja);
+  color: #1e40af !important; /* X azul */
+  padding: 0.7rem 1.3rem;
+  border-radius: 10px;
   font-weight: bold;
   border: none;
   cursor: pointer;
   font-family: 'Arapey', serif;
 }
-
-.btn-eliminar:hover { background-color: #e74c3c; }
+.btn-eliminar:hover { background-color: #e67e22; }
 
 /* ───────────────────────────────────────────
-   Total de presupuesto
+   Total del presupuesto
 ──────────────────────────────────────────── */
 .total-container {
-  background-color: var(--naranja);
+  background-color: var(--azul-oscuro);
   color: white;
   padding: 1rem 2rem;
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: bold;
   border-radius: 12px;
   text-align: center;
-  margin-bottom: 1.5rem;
-  animation: fadeIn 0.6s ease;
+  margin: .5rem 0 1.2rem;
 }
 
 /* ───────────────────────────────────────────
-   Botones finales (Exportar/Guardar)
+   Acciones finales
 ──────────────────────────────────────────── */
 .acciones {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
-  margin-left: clamp(60px, 10vw, 120px);
-  animation: fadeInUp 0.6s ease;
-  /* Forzar visibilidad */
-  visibility: visible;
-  opacity: 1;
+  justify-content: flex-start;
+  margin-top: 1.2rem;
 }
 
-.acciones button {
-  padding: 0.8rem 1.5rem;
-  font-size: 1rem;
-  border-radius: 8px;
+/* Guardar / Cancelar */
+.btn-guardar-estructura-unica,
+.btn-pdf {
+  width: 160px;
+  text-align: center;
+  padding: 0.9rem 1.6rem;
   font-weight: bold;
+  border-radius: 10px;
   border: none;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(0,0,0,.12);
   font-family: 'Arapey', serif;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.acciones button:hover { transform: scale(1.03); }
-
-.btn-pdf { background-color: var(--azul); color: white; }
-
-/* Botón: guardar estructura individual (visible y en flujo) */
 .btn-guardar-estructura-unica {
-  background-color: var(--verde);
-  color: white;
-  font-weight: bold;
-  border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 8px;
-  font-family: 'Arapey', serif;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  width: auto;
-  margin-top: 1rem;
-  display: inline-block;
-  visibility: visible;
-  opacity: 1;
+  background-color: var(--azul-oscuro);
+}
+.btn-guardar-estructura-unica:hover {
+  background-color: #111827;
+  transform: translateY(-1px);
 }
 
-.btn-guardar-estructura-unica:hover {
-  background-color: #1e8449;
-  transform: scale(1.03);
+.btn-pdf {
+  background-color: var(--naranja);
+}
+.btn-pdf:hover {
+  background-color: #e67e22;
+  transform: translateY(-1px);
 }
 
 /* ───────────────────────────────────────────
-   Lista de estructuras (cards + tabla)
+   Lista de estructuras
 ──────────────────────────────────────────── */
-.lista-estructuras { margin-top: 2rem; }
-
-.subtitulo {
-  color: var(--blanco);
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-}
-
-.estructura-card {
-  background-color: var(--blanco);
-  border-radius: 12px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.acciones-estructura {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.btn-editar {
-  background-color: var(--azul);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
-  cursor: not-allowed; /* botón inactivo por ahora */
-  font-family: 'Arapey', serif;
-  opacity: 0.6;
-}
-
-/* Contenedor visual para la tabla de estructuras */
 .lista-estructuras {
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 2px solid #ddd;
-  background-color: var(--blanco);
+  overflow: hidden;
+  text-align: left;
+}
+
+.estado-vacio {
+  border: 1px dashed rgba(0,0,0,.15);
   border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-  overflow-x: auto; /* scroll horizontal en móviles */
+  padding: 1.2rem;
+  text-align: center;
+  color: #6b7280;
+  background: rgba(0,0,0,.02);
+  font-style: italic;
 }
 
 .tabla-estructuras {
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   font-family: 'Arapey', serif;
 }
 
 .tabla-estructuras th,
 .tabla-estructuras td {
-  padding: 0.8rem 1rem;
-  border: 1px solid #ddd;
+  padding: 14px 16px;
+  border-bottom: var(--divider);
   text-align: left;
+  vertical-align: middle;
+  line-height: 1.35;
+  font-size: 1rem;
 }
 
 .tabla-estructuras th {
@@ -311,139 +397,263 @@ button { cursor: pointer; }
   font-weight: bold;
 }
 
+.tabla-estructuras tbody tr:nth-child(odd) { background: rgba(0,0,0,.015); }
+.tabla-estructuras tbody tr:hover { background: rgba(41,128,185,.06); }
+
+.btn-editar {
+  background-color: var(--ba);
+  color: white;
+  border: none;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  font-family: 'Arapey', serif;
+  cursor: pointer;
+  margin-right: .6rem;
+}
+.btn-editar:hover { background-color: #111827; }
+
+/* ───────────────────────────────────────────
+   Centrado tarjeta materiales
+──────────────────────────────────────────── */
+.formulario-materiales {
+  display: flex;
+  justify-content: center;
+}
+.formulario-materiales .calculadora-container {
+  margin: 0 auto;
+  max-width: 680px;
+  width: 92%;
+}
+
 /* ───────────────────────────────────────────
    Animaciones
 ──────────────────────────────────────────── */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideIn {
   from { transform: translateX(-30px); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 /* ───────────────────────────────────────────
-   Responsivo: móviles / tablets
+   🔧 Unificar tamaño de botones inferiores
 ──────────────────────────────────────────── */
-@media (max-width: 768px) {
+.btn-guardar-estructura-unica,
+.btn-pdf,
+button.btn-cancelar,
+.acciones button {
+  min-width: 180px; /* Igual que 'Agregar Material' */
+  height: 44px;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ───────────────────────────────────────────
+   Empujar SOLO las tarjetas a la derecha
+   (no cambia alineación interna)
+──────────────────────────────────────────── */
+.formulario-estructura {
+  margin-left: 80px;              /* 🔧 ajusta este valor a tu gusto (40–160px) */
+}
+
+/* Mantén legibilidad dentro de tarjetas */
+.calculadora-container,
+.lista-estructuras {
+  color: var(--azul-oscuro);
+  text-align: left;
+}
+
+/* En pantallas grandes puedes empujar un poco más */
+@media (min-width: 1400px) {
+  .formulario-estructura { margin-left: 120px; }
+}
+
+/* En móviles, sin empuje extra */
+@media (max-width: 900px) {
+  .formulario-estructura { margin-left: 0; }
+}
+
+/* Texto blanco en el fondo oscuro (fuera de tarjetas) */
+body { color: var(--blanco); }
+
+/*  Centrar el título y los tabs superiores */
+.titulo { text-align: center; }
+.switch-vista { justify-content: center; }
+
+/* =========================================
+   📱 Ajustes finos mobile (≤ 430px)
+   ========================================= */
+@media (max-width: 430px) {
+  /* Evita desbordes por padding/border en todos los hijos */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  /* Contenedor general: sin empuje lateral y padding compacto */
   .contenido-presupuesto {
-    padding: var(--layout-padding-mobile);
-    margin-left: 0 !important;
-  }
-
-  .titulo {
     margin-left: 0;
-    text-align: center;
-    font-size: clamp(1.5rem, 8vw, 3rem);
+    padding: 12px;
   }
 
-  .formulario-material,
-  .formulario-estructura {
+  /* Tabs superiores en columna, 100% ancho y sin espacios raros */
+  .switch-vista {
     flex-direction: column;
-    padding: 1.5rem;
+    gap: 8px;
+    align-items: stretch;
+  }
+  .switch-btn {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
+    border-radius: 10px;
   }
 
+  /* Tarjetas: ocupar ancho completo y borde/padding más compacto */
+  .calculadora-container,
+  .lista-estructuras {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 14px;
+    margin-inline: 0;
+    border-radius: 14px;
+  }
+
+  /* Títulos más contenidos para que no empujen */
+  .titulo { font-size: clamp(1.6rem, 7vw, 2.2rem); margin-bottom: .6rem; }
+  .subtitulo { font-size: 1.15rem; text-align: left; }
+
+  /* Bloques de formulario: 1 columna real y gaps pequeños */
+  .calculadora-container .formulario-material {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  /* Controles: ocupar 100% y tipografía cómoda */
+  .formulario-material input,
+  .formulario-estructura input,
+  .formulario-material select,
+  .formulario-estructura select {
+    width: 100%;
+    font-size: .95rem;
+  }
+
+  /* Botón de “Agregar material” dentro del grid: 100% ancho */
+  .calculadora-container .formulario-material button {
+    justify-self: stretch;
+    width: 100%;
+  }
+
+  /* Acciones finales: botones apilados a 100% */
   .acciones {
-    flex-direction: column;
-    margin-left: 0;
-    align-items: center;
+    gap: 10px;
+    justify-content: stretch;
+  }
+  .acciones .btn-guardar-estructura-unica,
+  .acciones .btn-pdf,
+  .acciones button {
+    width: 100%;
+    min-width: 0;
   }
 
-  .material-item {
-    flex-direction: column;
-    align-items: flex-start;
+  /* Input file: evita desbordes y corta texto largo del nombre */
+  input[type="file"] { width: 100%; }
+  input[type="file"]::file-selector-button {
+    padding: 8px 10px;
+    border-radius: 8px;
   }
 
-  .btn-eliminar { align-self: flex-end; }
+  /* Tabla: que no rompa el layout */
+  .tabla-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tabla-estructuras {
+    min-width: 380px;              /* más pequeño para caber en 360–430px */
+    font-size: .9rem;
+  }
+  .tabla-estructuras th, .tabla-estructuras td { padding: 10px 12px; }
+
+  /* Botones dentro de la tabla: compactos */
+  .btn-editar, .btn-eliminar { padding: .45rem .7rem; }
 }
 
-/* Escritorio (ajusta margen del contenido con sidebar visible) */
-@media (min-width: 769px) {
+/* Ultra-compacto para ≤ 360px */
+@media (max-width: 360px) {
+  .contenido-presupuesto { padding: 10px; }
+  .tabla-estructuras { min-width: 340px; }
+  .calculadora-container, .lista-estructuras { padding: 10px 12px; }
+  .switch-btn { height: 38px; }
+}
+
+/* ================================
+   📱 Fijes milimétricos 360–390 px
+   ================================ */
+@media (max-width: 390px) {
+  html, body { overflow-x: hidden; }               /* evita scroll/recorte lateral */
+
   .contenido-presupuesto {
-    margin-left: clamp(70px, 10vw, 120px);
-  }
-}
-
-/* Control del sidebar en móvil (oculto por defecto) */
-@media (max-width: 768px) {
-  .sidebar { display: none; }
-
-  .sidebar.open {
-    display: flex;
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
+    margin-left: 0 !important;                     /* sin empuje del sidebar */
+    padding: 10px 12px;                            /* padding compacto */
+    max-width: 100vw;                              /* nunca excede el viewport */
   }
 
-  .sidebar-toggle { display: block; }
-
-  .contenido-presupuesto { margin-left: 0 !important; }
-}
-
-/* ───────────────────────────────────────────
-   Tablet / pantallas medianas
-──────────────────────────────────────────── */
-@media (max-width: 1024px) {
-  .contenido-presupuesto {
-    margin-left: 0 !important;
-    padding: var(--layout-padding-mobile);
+  /* Tabs superiores: columna y 100% ancho */
+  .switch-vista {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .switch-btn {
+    width: 100%;
+    min-width: 0;
+    height: 40px;
   }
 
-  .titulo,
-  .subtitulo {
-    text-align: center;
-    margin-left: 0;
-  }
-
-  .switch-vista { justify-content: center; }
-
-  .formulario-material,
+  /* Tarjetas: ancho completo y padding ajustado */
   .formulario-estructura {
-    flex-direction: column;
-    padding: 1.5rem;
+    margin-left: 0 !important;
+    gap: 12px;
+    justify-content: center;
+  }
+  .calculadora-container,
+  .lista-estructuras {
+    width: 100%;
+    max-width: 100%;
+    padding: 12px 14px;
+    border-radius: 14px;
+    margin-inline: 0;
   }
 
-  .acciones {
-    flex-direction: column;
-    margin-left: 0;
-    align-items: center;
+  /* Grid del formulario: 1 columna real */
+  .calculadora-container .formulario-material {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 10px;
+  }
+  .calculadora-container .formulario-material button {
+    width: 100%;
+    justify-self: stretch;
   }
 
-  .material-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+  /* Controles 100% y sin desbordes */
+  .formulario-material input,
+  .formulario-estructura input,
+  .formulario-material select,
+  .formulario-estructura select { width: 100%; font-size: .95rem; }
+  input[type="file"] { width: 100%; }
 
-  .acciones-estructura {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
+  /* Acciones: botones apilados a 100% */
+  .acciones { gap: 10px; justify-content: stretch; }
+  .acciones .btn-guardar-estructura-unica,
+  .acciones .btn-pdf,
+  .acciones button { width: 100%; min-width: 0; }
 
-  .btn-editar,
-  .btn-eliminar {
-    font-size: 0.9rem;
-  }
+  /* Tabla: no rompe el layout */
+  .tabla-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tabla-estructuras { min-width: 340px; font-size: .9rem; }
+  .tabla-estructuras th, .tabla-estructuras td { padding: 10px 12px; }
 }
 
-/* ───────────────────────────────────────────
-   Contenedor de la calculadora (wrapper)
-──────────────────────────────────────────── */
-.calculadora-container {
-  background-color: var(--blanco);
-  padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-  width: 100%;
-  max-width: 900px;
-  margin: 2rem auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  animation: fadeInUp 0.6s ease;
-}
+/* Extra por si algún elemento intenta salirse */
+img, video, canvas { max-width: 100%; height: auto; }
