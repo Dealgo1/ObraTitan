@@ -19,6 +19,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../../../../context/AuthContext';
 import {
   collection,
   query,
@@ -44,7 +45,7 @@ const PagosListView = () => {
   // Proyecto provisto vía navegación (state)
   const location = useLocation();
   const { project } = location.state || {};
-
+const { userData } = useAuth(); // <- aquí viene tenantId
   // Estado local
   const [pagos, setPagos] = useState([]);               // listado de pagos
   const [editandoId, setEditandoId] = useState(null);   // id del pago en modo edición
@@ -59,15 +60,19 @@ const PagosListView = () => {
    */
   useEffect(() => {
     const fetchPagos = async () => {
-      if (project?.id) {
-        const q = query(collection(db, 'pagos'), where('projectId', '==', project.id));
+      if (project?.id && userData?.tenantId) {
+       const q = query(
+         collection(db, 'pagos'),
+        where('tenantId', '==', userData.tenantId),
+         where('projectId', '==', project.id)
+       );
         const snapshot = await getDocs(q);
         const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         setPagos(data);
       }
     };
     fetchPagos();
-  }, [project]);
+  }, [project, userData?.tenantId]);
 
   /**
    * Inicia edición inline de un pago.

@@ -26,7 +26,11 @@ const coleccion = collection(db, "proveedores");
  * @returns {Promise<void>} - No devuelve nada, solo confirma la escritura
  */
 export const guardarProveedor = async (proveedor) => {
-  await addDoc(coleccion, proveedor);
+  await addDoc(coleccion, {
+   ...proveedor,
+   tenantId,      // <- obligatorio
+   projectId,     // <- obligatorio
+});
 };
 
 /**
@@ -41,8 +45,12 @@ export const guardarProveedor = async (proveedor) => {
  * @returns {Promise<Object[]>} - Lista de proveedores en formato de objetos
  *                                con su `id` de documento incluido
  */
-export const obtenerProveedores = async (idProyecto) => {
-  const q = query(coleccion, where("proyectoId", "==", idProyecto));
+export const obtenerProveedores = async (projectId, tenantId) => {
+   const q = query(
+     coleccion,
+     where("tenantId", "==", tenantId),
+     where("projectId", "==", projectId)
+   );
   const snapshot = await getDocs(q);
 
   return snapshot.docs.map((doc) => ({

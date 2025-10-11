@@ -4,7 +4,7 @@ import { registrarPagoComoGasto } from "../../../../services/pagosService"; // �
 import FormularioPago from '../ui/FormularioPago'; // 🧾 Componente que contiene el formulario de pago
 import Sidebar from '../../../../components/Sidebar'; // 📌 Sidebar lateral
 import "../ui/FormularioPago.css"; // 🎨 Estilos del formulario de pago
-
+import { useAuth } from "../../../../context/AuthContext";
 /**
  * 📌 Vista: AgregarPago
  * 
@@ -18,7 +18,7 @@ const AgregarPago = () => {
 
   // 📌 El proyecto llega desde la navegación anterior (state)
   const { project } = location.state || {};
-
+const { userData } = useAuth(); // <- de aquí sale tenantId
   /**
    * 📝 Maneja el evento de agregar pago.
    * - Guarda el pago en Firestore
@@ -27,7 +27,7 @@ const AgregarPago = () => {
    */
   const handleAgregarPago = async (data) => {
     try {
-      await registrarPagoComoGasto(data, project?.id);
+      await registrarPagoComoGasto(data, project?.id, userData?.tenantId);
       navigate(-1); // ⬅ vuelve a la página anterior
     } catch (error) {
       console.error('Error al guardar el pago:', error);

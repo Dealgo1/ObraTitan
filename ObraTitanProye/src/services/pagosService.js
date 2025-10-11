@@ -14,7 +14,10 @@ import { db } from "../services/firebaseconfig";
  * @param {Object} pago - Datos del pago realizado.
  * @param {string} projectId - ID del proyecto al que pertenece el pago.
  */
-export const registrarPagoComoGasto = async (pago, projectId) => {
+
+ export const registrarPagoComoGasto = async (pago, projectId, tenantId) => {
+ if (!tenantId) throw new Error("registrarPagoComoGasto: falta tenantId");
+ if (!projectId) throw new Error("registrarPagoComoGasto: falta projectId");
   // Convierte la fecha a string legible (YYYY-MM-DD)
   const fechaStr = pago.fecha.toISOString().split("T")[0];
 
@@ -27,6 +30,7 @@ export const registrarPagoComoGasto = async (pago, projectId) => {
     moneda: pago.moneda === "C$" ? "NIO" : pago.moneda, // normaliza moneda
     fecha: fechaStr,
     projectId,
+    tenantId,
     esPago: true, // marca que este gasto proviene de un pago
     createdAt: Timestamp.now(),
   };
@@ -42,6 +46,7 @@ export const registrarPagoComoGasto = async (pago, projectId) => {
     fecha: Timestamp.fromDate(pago.fecha),
     creado: Timestamp.now(),
     projectId,
+    tenantId,
     gastoId: gastoRef.id, // Relación directa al gasto
   };
 

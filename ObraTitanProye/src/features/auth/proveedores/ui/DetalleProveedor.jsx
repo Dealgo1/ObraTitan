@@ -25,7 +25,10 @@
 
 import React, { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { actualizarProveedor, eliminarProveedor } from "../../../../services/proveedoresService";
+import {
+  actualizarProveedor,
+  eliminarProveedor,
+} from "../../../../services/proveedoresService";
 import { doc, updateDoc } from "firebase/firestore"; // Para actualización directa (ruta alternativa)
 import Sidebar from "../../../../components/Sidebar";
 import editIcon from "../../../../assets/iconos/edit.png";
@@ -40,6 +43,14 @@ const DetalleProveedorView = () => {
 
   // Proveedor recibido desde la vista anterior
   const proveedor = location.state?.proveedor;
+  // Recupera el proyecto actual (por si venía desde ProveedoresOverview)
+  const project = location.state?.project;
+
+  // Usa varias opciones seguras para obtener el ID del proyecto actual
+  const projectId =
+    project?.id ||
+    proveedor?.projectId || // en caso de venir dentro del proveedor
+    localStorage.getItem("projectId"); // respaldo desde el almacenamiento local
 
   // Modo edición ON/OFF
   const [editando, setEditando] = useState(false);
@@ -101,7 +112,9 @@ const DetalleProveedorView = () => {
     };
 
     if (isOffline) {
-      alert("Sin conexión: Proveedor actualizado localmente. Se sincronizará cuando haya internet.");
+      alert(
+        "Sin conexión: Proveedor actualizado localmente. Se sincronizará cuando haya internet."
+      );
     }
 
     // Actualiza a través del service (puede hacer manejo adicional de offline)
@@ -118,7 +131,7 @@ const DetalleProveedorView = () => {
   const handleEliminar = async () => {
     if (window.confirm("¿Estás seguro de eliminar este proveedor?")) {
       await eliminarProveedor(proveedor.id);
-      navigate("/proveedores");
+      navigate("/proveedores", { state: { project: { id: projectId } } });
     }
   };
 
@@ -152,7 +165,9 @@ const DetalleProveedorView = () => {
         // Refresco local si no hay conexión
         // (En escenarios reales, podrías guardar en cola local)
         // Aquí solo mantenemos el estado actual
-        alert("Sin conexión: Proveedor actualizado localmente. Se sincronizará cuando haya internet.");
+        alert(
+          "Sin conexión: Proveedor actualizado localmente. Se sincronizará cuando haya internet."
+        );
       } else {
         // Ok en la nube
         // (Podrías mostrar un toast también)
@@ -179,8 +194,14 @@ const DetalleProveedorView = () => {
 
             <div className="botones-superiores">
               {/* Botón dual: Editar ↔ Guardar */}
-              <button onClick={() => (editando ? handleGuardar() : setEditando(true))} title={editando ? "Guardar" : "Editar"}>
-                <img src={editando ? checkIcon : editIcon} alt={editando ? "Guardar" : "Editar"} />
+              <button
+                onClick={() => (editando ? handleGuardar() : setEditando(true))}
+                title={editando ? "Guardar" : "Editar"}
+              >
+                <img
+                  src={editando ? checkIcon : editIcon}
+                  alt={editando ? "Guardar" : "Editar"}
+                />
               </button>
 
               {/* Eliminar proveedor */}
@@ -189,7 +210,14 @@ const DetalleProveedorView = () => {
               </button>
 
               {/* Volver a listado */}
-              <button onClick={() => navigate("/proveedores")} title="Volver">
+              <button
+                onClick={() =>
+                  navigate("/proveedores", {
+                    state: { project: { id: projectId } },
+                  })
+                }
+                title="Volver"
+              >
                 <img src={closeIcon} alt="Volver" />
               </button>
             </div>
@@ -286,7 +314,11 @@ const DetalleProveedorView = () => {
       </div>
 
       {/* Toast de éxito tras guardar */}
-      {showToast && <div className="toast-exito-proveedor">✅ Proveedor actualizado con éxito</div>}
+      {showToast && (
+        <div className="toast-exito-proveedor">
+          ✅ Proveedor actualizado con éxito
+        </div>
+      )}
     </div>
   );
 };

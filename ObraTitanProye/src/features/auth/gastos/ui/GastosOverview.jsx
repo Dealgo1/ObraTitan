@@ -18,6 +18,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ListGroup } from "react-bootstrap";
 import { getGastos } from "../../../../services/gastosService";
+import { useAuth } from "../../../../context/AuthContext";
 import Sidebar from "../../../../components/Sidebar";
 import "../ui/GastosOverview.css";
 import { useProject } from "../../../../context/ProjectContext";
@@ -31,6 +32,7 @@ const GastosOverview = () => {
 
   // Proyecto activo desde el contexto global
   const { project } = useProject();
+  const { userData } = useAuth();   // ← aquí viene tenantId
   const projectId = project?.id;
   const projectName = project?.nombre;
 
@@ -46,10 +48,10 @@ const GastosOverview = () => {
    */
   useEffect(() => {
     const fetchData = async () => {
-      if (!projectId) return;
+      if (!projectId || !userData?.tenantId) return;
 
       try {
-        const data = await getGastos(projectId);
+        const data = await getGastos(projectId, userData.tenantId);
         setGastos(data);
         setOffline(false);
       } catch (error) {
@@ -61,7 +63,7 @@ const GastosOverview = () => {
     };
 
     fetchData();
-  }, [projectId]);
+  }, [projectId, userData?.tenantId]);
 
   /**
    * Navega a la vista de detalle del gasto seleccionado.
@@ -85,7 +87,7 @@ const GastosOverview = () => {
   });
 
   // Si no hay projectId (p. ej., acceso directo sin seleccionar proyecto)
-  if (!projectId) {
+  if (!projectId || !userData?.tenantId) {
     return (
       <div className="layout-gastos">
         <Sidebar />

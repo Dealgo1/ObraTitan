@@ -23,15 +23,24 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getGastos } from '../../../../services/gastosService';
+import { useAuth } from '../../../../context/AuthContext';
 import Sidebar from "../../../../components/Sidebar";
 import '../ui/BudgetVisualization.css';
 
 const BudgetVisualization = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
+const { userData } = useAuth(); // ← de aquí sale userData.tenantId
   // Proyecto recibido por state desde otra vista
-  const project = location.state?.project;
+   const project =
+    location.state?.project ||
+    (() => {
+      try {
+        return JSON.parse(localStorage.getItem('project')) || null;
+      } catch {
+       return null;
+      }
+    })();
 
   // Acumuladores en Córdobas (moneda local)
   const [totalGastado, setTotalGastado] = useState(0);
@@ -64,11 +73,12 @@ const BudgetVisualization = () => {
    */
   useEffect(() => {
     const fetchTransacciones = async () => {
-      if (!project?.id) return;
+      // Reglas de Firestore requieren proyecto + tenant
+      if (!project?.id || !userData?.tenantId) return;
 
       try {
-        const transacciones = await getGastos(project.id);
-
+        // ← ahora enviamos (proyectoId, tenantId)
+const transacciones = await getGastos(project.id, userData.tenantId);
         // Divide por tipo de transacción
         const gastos = transacciones.filter((t) => t.tipo === 'gasto');
         const ingresos = transacciones.filter((t) => t.tipo === 'ingreso');
@@ -101,7 +111,7 @@ const BudgetVisualization = () => {
     };
 
     fetchTransacciones();
-  }, [project]);
+  }, [project?.id, userData?.tenantId]);
 
   // Presupuesto inicial del proyecto (ya se asume en C$)
   const montoInicial = project?.presupuesto ? Number(project.presupuesto) : 0;
@@ -137,7 +147,7 @@ const BudgetVisualization = () => {
               <button
                 className="btn-naranja"
                 onClick={() =>
-                  navigate('/gastos-overview', { state: { projectId: project.id } })
+                 navigate('/gastos-overview', { state: { proyectoId: project.id } })
                 }
               >
                 Gastos
@@ -145,7 +155,7 @@ const BudgetVisualization = () => {
 
               <button
                 className="btn-naranja"
-                onClick={() => navigate('/gastos', { state: { projectId: project.id } })}
+                onClick={() => navigate('/gastos', { state: { proyectoId: project.id } })}
               >
                 Gastos +
               </button>

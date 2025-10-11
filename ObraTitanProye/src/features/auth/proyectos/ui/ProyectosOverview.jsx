@@ -6,6 +6,7 @@ import { useProject } from "../../../../context/ProjectContext";
 import flechaIcon from "../../../../assets/iconos/Flech.png";
 import estrellaIcon from "../../../../assets/iconos/star.png";
 import iconoBuscar from "../../../../assets/iconos/search.png";
+import { useAuth } from "../../../../context/AuthContext";
 
 /**
  * 📌 Vista: ProyectosOverview
@@ -17,6 +18,7 @@ import iconoBuscar from "../../../../assets/iconos/search.png";
  * - Incluye botón para crear un nuevo proyecto.
  */
 const ProyectosOverview = () => {
+const { userData, loading: authLoading } = useAuth(); // debe tener tenantId
   // Estado principal de la lista y su versión filtrada
   const [projects, setProjects] = useState([]);
   const [filtered, setFiltered] = useState([]);
@@ -28,22 +30,24 @@ const ProyectosOverview = () => {
   // Navegación y contexto de proyecto seleccionado
   const navigate = useNavigate();
   const { setProject } = useProject();
-
+  
   // 🔄 Carga inicial de proyectos
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await getProjects();   // 👉 Llama al servicio (Firestore)
-        setProjects(data);                  // Lista completa
-        setFiltered(data);                  // Lista filtrada (inicialmente igual)
-      } catch (err) {
-        console.error("Error al cargar proyectos", err);
-      } finally {
-        setLoading(false);                  // Apaga la pantalla de carga
-      }
-    };
-    fetchData();
-  }, []);
+  const fetchData = async () => {
+    try {
+      const data = await getProjects(userData.tenantId, true); // true si ordenas por createdAt
+      setProjects(data);
+      setFiltered(data);
+    } catch (err) {
+      console.error("Error al cargar proyectos", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (userData?.tenantId) fetchData();
+}, [userData?.tenantId]);
+
 
   /**
    * 🔍 Filtro de búsqueda (nombre, cliente, fecha formateada)
@@ -96,6 +100,21 @@ const ProyectosOverview = () => {
     setProject(project);
     navigate("/project-dashboard");
   };
+
+
+  if (authLoading || !userData?.tenantId) {
+  // Spinner o placeholder mientras carga el perfil/tenantId
+  return (
+    <div className="pantalla-carga">
+      <div className="wave-loader">
+        <div className="wave"></div><div className="wave"></div>
+        <div className="wave"></div><div className="wave"></div>
+        <div className="wave"></div>
+      </div>
+      <p className="texto-cargando">Preparando tus proyectos…</p>
+    </div>
+  );
+}
 
   // 🌀 Pantalla de carga (coincide con tu loader global)
   if (loading) {

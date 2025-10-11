@@ -20,8 +20,16 @@ const coleccion = collection(db, "proveedores");
  *
  * @param {Object} proveedor - Datos del proveedor (nombre, empresa, servicios, etc.)
  */
-export const guardarProveedor = async (proveedor) => {
-  await addDoc(coleccion, proveedor);
+// Crea proveedor con seguridad multitenant
+export const guardarProveedor = async (proveedor, projectId, tenantId) => {
+  if (!tenantId) throw new Error("guardarProveedor: falta tenantId");
+  if (!projectId) throw new Error("guardarProveedor: falta projectId");
+  await addDoc(coleccion, {
+    ...proveedor,
+    projectId,       // ← nombre CONSISTENTE
+    tenantId,        // ← requerido por reglas
+    creadoAt: new Date(),
+ });
 };
 
 /**
@@ -31,8 +39,15 @@ export const guardarProveedor = async (proveedor) => {
  * @param {string} idProyecto - ID del proyecto al que están vinculados los proveedores.
  * @returns {Array} - Lista de proveedores [{id, ...data}]
  */
-export const obtenerProveedores = async (idProyecto) => {
-  const q = query(coleccion, where("proyectoId", "==", idProyecto));
+// Obtener proveedores del proyecto del usuario
+export const obtenerProveedores = async (projectId, tenantId) => {
+ if (!tenantId) throw new Error("obtenerProveedores: falta tenantId");
+  if (!projectId) throw new Error("obtenerProveedores: falta projectId");
+  const q = query(
+   coleccion,
+    where("tenantId", "==", tenantId),
+    where("projectId", "==", projectId)
+  );
   const snapshot = await getDocs(q);
   return snapshot.docs.map((doc) => ({
     id: doc.id,

@@ -36,7 +36,7 @@ import {
 } from "firebase/firestore";
 import { useProject } from "../../../../context/ProjectContext";
 import Sidebar from "../../../../components/Sidebar";
-
+import { useAuth } from "../../../../context/AuthContext";
 // Iconografía UI
 import editIcon from "../../../../assets/iconos/edit.png";
 import deleteIcon from "../../../../assets/iconos/delete.png";
@@ -69,6 +69,7 @@ const ActividadesList = () => {
     cancelado: 0,
   });
 
+<<<<<<< HEAD
   // 🔔 Toast de éxito (como en PagosListView)
   const [showToast, setShowToast] = useState(false);
   const triggerToast = () => {
@@ -77,12 +78,23 @@ const ActividadesList = () => {
   };
 
   const { project } = useProject();
+=======
+const { project } = useProject();
+const { userData } = useAuth();     // ← para tenantId
+ const [projectId, setProjectId] = useState(null);
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
 
   useEffect(() => {
-    const storedProject = JSON.parse(localStorage.getItem("project"));
-    if (!project?.id && storedProject) project.id = storedProject.id; // fallback de id (⚠ mutación directa)
-    if (project?.id) obtenerActividades(project.id);
-  }, [project]);
+   const stored = JSON.parse(localStorage.getItem("project"));
+   setProjectId(project?.id || stored?.id || null);
+ }, [project?.id]);
+
+  useEffect(() => {
+   if (projectId && userData?.tenantId) {
+     obtenerActividades(projectId, userData.tenantId);
+   }
+ }, [projectId, userData?.tenantId]);
+
 
   /** Alterna visibilidad de subtareas para una actividad */
   const toggleVisibilidad = (id) => {
@@ -110,30 +122,25 @@ const ActividadesList = () => {
    * Obtiene actividades para el proyecto actual desde Firestore.
    * @param {string} projectId
    */
-  const obtenerActividades = async (projectId) => {
-    const q = query(
-      collection(db, "actividades"),
-      where("proyectoId", "==", projectId)
-    );
-    const data = await getDocs(q);
-
-    const actividadesCargadas = data.docs.map((doc) => ({
-      ...doc.data(),
-      id: doc.id,
-    }));
-
-    setActividades(actividadesCargadas);
-    contarEstados(actividadesCargadas);
-  };
+   const obtenerActividades = async (projectId, tenantId) => {
+   if (!projectId || !tenantId) return;
+   const q = query(
+     collection(db, "actividades"),
+     where("projectId", "==", projectId),
+     where("tenantId", "==", tenantId)
+   );
+   const snap = await getDocs(q);
+   const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+   setActividades(items);
+  contarEstados(items);
+ };
 
   /**
    * Crea una nueva actividad para el proyecto actual
    * Campos: nombre, subtareas[], estado, fechaInicio, fechaFin, proyectoId
    */
   const agregarActividad = async () => {
-    const projectId =
-      project?.id || JSON.parse(localStorage.getItem("project"))?.id;
-    if (!nuevaActividad.trim() || !projectId) return;
+   if (!nuevaActividad.trim() || !projectId || !userData?.tenantId) return;
 
     // Validación: no permitir números en el nombre
     if (/\d/.test(nuevaActividad)) {
@@ -147,15 +154,20 @@ const ActividadesList = () => {
       estado: "enProceso",
       fechaInicio,
       fechaFin,
-      proyectoId: projectId,
+      projectId: projectId,        // ← obligatorio por reglas
+    tenantId: userData.tenantId, // ← obligatorio por reglas
     });
 
     // Limpia inputs y recarga
     setNuevaActividad("");
     setFechaInicio("");
     setFechaFin("");
+<<<<<<< HEAD
     obtenerActividades(projectId);
     triggerToast(); // 🔔
+=======
+    obtenerActividades(projectId, userData?.tenantId);
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
   };
 
   /** Activa modo edición para una actividad */
@@ -200,8 +212,12 @@ const ActividadesList = () => {
     });
 
     setEditandoId(null);
+<<<<<<< HEAD
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
+=======
+    obtenerActividades(projectId, userData?.tenantId);
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
   };
 
   /**
@@ -221,8 +237,12 @@ const ActividadesList = () => {
     await updateDoc(doc(db, "actividades", id), { subtareas: nuevas });
     setSubtareaInput({ ...subtareaInput, [id]: "" });
     setMenuAbierto(null); // si se usa un menú contextual
+<<<<<<< HEAD
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
+=======
+   obtenerActividades(projectId, userData?.tenantId);
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
   };
 
   /**
@@ -242,8 +262,12 @@ const ActividadesList = () => {
 
     setEditandoSubtarea({ ...editandoSubtarea, [actividadId]: null });
     setNuevoNombreSubtarea({ ...nuevoNombreSubtarea, [actividadId]: "" });
+<<<<<<< HEAD
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
+=======
+   obtenerActividades(projectId, userData?.tenantId);
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
   };
 
   /** Cancela edición de subtarea */
@@ -268,8 +292,12 @@ const ActividadesList = () => {
     await updateDoc(doc(db, "actividades", actividadId), {
       subtareas: nuevasSubtareas,
     });
+<<<<<<< HEAD
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
+=======
+    obtenerActividades(projectId, userData?.tenantId);
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
   };
 
   /**
@@ -297,8 +325,12 @@ const ActividadesList = () => {
     await updateDoc(doc(db, "actividades", actividadId), {
       subtareas: nuevasSubtareas,
     });
+<<<<<<< HEAD
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
+=======
+   obtenerActividades(projectId, userData?.tenantId);
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
   };
 
   /** Elimina una subtarea por índice */
@@ -308,15 +340,23 @@ const ActividadesList = () => {
     nuevas.splice(index, 1);
 
     await updateDoc(doc(db, "actividades", actividadId), { subtareas: nuevas });
+<<<<<<< HEAD
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
+=======
+   obtenerActividades(projectId, userData?.tenantId);
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
   };
 
   /** Elimina una actividad completa */
   const eliminarActividad = async (id) => {
     await deleteDoc(doc(db, "actividades", id));
+<<<<<<< HEAD
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
+=======
+   obtenerActividades(projectId, userData?.tenantId);
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
   };
 
   /**
@@ -339,8 +379,12 @@ const ActividadesList = () => {
     }
 
     await updateDoc(doc(db, "actividades", actividad.id), updateData);
+<<<<<<< HEAD
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
+=======
+    obtenerActividades(projectId, userData?.tenantId);
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
   };
 
   /** Colores de botón de estado */

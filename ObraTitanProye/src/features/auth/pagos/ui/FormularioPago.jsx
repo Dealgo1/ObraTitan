@@ -34,8 +34,10 @@
 import React, { useState, useEffect } from "react";
 import "../ui/FormularioPago.css";
 import { obtenerProveedores } from "../../../../services/firebaseProveedores";
+import { useAuth } from "../../../../context/AuthContext";
 
 const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
+  const { userData } = useAuth(); // userData.tenantId
   // === Estado de formulario ===
   const [proveedorEmpleado, setProveedorEmpleado] = useState("");
   const [metodoPago, setMetodoPago] = useState("");
@@ -53,15 +55,15 @@ const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
   useEffect(() => {
     const cargarProveedores = async () => {
       try {
-        const lista = await obtenerProveedores(projectId);
+        const lista = await obtenerProveedores(projectId, userData?.tenantId);
         setProveedores(lista);
       } catch (error) {
         console.error("Error al cargar proveedores:", error);
       }
     };
 
-    if (projectId) cargarProveedores();
-  }, [projectId]);
+    if (projectId && userData?.tenantId) cargarProveedores();
+   }, [projectId, userData?.tenantId]);
 
   /**
    * handleSubmit

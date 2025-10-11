@@ -3,13 +3,14 @@ import { guardarProveedor } from "../../../../services/proveedoresService";
 import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "../../../../components/Sidebar";
 import "../../proveedores/ui/FormularioProveedor.css";
-
+import { useAuth } from "../../../../context/authcontext";
 /**
  * 📌 Componente: FormularioProveedor
  * Este componente permite registrar un nuevo proveedor en un proyecto específico.
  * Contiene un formulario con los datos básicos del proveedor, así como el historial de pagos.
  */
 const FormularioProveedor = () => {
+  const { userData } = useAuth(); // <- de aquí sale tenantId
   // Estado local que guarda los valores del formulario
   const [formulario, setFormulario] = useState({
     nombre: "",
@@ -78,6 +79,7 @@ const FormularioProveedor = () => {
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
+<<<<<<< HEAD
 
     // Validación extra: prevenir envío si nombre o empresa contienen números
     if (/\d/.test(formulario.nombre) || /\d/.test(formulario.empresa)) {
@@ -85,27 +87,38 @@ const FormularioProveedor = () => {
       return;
     }
 
+=======
+ if (!userData?.tenantId) {
+     alert("No se detectó tu organización (tenant). Vuelve a iniciar sesión.");
+    return;
+   }
+   if (!projectId) {
+     alert("No se detectó el proyecto actual.");
+     return;
+  }
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
     // Se construye el objeto proveedor listo para almacenar
     const proveedor = {
       ...formulario,
       historialPago: {
-        monto: parseFloat(formulario.historialPago.monto), // Convierte monto a número
+        monto: parseFloat(formulario.historialPago.monto),
         fecha: formulario.historialPago.fecha,
         estado: formulario.historialPago.estado,
       },
-      proyectoId: projectId, // Se asocia el proveedor al proyecto actual
     };
 
     try {
-      await guardarProveedor(proveedor); // Guardado en Firebase
+      await guardarProveedor(proveedor, projectId, userData.tenantId);
     } catch (error) {
       // Si hay error (ej. sin conexión), igualmente se redirige
       console.warn(
         "Guardado localmente. Se sincronizará cuando haya conexión."
       );
+      console.error("Error al guardar proveedor:", error?.message || error);
+    alert(error?.message || "No se pudo guardar el proveedor.");
     } finally {
       // Redirige siempre a la lista de proveedores del proyecto
-      navigate("/proveedores", { state: { projectId } });
+     navigate("/proveedores", { state: { project: { id: projectId } } });
     }
   };
 
@@ -276,7 +289,7 @@ const FormularioProveedor = () => {
                 type="button"
                 className="btn-cancelar"
                 onClick={() =>
-                  navigate("/proveedores", { state: { projectId } })
+                navigate("/proveedores", { state: { project: { id: projectId } } })
                 }
               >
                 Cancelar

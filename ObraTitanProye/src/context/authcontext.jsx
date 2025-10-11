@@ -44,38 +44,47 @@ export const AuthProvider = ({ children }) => {
 
       // Sesión abierta: cargar perfil desde Firestore
       setLoading(true);
-      try {
-        // 1) Intenta en 'usuarios/{uid}'
-        let snap = await getDoc(doc(db, "usuarios", fbUser.uid));
-        if (!snap.exists()) {
-          // 2) Fallback: 'users/{uid}'
-          snap = await getDoc(doc(db, "users", fbUser.uid));
-        }
+      setLoading(true);
+try {
+  // 1) Perfil principal en 'users/{uid}'
+  const ref1 = doc(db, "users", fbUser.uid);
+  let snap = await getDoc(ref1);
 
-        if (snap.exists()) {
-          const data = { id: snap.id, ...snap.data() };
-          setUserData(data);
-          // Derivar rol con tolerancia a 'rol' o 'role'
-          const derivedRole =
-            data.rol ??
-            data.role ??
-            fbUser?.role ?? // rara vez viene de Firebase
-            fbUser?.claims?.role ??
-            fbUser?.claims?.rol ??
-            null;
-          setRole(derivedRole);
-        } else {
-          // Si no hay doc de perfil, deja userData en null, role null
-          setUserData(null);
-          setRole(null);
-        }
-      } catch (err) {
-        console.error("Error cargando perfil de usuario:", err);
-        setUserData(null);
-        setRole(null);
-      } finally {
-        setLoading(false);
-      }
+  // 2) Fallback opcional a 'usuarios/{uid}' SIN romper si falla permisos
+  if (!snap.exists()) {
+    try {
+      const ref2 = doc(db, "usuarios", fbUser.uid);
+      const snap2 = await getDoc(ref2);
+      if (snap2.exists()) snap = snap2;
+    } catch (_) {
+      // silencio: no tenemos permisos/colección y seguimos sin abortar
+    }
+  }
+
+  if (snap.exists()) {
+    const data = { id: snap.id, ...snap.data() };
+    setUserData(data);
+
+    const derivedRole =
+      data.rol ??
+      data.role ??
+      fbUser?.role ??
+      fbUser?.claims?.role ??
+      fbUser?.claims?.rol ??
+      null;
+    setRole(derivedRole);
+  } else {
+    setUserData(null);
+    setRole(null);
+  }
+} catch (err) {
+  console.error("Error cargando perfil de usuario:", err);
+  setUserData(null);
+  setRole(null);
+} finally {
+  setLoading(false);
+}
+
     });
 
     return () => {

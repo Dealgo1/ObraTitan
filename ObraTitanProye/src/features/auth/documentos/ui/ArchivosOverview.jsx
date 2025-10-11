@@ -60,7 +60,7 @@ const ArchivoOverview = () => {
       if (!project) return;
 
       try {
-        const proyectoRef = doc(db, "proyectos", project.id);
+        const proyectoRef = doc(db, "projects", project.id);
         const documentosRef = collection(proyectoRef, "documentos");
         const querySnapshot = await getDocs(documentosRef);
 
@@ -100,6 +100,7 @@ const ArchivoOverview = () => {
 
   const guardarCambios = async (id) => {
     try {
+<<<<<<< HEAD
       // 🚫 Validación: el nombre no admite números
       if (/\d/.test(formEdit.nombre || "")) {
         alert("El nombre del documento no puede contener números.");
@@ -107,6 +108,9 @@ const ArchivoOverview = () => {
       }
 
       const ref = doc(db, "proyectos", project.id, "documentos", id);
+=======
+      const ref = doc(db, "projects", project.id, "documentos", id);
+>>>>>>> c56b5c3 (Incorporacion de multitenant)
       await updateDoc(ref, formEdit);
 
       const actualizados = documentos.map((d) =>
@@ -123,7 +127,7 @@ const ArchivoOverview = () => {
   const eliminarDocumento = async (id) => {
     if (window.confirm("¿Deseas eliminar este documento?")) {
       try {
-        await deleteDoc(doc(db, "proyectos", project.id, "documentos", id));
+        await deleteDoc(doc(db, "projects", project.id, "documentos", id));
         setDocumentos((prev) => prev.filter((d) => d.id !== id));
         triggerToast("🗑️ Documento eliminado");
       } catch (error) {

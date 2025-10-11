@@ -7,7 +7,7 @@ import flecha from "../../../../assets/iconos/Flecha.png";
 import iconoBuscar from "../../../../assets/iconos/search.png";
 import {  } from "../../../../services/proveedoresService"; // Reservado por si necesitas servicios extra
 import "../../proveedores/ui/ProveedoresOverview.css";
-
+import { useAuth } from "../../../../context/authcontext";
 /**
  * 📌 Componente: ProveedoresOverview
  * Vista que muestra el listado de proveedores de un proyecto,
@@ -28,8 +28,9 @@ const ProveedoresOverview = () => {
   const location = useLocation();
 
   // Obtenemos el proyecto desde la navegación o localStorage
-  const { project } = location.state || {};
+ const { project } = location.state || {};
   const projectId = project?.id || localStorage.getItem("projectId");
+  const { userData } = useAuth(); // tenantId aquí
 
   /**
    * 📌 Hook: detección de conexión
@@ -57,10 +58,13 @@ const ProveedoresOverview = () => {
    * Se suscribe a Firestore para recibir cambios en la colección de proveedores
    * del proyecto actual, con soporte para caché offline.
    */
-  useEffect(() => {
+   useEffect(() => {
+   if (!projectId || !userData?.tenantId) return; // evita query inválida
     const q = query(
       collection(db, "proveedores"),
-      where("proyectoId", "==", projectId) // Solo proveedores del proyecto actual
+       
+      where("tenantId", "==", userData.tenantId),
+      where("projectId", "==", projectId)// Solo proveedores del proyecto actual
     );
 
     const unsubscribe = onSnapshot(
@@ -88,7 +92,7 @@ const ProveedoresOverview = () => {
     );
 
     return () => unsubscribe(); // Limpieza al desmontar
-  }, [projectId, isOffline]);
+  }, [projectId, userData?.tenantId]);
 
   /**
    * 📌 handleSelectProveedor

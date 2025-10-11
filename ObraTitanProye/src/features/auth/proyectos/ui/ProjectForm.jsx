@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "../../proyectos/ui/ProjectForm.css";
 import { createProject } from "../../../../services/projectsService";
 import { useNavigate } from "react-router-dom";
-
+import { useAuth } from "../../../../context/AuthContext";
 const ProjectForm = () => {
   // =========================
   // 📌 Estado del formulario
@@ -15,13 +15,13 @@ const ProjectForm = () => {
   const [estado, setEstado] = useState("En progreso");
   const [fechaInicio, setFechaInicio] = useState("");
   const [fechaFin, setFechaFin] = useState("");
-  const [imagen, setImagen] = useState(null);     // Archivo original
-  const [preview, setPreview] = useState(null);   // URL de vista previa
-  const [errores, setErrores] = useState({});     // Errores de validación
+  const [imagen, setImagen] = useState(null); // Archivo original
+  const [preview, setPreview] = useState(null); // URL de vista previa
+  const [errores, setErrores] = useState({}); // Errores de validación
   const [isOffline, setIsOffline] = useState(!navigator.onLine); // 🌐 Estado de conexión
 
   const navigate = useNavigate();
-
+ const { userData } = useAuth(); // ← aquí viene tenantId
   // ==========================================
   // 🌐 Detección de conexión y sincronización
   // ==========================================
@@ -65,7 +65,10 @@ const ProjectForm = () => {
 
   const formatCurrency = (value) => {
     if (value === null || value === undefined || isNaN(value)) return "C$ 0.00";
-    return value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return value.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
   };
 
   // ==========================================
@@ -82,7 +85,8 @@ const ProjectForm = () => {
     if (!presupuesto.toString().trim()) {
       nuevosErrores.presupuesto = "Campo requerido";
     } else if (!regexPresupuesto.test(presupuesto)) {
-      nuevosErrores.presupuesto = "Debe ser un número positivo válido (hasta 2 decimales)";
+      nuevosErrores.presupuesto =
+        "Debe ser un número positivo válido (hasta 2 decimales)";
     } else if (parseFloat(presupuesto) < 0) {
       nuevosErrores.presupuesto = "No puede ser negativo";
     }
@@ -95,7 +99,8 @@ const ProjectForm = () => {
       const inicio = new Date(fechaInicio);
       const fin = new Date(fechaFin);
       if (inicio > fin) {
-        nuevosErrores.fechaFin = "La fecha fin debe ser mayor que la fecha de inicio";
+        nuevosErrores.fechaFin =
+          "La fecha fin debe ser mayor que la fecha de inicio";
       }
     }
 
@@ -116,7 +121,12 @@ const ProjectForm = () => {
   // ==========================================
   // 🗜️ Compresión de imagen en el navegador
   // ==========================================
-  const compressImage = (file, maxWidth = 800, maxHeight = 800, quality = 0.6) => {
+  const compressImage = (
+    file,
+    maxWidth = 800,
+    maxHeight = 800,
+    quality = 0.6
+  ) => {
     return new Promise((resolve) => {
       const reader = new FileReader();
       reader.onload = (event) => {
@@ -169,7 +179,9 @@ const ProjectForm = () => {
 
         // Límite de 1MB (1,048,576 bytes)
         if (base64Length > 1048576) {
-          alert("La imagen sigue siendo muy grande después de la compresión. Intente con otra imagen más liviana.");
+          alert(
+            "La imagen sigue siendo muy grande después de la compresión. Intente con otra imagen más liviana."
+          );
           return;
         }
       }
@@ -183,22 +195,28 @@ const ProjectForm = () => {
         nombre,
         descripcion,
         cliente,
-        presupuesto: presupuestoNum,       // valor tal como lo ingresó el usuario
-        moneda,                            // "CORD" | "USD" | "EUR"
-        presupuestoCordobas,               // convertido a córdobas
+        presupuesto: presupuestoNum, // valor tal como lo ingresó el usuario
+        moneda, // "CORD" | "USD" | "EUR"
+        presupuestoCordobas, // convertido a córdobas
         estado,
         fechaInicio: fechaInicio ? new Date(fechaInicio) : null,
         fechaFin: fechaFin ? new Date(fechaFin) : null,
         imagen: base64Image, // base64 | null
+        tenantId: userData?.tenantId || null,
       };
 
       if (isOffline) {
         // 💾 Persistencia local si no hay internet
-        localStorage.setItem("offlineProject", JSON.stringify(projectData));
-        alert("Estás offline. El proyecto se guardará localmente y se sincronizará cuando vuelva la conexión.");
+       localStorage.setItem("offlineProject", JSON.stringify({
+        ...projectData,
+       tenantId: userData?.tenantId || null,  // asegúralo también offline
+      }));
+        alert(
+          "Estás offline. El proyecto se guardará localmente y se sincronizará cuando vuelva la conexión."
+        );
       } else {
         // ☁️ Crear en backend/Firestore (según tu servicio)
-        await createProject(projectData);
+        await createProject(projectData, base64Image ? [base64Image] : []);
         navigate("/proyecto"); // Redirección a la vista de proyectos
       }
     } catch (error) {
@@ -214,7 +232,11 @@ const ProjectForm = () => {
     const offlineProject = localStorage.getItem("offlineProject");
     if (offlineProject) {
       const projectData = JSON.parse(offlineProject);
-      createProject(projectData)
+        if (!projectData.tenantId && userData?.tenantId) {
+       projectData.tenantId = userData.tenantId; // rellena si faltaba
+     }
+      const base64Arr = projectData.imagen ? [projectData.imagen] : [];
+      createProject(projectData, base64Arr)
         .then(() => {
           localStorage.removeItem("offlineProject");
         })
@@ -227,7 +249,10 @@ const ProjectForm = () => {
   // ==========================================
   // 👀 Valor convertido para mostrar en UI
   // ==========================================
-  const presupuestoCordobasPreview = convertToCordobas(Number(presupuesto || 0), moneda);
+  const presupuestoCordobasPreview = convertToCordobas(
+    Number(presupuesto || 0),
+    moneda
+  );
 
   // ==========================
   // 🧩 Render del formulario
@@ -238,7 +263,11 @@ const ProjectForm = () => {
       <div className="header-proyecto">
         <h2 className="titulo-crear">Crear Proyecto</h2>
         {/* Botón de acción rápida que dispara el submit */}
-        <button type="submit" className="btn-agregar-proyecto" onClick={handleSubmit}>
+        <button
+          type="submit"
+          className="btn-agregar-proyecto"
+          onClick={handleSubmit}
+        >
           Agregar
         </button>
       </div>
@@ -247,22 +276,40 @@ const ProjectForm = () => {
         {/* Nombre */}
         <div className="fila-formulario">
           <label>Nombre del Proyecto:</label>
-          <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-          {errores.nombre && <span className="error-texto">{errores.nombre}</span>}
+          <input
+            type="text"
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+          />
+          {errores.nombre && (
+            <span className="error-texto">{errores.nombre}</span>
+          )}
         </div>
 
         {/* Descripción */}
         <div className="fila-formulario">
           <label>Descripción:</label>
-          <input type="text" value={descripcion} onChange={(e) => setDescripcion(e.target.value)} />
-          {errores.descripcion && <span className="error-texto">{errores.descripcion}</span>}
+          <input
+            type="text"
+            value={descripcion}
+            onChange={(e) => setDescripcion(e.target.value)}
+          />
+          {errores.descripcion && (
+            <span className="error-texto">{errores.descripcion}</span>
+          )}
         </div>
 
         {/* Cliente */}
         <div className="fila-formulario">
           <label>Cliente:</label>
-          <input type="text" value={cliente} onChange={(e) => setCliente(e.target.value)} />
-          {errores.cliente && <span className="error-texto">{errores.cliente}</span>}
+          <input
+            type="text"
+            value={cliente}
+            onChange={(e) => setCliente(e.target.value)}
+          />
+          {errores.cliente && (
+            <span className="error-texto">{errores.cliente}</span>
+          )}
         </div>
 
         {/* Presupuesto con moneda */}
@@ -301,12 +348,17 @@ const ProjectForm = () => {
             </select>
           </div>
 
-          {errores.presupuesto && <span className="error-texto">{errores.presupuesto}</span>}
+          {errores.presupuesto && (
+            <span className="error-texto">{errores.presupuesto}</span>
+          )}
 
           {/* Preview conversión */}
           <div className="preview-conversion">
             ≈ C$ {formatCurrency(presupuestoCordobasPreview)}
-            <span className="muted"> ({presupuesto || 0} {moneda})</span>
+            <span className="muted">
+              {" "}
+              ({presupuesto || 0} {moneda})
+            </span>
           </div>
         </div>
 
@@ -348,13 +400,25 @@ const ProjectForm = () => {
         <div className="fila-fechas">
           <div className="campo-fecha">
             <label>Fecha inicio:</label>
-            <input type="date" value={fechaInicio} onChange={(e) => setFechaInicio(e.target.value)} />
-            {errores.fechaInicio && <span className="error-texto">{errores.fechaInicio}</span>}
+            <input
+              type="date"
+              value={fechaInicio}
+              onChange={(e) => setFechaInicio(e.target.value)}
+            />
+            {errores.fechaInicio && (
+              <span className="error-texto">{errores.fechaInicio}</span>
+            )}
           </div>
           <div className="campo-fecha">
             <label>Fecha fin:</label>
-            <input type="date" value={fechaFin} onChange={(e) => setFechaFin(e.target.value)} />
-            {errores.fechaFin && <span className="error-texto">{errores.fechaFin}</span>}
+            <input
+              type="date"
+              value={fechaFin}
+              onChange={(e) => setFechaFin(e.target.value)}
+            />
+            {errores.fechaFin && (
+              <span className="error-texto">{errores.fechaFin}</span>
+            )}
           </div>
         </div>
 
@@ -362,8 +426,12 @@ const ProjectForm = () => {
         <div className="fila-formulario">
           <label>Imagen del proyecto (opcional):</label>
           <input type="file" accept="image/*" onChange={handleImageChange} />
-          {errores.imagen && <span className="error-texto">{errores.imagen}</span>}
-          {preview && <img src={preview} alt="Vista previa" className="preview-imagen" />}
+          {errores.imagen && (
+            <span className="error-texto">{errores.imagen}</span>
+          )}
+          {preview && (
+            <img src={preview} alt="Vista previa" className="preview-imagen" />
+          )}
         </div>
       </form>
     </div>
