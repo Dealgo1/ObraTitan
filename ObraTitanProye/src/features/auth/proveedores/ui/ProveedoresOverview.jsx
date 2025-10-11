@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { db } from "../../../../services/firebaseconfig"; // Configuración de Firebase
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import Sidebar from "../../../../components/Sidebar";
-import flecha from "../../../../assets/iconos/Flecha.png";
+import flecha from "../../../../assets/iconos/flecha.png";
 import iconoBuscar from "../../../../assets/iconos/search.png";
 import {  } from "../../../../services/proveedoresService"; // Reservado por si necesitas servicios extra
 import "../../proveedores/ui/ProveedoresOverview.css";
