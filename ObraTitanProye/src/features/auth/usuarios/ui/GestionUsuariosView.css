@@ -319,3 +319,10 @@ html, body {
     padding: 15px;
   }
 }
+.acciones-header {
+  display: flex;
+  justify-content: flex-end; /* derecha */
+  margin-top: -10px; 
+  margin-right: 140px;        /* separa del borde derecho */
+  margin-bottom: 25px;  
+}

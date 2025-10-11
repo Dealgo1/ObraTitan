@@ -21,7 +21,7 @@
 import React, { useEffect, useState } from "react";
 import { getFirestore, doc, setDoc, updateDoc } from "firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
-
+import { useAuth } from "../../../../context/authcontext";
 const FormularioUsuario = ({ usuario = null, cerrarFormulario }) => {
   // === Estado local de los campos ===
   const [nombre, setNombre] = useState("");
@@ -30,7 +30,7 @@ const FormularioUsuario = ({ usuario = null, cerrarFormulario }) => {
   const [telefono, setTelefono] = useState("");
   const [fechaNacimiento, setFechaNacimiento] = useState("");
   const [rol, setRol] = useState("lector");
-
+ const { userData } = useAuth(); // debe traer tenantId del usuario logueado
   // Instancia de Firestore (app ya inicializada en otra parte)
   const db = getFirestore();
 
@@ -69,12 +69,16 @@ const FormularioUsuario = ({ usuario = null, cerrarFormulario }) => {
       telefono,
       fechaNacimiento,
       rol,
+      tenantId: userData?.tenantId, // <-- obligatorio para pasar las reglas
     };
 
     try {
       if (usuario) {
         // Edición
-        await updateDoc(doc(db, "users", usuario.id), usuarioData);
+        // no dejes que cambien tenantId desde UI
+       await updateDoc(doc(db, "users", usuario.id), {
+         nombre, apellido, correo, telefono, fechaNacimiento, rol
+       });
       } else {
         // Creación con UUID como id de documento
         const id = uuidv4();

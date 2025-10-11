@@ -4,7 +4,7 @@ import { registrarPagoComoGasto } from "../../../../services/pagosService"; // �
 import FormularioPago from '../ui/FormularioPago'; // 🧾 Componente que contiene el formulario de pago
 import Sidebar from '../../../../components/Sidebar'; // 📌 Sidebar lateral
 import "../ui/FormularioPago.css"; // 🎨 Estilos del formulario de pago
-import { useAuth } from "../../../../context/AuthContext";
+import { useAuth } from "../../../../context/authcontext";
 /**
  * 📌 Vista: AgregarPago
  * 

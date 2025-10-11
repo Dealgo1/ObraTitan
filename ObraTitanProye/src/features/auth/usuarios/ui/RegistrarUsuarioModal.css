@@ -1,0 +1,85 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 650px;
+  background: #fff;
+  border-radius: 12px;
+  border: 3px solid #D35400;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.3rem;
+  color: #000000;
+  font-size: 1.5rem;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #000000;
+  border-radius: 8px;
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.btn {
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background-color: #d35400;
+  color: #fff;
+
+}
+
+/* 🌟 Efecto al pasar el cursor */
+.btn-primary:hover {
+  background-color: #e67e22; /* tono naranja más claro */
+  transform: scale(1.03);    /* leve aumento para dar efecto visual */
+}
+
+.btn-secondary {
+  background-color: #1e293b;
+  color: #ffffff;
+}
+
+.alerta-error {
+  background: #ffe9e9;
+  color: #a40000;
+  border: 1px solid #ffb3b3;
+  padding: 0.6rem;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
