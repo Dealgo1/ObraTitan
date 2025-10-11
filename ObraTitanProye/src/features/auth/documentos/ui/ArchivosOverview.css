@@ -84,11 +84,13 @@
 /* Celdas: borde, padding y alineación centrada vertical/horizontal */
 .archivo-overview-tabla th,
 .archivo-overview-tabla td {
-  border: 1px solid #ccc;
+  border: 1px solid #D35400;
   padding: 12px;
   font-size: 18px;
   text-align: center;
   vertical-align: middle;
+  color: #000; 
+  font-size: 1.5rem;
 }
 
 /* Encabezados con fondo suave para distinguir columnas */

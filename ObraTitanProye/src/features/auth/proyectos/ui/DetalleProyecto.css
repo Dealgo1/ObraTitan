@@ -128,12 +128,16 @@
   border-radius: 10px;
   background-color: #fffdfc;
   margin-bottom: 1rem;
+  color: #000; 
+  font-size: 1.5rem;
 }
 .dpv-presupuesto {
   border: 2px solid #D35400;
   padding: 0.8rem;
   border-radius: 10px;
   margin-bottom: 1.5rem;
+  color: #000; 
+  font-size: 1.5rem;
 }
 
 /* 🧾 Inputs editables */
@@ -144,6 +148,7 @@
   border-radius: 8px;
   width: 100%;
   margin-bottom: 1rem;
+  
 }
 .dpv-textarea {
   min-height: 120px;
@@ -157,6 +162,8 @@
   gap: 2rem;
   margin: 1.5rem 0;
   flex-wrap: wrap;
+  color: #000; 
+  font-size: 1.5rem;
 }
 .dpv-fecha-item {
   flex: 1;
@@ -181,6 +188,8 @@
   font-weight: bold;
   flex-wrap: wrap;
   gap: 1rem;
+  color: #000; 
+  font-size: 1.5rem;
 }
 .dpv-estado label {
   display: flex;
@@ -195,6 +204,7 @@
 .dpv-activo {
   background-color: #ce5f15;
   border: 2px solid #D35400;
+  
 }
 
 /* 🖥️ Ajustes en pantallas medianas (más pegada a la izquierda) */

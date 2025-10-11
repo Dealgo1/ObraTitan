@@ -75,12 +75,14 @@
 
 .tabla-pagos th,
 .tabla-pagos td {
-  border: 1px solid #ccc;
+  border: 1px solid #D35400;
   padding: 12px;
   font-size: 20px;
   vertical-align: middle;
   text-align: center;
   white-space: nowrap;
+  color: #000; 
+  font-size: 1.3rem;
 }
 
 .tabla-pagos th {

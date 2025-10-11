@@ -348,8 +348,8 @@
 .contenido .acciones-tarea-principal .btn-accion.edit-btn img {
   content: url('https://img.icons8.com/material-outlined/24/000000/edit--v1.png');
   /* Ícono de editar */
-  width: 25px;
-  height: 25px;
+  width: 30px;
+  height: 40px;
   filter: invert(20%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(30%) contrast(90%);
   /* Icono en gris oscuro */
 }
@@ -357,8 +357,8 @@
 .contenido .acciones-tarea-principal .btn-accion.delete-btn img {
   content: url('https://img.icons8.com/material-outlined/24/000000/trash--v1.png');
   /* Ícono de eliminar */
-  width: 25px;
-  height: 25px;
+   width: 30px;
+  height: 40px;
   filter: invert(20%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(30%) contrast(90%);
   /* Icono en gris oscuro */
 }
