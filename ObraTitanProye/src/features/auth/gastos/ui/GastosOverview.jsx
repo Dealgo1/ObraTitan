@@ -18,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ListGroup } from "react-bootstrap";
 import { getGastos } from "../../../../services/gastosService";
-import { useAuth } from "../../../../context/AuthContext";
+import { useAuth } from "../../../../context/authcontext";
 import Sidebar from "../../../../components/Sidebar";
 import "../ui/GastosOverview.css";
 import { useProject } from "../../../../context/ProjectContext";
