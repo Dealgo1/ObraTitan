@@ -34,7 +34,7 @@
 import React, { useState, useEffect } from "react";
 import "../ui/FormularioPago.css";
 import { obtenerProveedores } from "../../../../services/firebaseProveedores";
-import { useAuth } from "../../../../context/AuthContext";
+import { useAuth } from "../../../../context/authcontext";
 
 const FormularioPago = ({ onSubmit, nombreProyecto, projectId }) => {
   const { userData } = useAuth(); // userData.tenantId

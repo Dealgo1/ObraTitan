@@ -6,7 +6,7 @@ import { useProject } from "../../../../context/ProjectContext";
 import flechaIcon from "../../../../assets/iconos/Flech.png";
 import estrellaIcon from "../../../../assets/iconos/star.png";
 import iconoBuscar from "../../../../assets/iconos/search.png";
-import { useAuth } from "../../../../context/AuthContext";
+import { useAuth } from "../../../../context/authcontext";
 
 /**
  * 📌 Vista: ProyectosOverview
