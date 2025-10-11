@@ -23,7 +23,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getGastos } from '../../../../services/gastosService';
-import { useAuth } from '../../../../context/AuthContext';
+import { useAuth } from '../../../../context/authcontext';
 import Sidebar from "../../../../components/Sidebar";
 import '../ui/BudgetVisualization.css';
 
