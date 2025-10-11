@@ -100,7 +100,6 @@ const ArchivoOverview = () => {
 
   const guardarCambios = async (id) => {
     try {
-<<<<<<< HEAD
       // 🚫 Validación: el nombre no admite números
       if (/\d/.test(formEdit.nombre || "")) {
         alert("El nombre del documento no puede contener números.");
@@ -108,9 +107,6 @@ const ArchivoOverview = () => {
       }
 
       const ref = doc(db, "proyectos", project.id, "documentos", id);
-=======
-      const ref = doc(db, "projects", project.id, "documentos", id);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
       await updateDoc(ref, formEdit);
 
       const actualizados = documentos.map((d) =>
