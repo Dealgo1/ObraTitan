@@ -79,7 +79,6 @@ const FormularioProveedor = () => {
    */
   const handleSubmit = async (e) => {
     e.preventDefault();
-<<<<<<< HEAD
 
     // Validación extra: prevenir envío si nombre o empresa contienen números
     if (/\d/.test(formulario.nombre) || /\d/.test(formulario.empresa)) {
@@ -87,16 +86,6 @@ const FormularioProveedor = () => {
       return;
     }
 
-=======
- if (!userData?.tenantId) {
-     alert("No se detectó tu organización (tenant). Vuelve a iniciar sesión.");
-    return;
-   }
-   if (!projectId) {
-     alert("No se detectó el proyecto actual.");
-     return;
-  }
->>>>>>> c56b5c3 (Incorporacion de multitenant)
     // Se construye el objeto proveedor listo para almacenar
     const proveedor = {
       ...formulario,

@@ -36,7 +36,7 @@ import {
 } from "firebase/firestore";
 import { useProject } from "../../../../context/ProjectContext";
 import Sidebar from "../../../../components/Sidebar";
-import { useAuth } from "../../../../context/AuthContext";
+import { useAuth } from "../../../../context/authcontext";
 // Iconografía UI
 import editIcon from "../../../../assets/iconos/edit.png";
 import deleteIcon from "../../../../assets/iconos/delete.png";
@@ -69,7 +69,7 @@ const ActividadesList = () => {
     cancelado: 0,
   });
 
-<<<<<<< HEAD
+
   // 🔔 Toast de éxito (como en PagosListView)
   const [showToast, setShowToast] = useState(false);
   const triggerToast = () => {
@@ -77,12 +77,12 @@ const ActividadesList = () => {
     setTimeout(() => setShowToast(false), 3000);
   };
 
-  const { project } = useProject();
-=======
+
+
 const { project } = useProject();
 const { userData } = useAuth();     // ← para tenantId
  const [projectId, setProjectId] = useState(null);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+
 
   useEffect(() => {
    const stored = JSON.parse(localStorage.getItem("project"));
@@ -162,12 +162,12 @@ const { userData } = useAuth();     // ← para tenantId
     setNuevaActividad("");
     setFechaInicio("");
     setFechaFin("");
-<<<<<<< HEAD
+
     obtenerActividades(projectId);
     triggerToast(); // 🔔
-=======
+
     obtenerActividades(projectId, userData?.tenantId);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+
   };
 
   /** Activa modo edición para una actividad */
@@ -212,12 +212,12 @@ const { userData } = useAuth();     // ← para tenantId
     });
 
     setEditandoId(null);
-<<<<<<< HEAD
+
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
-=======
+
     obtenerActividades(projectId, userData?.tenantId);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+
   };
 
   /**
@@ -237,12 +237,12 @@ const { userData } = useAuth();     // ← para tenantId
     await updateDoc(doc(db, "actividades", id), { subtareas: nuevas });
     setSubtareaInput({ ...subtareaInput, [id]: "" });
     setMenuAbierto(null); // si se usa un menú contextual
-<<<<<<< HEAD
+
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
-=======
+
    obtenerActividades(projectId, userData?.tenantId);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+
   };
 
   /**
@@ -262,12 +262,12 @@ const { userData } = useAuth();     // ← para tenantId
 
     setEditandoSubtarea({ ...editandoSubtarea, [actividadId]: null });
     setNuevoNombreSubtarea({ ...nuevoNombreSubtarea, [actividadId]: "" });
-<<<<<<< HEAD
+
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
-=======
+
    obtenerActividades(projectId, userData?.tenantId);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+
   };
 
   /** Cancela edición de subtarea */
@@ -292,12 +292,12 @@ const { userData } = useAuth();     // ← para tenantId
     await updateDoc(doc(db, "actividades", actividadId), {
       subtareas: nuevasSubtareas,
     });
-<<<<<<< HEAD
+
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
-=======
+
     obtenerActividades(projectId, userData?.tenantId);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+
   };
 
   /**
@@ -325,12 +325,12 @@ const { userData } = useAuth();     // ← para tenantId
     await updateDoc(doc(db, "actividades", actividadId), {
       subtareas: nuevasSubtareas,
     });
-<<<<<<< HEAD
+
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
-=======
+
    obtenerActividades(projectId, userData?.tenantId);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+
   };
 
   /** Elimina una subtarea por índice */
@@ -340,23 +340,23 @@ const { userData } = useAuth();     // ← para tenantId
     nuevas.splice(index, 1);
 
     await updateDoc(doc(db, "actividades", actividadId), { subtareas: nuevas });
-<<<<<<< HEAD
+
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
-=======
+
    obtenerActividades(projectId, userData?.tenantId);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+
   };
 
   /** Elimina una actividad completa */
   const eliminarActividad = async (id) => {
     await deleteDoc(doc(db, "actividades", id));
-<<<<<<< HEAD
+
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
-=======
+
    obtenerActividades(projectId, userData?.tenantId);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+
   };
 
   /**
@@ -379,12 +379,12 @@ const { userData } = useAuth();     // ← para tenantId
     }
 
     await updateDoc(doc(db, "actividades", actividad.id), updateData);
-<<<<<<< HEAD
+
     obtenerActividades(project?.id);
     triggerToast(); // 🔔
-=======
+
     obtenerActividades(projectId, userData?.tenantId);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+
   };
 
   /** Colores de botón de estado */

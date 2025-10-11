@@ -6,162 +6,154 @@ import { useProject } from "../../../../context/ProjectContext";
 import { useAuth } from "../../../../context/authcontext";
 import "../ui/DocumentosYPlanosView.css";
 
-<<<<<<< HEAD
 /**
- * 📄 Vista: DocumentosYPlanosView
- * Permite subir un archivo (Documento o Plano) asociado al proyecto activo.
- * Guarda el archivo como dataURL (base64) en una subcolección `proyectos/{id}/documentos`.
- * Muestra un toast visual de éxito o error, y un estado de "subiendo..." durante la carga.
+ * 📄 DocumentosYPlanosView
+ * Sube un archivo (Documento o Plano) al proyecto activo.
+ * Guarda como Base64 en subcolección: projects/{project.id}/documentos
+ * Muestra toasts de éxito/error y estado de "Subiendo..."
  */
-=======
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+
+const MAX_FILE_MB = 15;
+
 const DocumentosYPlanosView = () => {
   const { project } = useProject();
-  const { userData } = useAuth(); // ← de aquí sale tenantId
+  const { userData } = useAuth(); // debe aportar tenantId, y opcionalmente displayName / uid
 
-<<<<<<< HEAD
   // =========================
   // 📦 Estados del formulario
   // =========================
-=======
->>>>>>> c56b5c3 (Incorporacion de multitenant)
   const [file, setFile] = useState(null);
-  const [tipoDocumento, setTipoDocumento] = useState("Documento");
+  const [tipoDocumento, setTipoDocumento] = useState("Documento"); // "Documento" | "Plano"
   const [nombre, setNombre] = useState("");
   const [subiendo, setSubiendo] = useState(false);
-<<<<<<< HEAD
-  const [toastMsg, setToastMsg] = useState("");
-  const [showToast, setShowToast] = useState(false);
 
   // =========================
-  // 🔔 Toast control
+  // 🔔 Toast
   // =========================
-  const triggerToast = (mensaje) => {
-    setToastMsg(mensaje);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+  const [toast, setToast] = useState({ show: false, msg: "", kind: "ok" }); // ok | error | warn
+  const triggerToast = (msg, kind = "ok", ms = 3000) => {
+    setToast({ show: true, msg, kind });
+    setTimeout(() => setToast({ show: false, msg: "", kind }), ms);
   };
-=======
-  const [showToast, setShowToast] = useState(false);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
 
-  const handleFileChange = (e) => setFile(e.target.files[0]);
+  // =========================
+  // 🧰 Helpers
+  // =========================
+  const handleFileChange = (e) => setFile(e.target.files?.[0] ?? null);
   const handleTipoDocumentoChange = (e) => setTipoDocumento(e.target.value);
 
-<<<<<<< HEAD
-  /**
-   * 📤 Envío del formulario:
-   * - Valida campos requeridos
-   * - Convierte el archivo a base64 (dataURL)
-   * - Crea un documento en la subcolección `proyectos/{id}/documentos`
-   * - Muestra toasts visuales en vez de alert()
-   */
-  const handleSubmit = (e) => {
+  const fileToDataURL = (archivo) =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(archivo);
+    });
+
+  // =========================
+  // 📤 Submit
+  // =========================
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validaciones previas
-    if (!file || !nombre || !project) {
-      triggerToast("⚠️ Por favor completa todos los campos.");
+    // Validaciones
+    if (!file || !nombre || !project?.id || !userData?.tenantId) {
+      triggerToast("⚠️ Completa archivo, nombre, proyecto y tenant.", "warn");
       return;
     }
 
     if (/\d/.test(nombre)) {
-      triggerToast("🚫 El nombre no puede contener números.");
-=======
-  const handleSubmit = (e) => {
-    e.preventDefault();
+      triggerToast("🚫 El nombre no puede contener números.", "warn");
+      return;
+    }
 
-    if (!file || !nombre || !project?.id || !userData?.tenantId) {
-      alert("Faltan datos (archivo, nombre, proyecto o tenant).");
->>>>>>> c56b5c3 (Incorporacion de multitenant)
+    const sizeMB = file.size / (1024 * 1024);
+    if (sizeMB > MAX_FILE_MB) {
+      triggerToast(`📦 El archivo supera ${MAX_FILE_MB} MB.`, "warn");
       return;
     }
 
     setSubiendo(true);
+    try {
+      const base64String = await fileToDataURL(file);
 
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
+      // Ref a subcolección del proyecto
+      const proyectoRef = doc(db, "projects", project.id);
+      const documentosRef = collection(proyectoRef, "documentos");
 
-    reader.onload = async () => {
-      const base64String = reader.result;
+      const payload = {
+        // Campos de UI
+        nombre,
+        tipoDocumento, // "Documento" | "Plano"
 
-      try {
-<<<<<<< HEAD
-        const fechaSubida = new Date().toISOString();
-        const proyectoRef = doc(db, "proyectos", project.id);
-=======
-        // ⬅️ OJO: usamos 'projects' (en inglés) para que coincida con las reglas
-        const proyectoRef = doc(db, "projects", project.id);
->>>>>>> c56b5c3 (Incorporacion de multitenant)
-        const documentosRef = collection(proyectoRef, "documentos");
+        // Metadatos del archivo
+        filename: file.name,
+        mimeType: file.type || "application/octet-stream",
+        sizeBytes: file.size,
 
-        await addDoc(documentosRef, {
-          nombre,
-          tipoDocumento,
-<<<<<<< HEAD
-          fechaSubida,
-          archivoBase64: base64String,
-          timestamp: serverTimestamp(),
-        });
+        // Contenido Base64
+        archivoBase64: base64String,
 
-        triggerToast("✅ Archivo cargado correctamente.");
+        // Multitenant / relaciones
+        tenantId: userData.tenantId,
+        projectId: project.id,
+        projectName: project.nombre ?? null,
 
-        // Reset del formulario
-=======
-          archivoBase64: base64String,
-          // Campos que piden tus reglas / que usa tu UI
-          tenantId: userData.tenantId,
-          projectId: project.id,
-          projectName: project.nombre,
-          fechaSubida: serverTimestamp(),   // mejor Timestamp para tu listado
-          creadoAt: serverTimestamp(),
-        });
+        // Quién sube (si está disponible)
+        uploadedByUid: userData.uid ?? null,
+        uploadedByName: userData.displayName ?? userData.email ?? null,
 
-        setShowToast(true);
-        setTimeout(() => setShowToast(false), 3000);
+        // Timestamps
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        fechaSubida: serverTimestamp(),
+      };
 
->>>>>>> c56b5c3 (Incorporacion de multitenant)
-        setNombre("");
-        setFile(null);
-        setTipoDocumento("Documento");
-      } catch (error) {
-        console.error("❌ Error al cargar el archivo:", error);
-        triggerToast("❌ Error al cargar el archivo. Intenta de nuevo.");
-      } finally {
-        setSubiendo(false);
-      }
-    };
+      await addDoc(documentosRef, payload);
 
-    reader.onerror = () => {
-      triggerToast("❌ Error al leer el archivo.");
+      triggerToast("✅ Archivo cargado correctamente.", "ok");
+
+      // Reset form
+      setNombre("");
+      setFile(null);
+      setTipoDocumento("Documento");
+    } catch (err) {
+      console.error("❌ Error al cargar el archivo:", err);
+      triggerToast("❌ Error al cargar el archivo. Intenta de nuevo.", "error");
+    } finally {
       setSubiendo(false);
-    };
+    }
   };
+
+  // =========================
+  // 🎨 UI
+  // =========================
+  const acceptForTipo = 
+    tipoDocumento === "Plano"
+      // Nota: algunos navegadores no reconocen DWG/DXF MIME; se dejan extensiones.
+      ? "application/pdf,.pdf,.dwg,.dxf"
+      : "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.doc,.docx,.txt";
 
   return (
     <div className="doc-plan-app-container">
       <Sidebar />
-<<<<<<< HEAD
 
-=======
->>>>>>> c56b5c3 (Incorporacion de multitenant)
       <div className="doc-plan-content-wrapper">
         <div className="doc-plan-container">
           <h2 className="doc-plan-title">Subir Documento o Plano</h2>
 
-          <form onSubmit={handleSubmit} className="doc-plan-form-upload">
-            {project && (
-              <div className="doc-plan-project-name">
-                <strong>{project.nombre}</strong>
-              </div>
-            )}
+          {project && (
+            <div className="doc-plan-project-name">
+              Proyecto activo: <strong>{project.nombre}</strong>
+            </div>
+          )}
 
-<<<<<<< HEAD
+          <form onSubmit={handleSubmit} className="doc-plan-form-upload">
             {/* Tipo de archivo */}
-=======
->>>>>>> c56b5c3 (Incorporacion de multitenant)
             <div className="doc-plan-form-group">
-              <label htmlFor="tipoDocumento" className="doc-plan-label">Tipo de Archivo</label>
+              <label htmlFor="tipoDocumento" className="doc-plan-label">
+                Tipo de Archivo
+              </label>
               <select
                 id="tipoDocumento"
                 value={tipoDocumento}
@@ -173,8 +165,11 @@ const DocumentosYPlanosView = () => {
               </select>
             </div>
 
+            {/* Nombre (sin números) */}
             <div className="doc-plan-form-group">
-              <label htmlFor="nombre" className="doc-plan-label">Nombre</label>
+              <label htmlFor="nombre" className="doc-plan-label">
+                Nombre
+              </label>
               <input
                 id="nombre"
                 type="text"
@@ -196,51 +191,48 @@ const DocumentosYPlanosView = () => {
                 }}
                 required
                 className="doc-plan-input"
+                placeholder={tipoDocumento === "Plano" ? "Ej: Planta arquitectónica" : "Ej: Contrato de obra"}
               />
             </div>
 
-<<<<<<< HEAD
             {/* Selector de archivo */}
-=======
->>>>>>> c56b5c3 (Incorporacion de multitenant)
             <div className="doc-plan-form-group">
-              <label htmlFor="file" className="doc-plan-label">Seleccionar Archivo</label>
+              <label htmlFor="file" className="doc-plan-label">
+                Seleccionar Archivo
+              </label>
               <input
                 id="file"
                 type="file"
                 className="doc-plan-input"
-                accept={
-                  tipoDocumento === "Plano"
-                    ? "application/pdf,.pdf,.dwg,.dxf"
-                    : "application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf,.doc,.docx,.txt"
-                }
+                accept={acceptForTipo}
                 onChange={handleFileChange}
                 required
               />
+              <small className="doc-plan-hint">
+                Tamaño máximo: {MAX_FILE_MB} MB. Tipos aceptados según selección.
+              </small>
             </div>
 
-<<<<<<< HEAD
             {/* Botón principal */}
-            <button
-              type="submit"
-              className="doc-plan-submit-btn"
-              disabled={subiendo}
-            >
-=======
             <button type="submit" className="doc-plan-submit-btn" disabled={subiendo}>
->>>>>>> c56b5c3 (Incorporacion de multitenant)
               {subiendo ? "Subiendo..." : `Subir ${tipoDocumento}`}
             </button>
           </form>
 
-<<<<<<< HEAD
-          {/* Toast visual (estilo unificado) */}
-          {showToast && (
-            <div className="toast-exito-pago">{toastMsg}</div>
+          {/* Toast visual */}
+          {toast.show && (
+            <div
+              className={
+                toast.kind === "ok"
+                  ? "doc-plan-toast-success"
+                  : toast.kind === "error"
+                  ? "doc-plan-toast-error"
+                  : "doc-plan-toast-warn"
+              }
+            >
+              {toast.msg}
+            </div>
           )}
-=======
-          {showToast && <div className="doc-plan-toast-success">✅ Archivo cargado correctamente.</div>}
->>>>>>> c56b5c3 (Incorporacion de multitenant)
         </div>
       </div>
     </div>
