@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../../../services/firebaseconfig";
 import { addDoc, collection, updateDoc, doc } from "firebase/firestore";
+import { useProject } from "../../../../context/ProjectContext";
+import { useAuth } from "../../../../context/authcontext";
 import MaterialForm from "../ui/MaterialForm";
 import MaterialList from "../ui/MaterialList";
 import "../ui/PresupuestoCalculator.css";
 
 const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
+  const { project } = useProject();
+  const projectId = project?.id;
+  const { userData } = useAuth();
+  const tenantId = userData?.tenantId;
+
   // Estado para el nombre de la estructura
   const [nombre, setNombre] = useState("");
   // Estado que almacena los materiales agregados
@@ -20,7 +27,8 @@ const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
   }, [estructuraEnEdicion]);
 
   // 📌 Agregar/eliminar material
-  const agregarMaterial = (material) => setMateriales((prev) => [...prev, material]);
+  const agregarMaterial = (material) =>
+    setMateriales((prev) => [...prev, material]);
   const eliminarMaterial = (index) =>
     setMateriales((prev) => prev.filter((_, i) => i !== index));
 
@@ -28,6 +36,10 @@ const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
   const guardarEstructura = async () => {
     if (!nombre.trim() || materiales.length === 0) {
       alert("Nombre de la estructura y al menos un material son obligatorios.");
+      return;
+    }
+    if (!projectId || !tenantId) {
+      alert("Falta projectId o tenantId para guardar.");
       return;
     }
 
@@ -38,6 +50,8 @@ const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
         await updateDoc(ref, {
           nombre,
           materiales,
+           projectId,
+          tenantId,
           actualizado: new Date(), // Fecha de actualización
         });
         alert("✅ Estructura actualizada correctamente");
@@ -47,6 +61,8 @@ const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
         await addDoc(collection(db, "estructuras"), {
           nombre,
           materiales,
+          projectId,
+         tenantId,
           creado: new Date(), // Fecha de creación
         });
         alert("✅ Estructura guardada correctamente");
@@ -86,7 +102,9 @@ const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
       {/* ════════════════════════
           🔹 AGREGAR MATERIALES
           ════════════════════════ */}
-      <div className="bloque-titulo materiales">Agregar materiales a la estructura</div>
+      <div className="bloque-titulo materiales">
+        Agregar materiales a la estructura
+      </div>
       <div className="fila-form">
         <MaterialForm onAgregar={agregarMaterial} />
       </div>
@@ -105,7 +123,10 @@ const EstructuraForm = ({ estructuraEnEdicion, setEstructuraEnEdicion }) => {
           🔹 ACCIONES
           ════════════════════════ */}
       <div className="acciones">
-        <button onClick={guardarEstructura} className="btn-guardar-estructura-unica">
+        <button
+          onClick={guardarEstructura}
+          className="btn-guardar-estructura-unica"
+        >
           {estructuraEnEdicion ? "Actualizar Estructura" : "Guardar Estructura"}
         </button>
 

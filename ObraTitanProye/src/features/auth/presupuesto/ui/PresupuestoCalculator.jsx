@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import MaterialForm from "./MaterialForm";
 import MaterialList from "./MaterialList";
 import { db } from "../../../../services/firebaseconfig";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import { useAuth } from "../../../../context/authcontext";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useProject } from "../../../../context/ProjectContext";
@@ -12,36 +13,63 @@ import "../ui/PresupuestoCalculator.css";
 const PresupuestoCalculator = () => {
   const { project } = useProject();
   const projectId = project?.id;
-
+  const { userData } = useAuth();
+  const tenantId = userData?.tenantId;
   const [materiales, setMateriales] = useState([]);
   const [predefinidos, setPredefinidos] = useState([]);
   const [estructuras, setEstructuras] = useState([]);
 
   useEffect(() => {
     const cargarDatos = async () => {
+     // Catálogo global (solo lectura)
       const materialesSnapshot = await getDocs(collection(db, "materialesPredefinidos"));
-      const estructurasSnapshot = await getDocs(collection(db, "estructuras"));
-      setPredefinidos(materialesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-      setEstructuras(estructurasSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      // Estructuras del proyecto/tenant actual
+      if (!projectId || !tenantId) { setEstructuras([]); }
+     else {
+        const qE = query(
+          collection(db, "estructuras"),
+          where("projectId", "==", projectId),
+         where("tenantId", "==", tenantId)
+       );
+       const estructurasSnapshot = await getDocs(qE);
+       setEstructuras(estructurasSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+      }
+      setPredefinidos(
+        materialesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      );
+      
     };
     cargarDatos();
-  }, []);
+   }, [projectId, tenantId]);
 
-  const agregarMaterial = (material) => setMateriales((prev) => [...prev, material]);
-  const eliminarMaterial = (index) => setMateriales((prev) => prev.filter((_, i) => i !== index));
+
+  const agregarMaterial = (material) =>
+    setMateriales((prev) => [...prev, material]);
+  const eliminarMaterial = (index) =>
+    setMateriales((prev) => prev.filter((_, i) => i !== index));
 
   const calcularTotal = () =>
-    materiales.reduce((acc, mat) => acc + (Number(mat.precio) || 0) * (Number(mat.cantidad) || 0), 0);
+    materiales.reduce(
+      (acc, mat) =>
+        acc + (Number(mat.precio) || 0) * (Number(mat.cantidad) || 0),
+      0
+    );
 
   const guardarPresupuestoEnFirebase = async () => {
     if (!projectId) {
       alert("⚠️ No se ha seleccionado un proyecto válido.");
       return;
     }
+
+      if (!tenantId) {
+      alert("⚠️ No se encontró tenantId del usuario.");
+      return;
+    }
     try {
       await addDoc(collection(db, `projects/${projectId}/presupuestos`), {
         materiales,
         total: calcularTotal(),
+        tenantId,
         creado: new Date(),
       });
       alert("✅ Presupuesto guardado con éxito");
@@ -75,7 +103,9 @@ const PresupuestoCalculator = () => {
   return (
     <div className="calculadora-container" id="presupuesto-container">
       {!projectId ? (
-        <p style={{ color: "red", textAlign: "center" }}>Error: No se recibió el ID del proyecto.</p>
+        <p style={{ color: "red", textAlign: "center" }}>
+          Error: No se recibió el ID del proyecto.
+        </p>
       ) : (
         <>
           {/* ════════════════════════
@@ -97,7 +127,10 @@ const PresupuestoCalculator = () => {
           {materiales.length > 0 && (
             <>
               <h3 className="seccion-titulo">📋 Materiales Agregados</h3>
-              <MaterialList materiales={materiales} onEliminar={eliminarMaterial} />
+              <MaterialList
+                materiales={materiales}
+                onEliminar={eliminarMaterial}
+              />
             </>
           )}
 
@@ -106,7 +139,9 @@ const PresupuestoCalculator = () => {
               ════════════════════════ */}
           <div className="total-container">
             <h3>Total del Presupuesto</h3>
-            <p style={{ fontSize: "2rem", margin: "0.5rem 0" }}>C${calcularTotal().toFixed(2)}</p>
+            <p style={{ fontSize: "2rem", margin: "0.5rem 0" }}>
+              C${calcularTotal().toFixed(2)}
+            </p>
           </div>
 
           {/* ════════════════════════
@@ -116,7 +151,10 @@ const PresupuestoCalculator = () => {
             <button onClick={generarPDF} className="btn-pdf">
               📄 Exportar PDF
             </button>
-            <button onClick={guardarPresupuestoEnFirebase} className="btn-guardar">
+            <button
+              onClick={guardarPresupuestoEnFirebase}
+              className="btn-guardar"
+            >
               💾 Guardar Presupuesto
             </button>
           </div>

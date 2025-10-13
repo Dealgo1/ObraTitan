@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../../../../services/firebaseconfig";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, getDocs, deleteDoc, doc, query, where } from "firebase/firestore";
+import { useProject } from "../../../../context/ProjectContext";
+import { useAuth } from "../../../../context/authcontext";
 
 /* Popup mínimo (si ya tienes uno, puedes quitar este) */
 const ConfirmPopup = ({ mensaje, onConfirmar, onCancelar, loading }) => (
@@ -23,12 +25,22 @@ const ConfirmPopup = ({ mensaje, onConfirmar, onCancelar, loading }) => (
 );
 
 const ListaEstructuras = ({ setEstructuraEnEdicion }) => {
+    const { project } = useProject();
+  const projectId = project?.id;
+  const { userData } = useAuth();
+  const tenantId = userData?.tenantId;
   const [estructuras, setEstructuras] = useState([]);
   const [estructuraAEliminar, setEstructuraAEliminar] = useState(null);
   const [eliminando, setEliminando] = useState(false);
 
   const cargarEstructuras = async () => {
-    const snapshot = await getDocs(collection(db, "estructuras"));
+    if (!projectId || !tenantId) return setEstructuras([]);
+   const q = query(
+      collection(db, "estructuras"),
+     where("projectId", "==", projectId),
+      where("tenantId", "==", tenantId)
+    );
+    const snapshot = await getDocs(q);
     setEstructuras(snapshot.docs.map((d) => ({ id: d.id, ...d.data() })));
   };
 
