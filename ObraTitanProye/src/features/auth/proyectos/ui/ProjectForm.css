@@ -255,3 +255,48 @@
   font-size: 0.95rem;
 }
 
+/* Presupuesto + selector */
+.fila-presupuesto .presupuesto-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* El input de monto crece y ocupa todo */
+.presupuesto-row input[type="text"],
+.presupuesto-row input[type="number"] {
+  flex: 1 1 0%;
+  min-width: 0;           /* permite que el flex-item se ajuste bien */
+  width: auto;            /* evita que quede chico por defecto */
+  padding: 0.6rem 0.8rem;
+  border: 2px solid #D35400;
+  border-radius: 8px;
+  font-size: 1rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+/* El selector de moneda tiene ancho fijo para no apretar al input */
+.select-moneda {
+  flex: 0 0 220px;        /* ancho fijo, no crece */
+  max-width: 40vw;        /* seguridad en pantallas pequeñas */
+  padding: 0.8rem 0.6rem;
+  border-radius: 8px;
+  border: 2px solid #D35400;
+  background: #fff;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+/* Responsive: en móvil que se apile */
+@media (max-width: 600px) {
+  .fila-presupuesto .presupuesto-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .select-moneda {
+    flex: 0 0 auto;
+    width: 100%;
+    max-width: 100%;
+  }
+}

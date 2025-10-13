@@ -1,32 +1,28 @@
 // =========================================
-// ⚙️ Service Worker — ObraTitan
+// ⚙️ Service Worker — ObraTitan (seguro)
 // =========================================
 
-const CACHE_NAME = 'obra-titan-cache-v1';
+const CACHE_NAME = 'obra-titan-cache-v4';
 const URLS_TO_CACHE = [
-  '/',
-  '/index.html',
-  '/manifest.webmanifest',
-  '/logo-192.png',
-  '/logo-512.png',
-  '/vite.svg'
+  '/', '/index.html', '/manifest.webmanifest',
+  '/logo-192.png', '/logo-512.png', '/vite.svg'
 ];
+
+// Rutas/hosts que NUNCA debe interceptar (HMR, herramientas, etc.)
+const NEVER_INTERCEPT_PATHS = [
+  '/@vite', '/@react-refresh', '/__vite_ping', '/__vite'
+];
+
+// Utilidad: ¿es http(s)?
+const isHttp = (url) => url.protocol === 'http:' || url.protocol === 'https:';
 
 // =========================================
 // 🛠️ INSTALACIÓN
 // =========================================
 self.addEventListener('install', (event) => {
-  console.log('🛠️ Instalando Service Worker...');
-
-  // Abre la caché y agrega los archivos definidos
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(URLS_TO_CACHE);
-      })
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(URLS_TO_CACHE))
   );
-
-  // Obliga al navegador a activar el SW sin esperar
   self.skipWaiting();
 });
 
@@ -34,56 +30,68 @@ self.addEventListener('install', (event) => {
 // 🚀 ACTIVACIÓN
 // =========================================
 self.addEventListener('activate', (event) => {
-  console.log('🚀 Activando Service Worker...');
-
-  // Elimina todas las cachés antiguas que no coincidan con la actual
   event.waitUntil(
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames.map((name) => {
-          if (name !== CACHE_NAME) {
-            console.log('🧹 Borrando caché antigua:', name);
-            return caches.delete(name);
-          }
-        })
-      )
+    caches.keys().then((names) =>
+      Promise.all(names.map((n) => (n !== CACHE_NAME ? caches.delete(n) : undefined)))
     )
   );
-
-  // Toma control inmediato sobre todas las pestañas abiertas
   self.clients.claim();
 });
 
 // =========================================
-// 🌐 INTERCEPTAR PETICIONES (FETCH EVENT)
+// 🌐 INTERCEPTAR PETICIONES
 // =========================================
 self.addEventListener('fetch', (event) => {
-  // Solo manejar peticiones GET
-  if (event.request.method !== 'GET') return;
+  const req = event.request;
 
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // Si el recurso está en caché, devuélvelo directamente
-      if (cachedResponse) {
-        return cachedResponse;
+  // 1) Solo GET es cacheable
+  if (req.method !== 'GET') return;
+
+  // 2) Evitar bug: only-if-cached + cross-origin
+  if (req.cache === 'only-if-cached' && req.mode !== 'same-origin') return;
+
+  const url = new URL(req.url);
+
+  // 3) Ignorar esquemas no http(s): chrome-extension, ws, wss, data, blob…
+  if (!isHttp(url)) return;
+
+  // 4) No interceptar rutas internas de Vite/HMR u otras herramientas
+  if (NEVER_INTERCEPT_PATHS.some((p) => url.pathname.startsWith(p))) return;
+
+  // 5) En desarrollo (localhost:5173) no interceptes nada del dev server
+  if (url.hostname === 'localhost' && url.port === '5173') return;
+
+  // 6) Política: solo cachear mismo origen (evita hotjar/terceros y respuestas opacas)
+  const sameOrigin = url.origin === self.location.origin;
+  if (!sameOrigin) return; // Deja pasar a la red sin interceptar
+
+  // Estrategia: cache-first con actualización en segundo plano
+  event.respondWith((async () => {
+    const cache = await caches.open(CACHE_NAME);
+    const cached = await cache.match(req);
+    if (cached) {
+      // Actualiza en background (no bloquea la respuesta)
+      fetch(req).then((resp) => {
+        if (resp && resp.ok && resp.type === 'basic') {
+          cache.put(req, resp.clone()).catch(() => {});
+        }
+      }).catch(() => {});
+      return cached;
+    }
+
+    try {
+      const resp = await fetch(req);
+      if (resp && resp.ok && resp.type === 'basic') {
+        cache.put(req, resp.clone()).catch(() => {});
       }
-
-      // Si no está en caché, intenta obtenerlo de la red
-      return fetch(event.request)
-        .then((networkResponse) => {
-          // Guarda una copia en caché para futuras visitas
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, networkResponse.clone());
-            return networkResponse;
-          });
-        })
-        .catch(() => {
-          // Si no hay conexión y la solicitud es de navegación (HTML),
-          // muestra la página offline (index.html)
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
-          }
-        });
-    })
-  );
+      return resp;
+    } catch (err) {
+      // Fallback para navegación cuando no hay red
+      if (req.mode === 'navigate' || (req.destination === 'document')) {
+        const offline = await cache.match('/index.html');
+        if (offline) return offline;
+      }
+      throw err;
+    }
+  })());
 });
