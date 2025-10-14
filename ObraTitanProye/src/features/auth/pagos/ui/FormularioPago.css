@@ -179,3 +179,33 @@
     width: 100%;
   }
 }
+
+
+
+/* Banner de alerta superior */
+.form-alert {
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  box-shadow: 0 2px 10px rgba(0,0,0,.08);
+}
+.form-alert.is-error {
+  background: #ffe8e8;
+  color: #842029;
+  border: 1px solid #f5c2c7;
+}
+.form-alert.is-ok {
+  background: #e8ffef;
+  color: #0f5132;
+  border: 1px solid #badbcc;
+}
+
+/* Mensajes de error de campo */
+.error-message {
+  margin-top: 6px;
+  margin-bottom: 10px;
+  font-size: 0.86rem;
+  color: #b42318;
+}
