@@ -93,7 +93,7 @@ const Login = () => {
 
         // 3) Redirección por rol
         if (rol === "lector") navigate("/inicio");
-        else if (rol === "contador") navigate("/gastos-overview");
+        else if (rol === "contador") navigate("/inicio");
         else if (rol === "ingeniero") navigate("/inicio");
         else if (rol === "administrador") navigate("/inicio");
         else navigate("/inicio"); // Fallback

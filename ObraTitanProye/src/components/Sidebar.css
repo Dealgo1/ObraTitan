@@ -147,8 +147,8 @@
 .icon-usuarios,
 .icon-logout,
 .icon-GestProy{
-  width: 42px;
-  height: 42px;
+  width: 62px;
+  height: 62px;
   transition: transform 0.2s ease;
   object-fit: contain;
 }
@@ -279,3 +279,10 @@
 
 
 
+/* 🔶 Estilo del popup de cierre de sesión */
+.swal2-popup.logout-popup {
+  border: 3px solid #D35400 !important; /* Borde naranja */
+  border-radius: 14px !important;
+  box-shadow: 0 0 25px rgba(211, 84, 0, 0.5) !important; /* brillo suave */
+  background-color: #fffaf5 !important; /* fondo cálido */
+}

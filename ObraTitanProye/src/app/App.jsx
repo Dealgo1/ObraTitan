@@ -119,20 +119,20 @@ const AppContent = () => {
            * Cada ruta protegida envuelve un componente de Vista dentro de <ProtectedRoute />
            * y declara los roles que pueden acceder a dicha ruta.
            *
-           * @roles posibles: "administrador" | "contador" | "ingeniero" | "lector"
+           * @roles posibles: "administrador" | "contador" | "ingeniero"
            *
            * ProtectedRoute espera props:
            * - element: JSX.Element a renderizar si el usuario está autenticado y autorizado.
            * - roles: string[] con roles permitidos (autorización por RBAC).
            */}
 
-          {/* Inicio → visible para todos los roles autenticados */}
+          {/* Inicio → visible para todos los roles autenticados (sin lector) */}
           <Route
             path="/inicio"
             element={
               <ProtectedRoute
                 element={<Inicio />}
-                roles={["administrador", "contador", "ingeniero", "lector"]}
+                roles={["administrador", "contador", "ingeniero"]}
               />
             }
           />
@@ -143,7 +143,7 @@ const AppContent = () => {
             element={
               <ProtectedRoute
                 element={<ProyectosOverview />}
-                roles={["administrador", "contador", "ingeniero", "lector"]}
+                roles={["administrador", "contador", "ingeniero"]}
               />
             }
           />
@@ -154,7 +154,7 @@ const AppContent = () => {
             element={
               <ProtectedRoute
                 element={<ProjectDashboard />}
-                roles={["administrador", "contador", "ingeniero", "lector"]}
+                roles={["administrador", "contador", "ingeniero"]}
               />
             }
           />
@@ -165,7 +165,7 @@ const AppContent = () => {
             element={
               <ProtectedRoute
                 element={<ActividadesList />}
-                roles={["administrador", "ingeniero", "lector"]}
+                roles={["administrador", "ingeniero"]}
               />
             }
           />
@@ -176,7 +176,7 @@ const AppContent = () => {
             element={
               <ProtectedRoute
                 element={<BudgetVisualization />}
-                roles={["administrador"]}
+                roles={["administrador","contador"]}
               />
             }
           />
@@ -187,7 +187,7 @@ const AppContent = () => {
             element={
               <ProtectedRoute
                 element={<GastosManagement />}
-                roles={["administrador"]}
+                roles={["administrador","contador"  ]}
               />
             }
           />
@@ -198,7 +198,7 @@ const AppContent = () => {
             element={
               <ProtectedRoute
                 element={<GastosOverview />}
-                roles={["administrador"]}
+                roles={["administrador","contador"]}
               />
             }
           />
@@ -209,7 +209,7 @@ const AppContent = () => {
             element={
               <ProtectedRoute
                 element={<GastoDetail />}
-                roles={["administrador"]}
+                roles={["administrador","contador"]}
               />
             }
           />
@@ -356,8 +356,6 @@ const AppContent = () => {
               />
             }
           />
-
-          
         </Routes>
       </main>
     </>

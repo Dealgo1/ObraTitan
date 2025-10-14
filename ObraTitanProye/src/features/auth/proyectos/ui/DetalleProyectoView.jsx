@@ -12,12 +12,17 @@ import "../../proyectos/ui/DetalleProyecto.css";
 import { useNavigate } from "react-router-dom";
 import PantallaCarga from "../../../../components/PantallaCarga"; // ✅ Componente de carga
 import { getProjectById } from "../../../../services/projectsService";
-
+import { useAuth } from "../../../../context/authcontext";
 const DetalleProyectoView = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true); // 🔄 Estado de pantalla de carga
 
   const { project, setProject } = useProject(); // Contexto del proyecto seleccionado
+  const { userData } = useAuth();
+  const role = userData?.rol;
+  const canEditProject = role === "administrador" || role === "ingeniero";
+  const canDeleteProject = role === "administrador";
+
   const [modoEdicion, setModoEdicion] = useState(false); // Alterna entre ver/editar
   const [preview, setPreview] = useState(project?.imagen || null); // Vista previa de la imagen
   const [nuevaImagen, setNuevaImagen] = useState(null); // Archivo de nueva imagen
@@ -27,44 +32,42 @@ const DetalleProyectoView = () => {
   // 👉 Estado de errores por campo
   const [errores, setErrores] = useState({});
 
-
   useEffect(() => {
-  if (!project?.id) return;
-  let mounted = true;
-  const fetchAndNormalize = async () => {
-    try {
-      const fresh = await getProjectById(project.id);
-      if (!mounted || !fresh) return;
+    if (!project?.id) return;
+    let mounted = true;
+    const fetchAndNormalize = async () => {
+      try {
+        const fresh = await getProjectById(project.id);
+        if (!mounted || !fresh) return;
 
-      // Actualiza contexto (opcional, útil para mantener todo consistente)
-      setProject((prev) => ({ ...(prev || {}), ...fresh }));
+        // Actualiza contexto (opcional, útil para mantener todo consistente)
+        setProject((prev) => ({ ...(prev || {}), ...fresh }));
 
-      // Normaliza fechas a formato para inputs (YYYY-MM-DD)
-      setDatosEditables((prev) => ({
-        ...prev,
-        nombre: fresh.nombre ?? prev?.nombre ?? "",
-        cliente: fresh.cliente ?? prev?.cliente ?? "",
-        descripcion: fresh.descripcion ?? prev?.descripcion ?? "",
-        presupuesto: fresh.presupuesto ?? prev?.presupuesto ?? "",
-        moneda: fresh.moneda ?? prev?.moneda ?? "CORD",
-        estado: fresh.estado ?? prev?.estado ?? "En progreso",
-        fechaInicio: formatFechaParaInput(fresh.fechaInicio),
-        fechaFin: formatFechaParaInput(fresh.fechaFin),
-        imagen: fresh.imagen ?? prev?.imagen ?? null,
-      }));
+        // Normaliza fechas a formato para inputs (YYYY-MM-DD)
+        setDatosEditables((prev) => ({
+          ...prev,
+          nombre: fresh.nombre ?? prev?.nombre ?? "",
+          cliente: fresh.cliente ?? prev?.cliente ?? "",
+          descripcion: fresh.descripcion ?? prev?.descripcion ?? "",
+          presupuesto: fresh.presupuesto ?? prev?.presupuesto ?? "",
+          moneda: fresh.moneda ?? prev?.moneda ?? "CORD",
+          estado: fresh.estado ?? prev?.estado ?? "En progreso",
+          fechaInicio: formatFechaParaInput(fresh.fechaInicio),
+          fechaFin: formatFechaParaInput(fresh.fechaFin),
+          imagen: fresh.imagen ?? prev?.imagen ?? null,
+        }));
 
-      if (fresh.imagen) setPreview(fresh.imagen);
-    } catch (err) {
-      console.error("Error obteniendo proyecto desde BD:", err);
-    }
-  };
+        if (fresh.imagen) setPreview(fresh.imagen);
+      } catch (err) {
+        console.error("Error obteniendo proyecto desde BD:", err);
+      }
+    };
 
-  fetchAndNormalize();
-  return () => {
-    mounted = false;
-  };
-}, [project?.id, setProject]); // se ejecuta cuando cambia el id del proyecto
-
+    fetchAndNormalize();
+    return () => {
+      mounted = false;
+    };
+  }, [project?.id, setProject]); // se ejecuta cuando cambia el id del proyecto
 
   // Estado local editable del proyecto (inicializado con los datos del contexto)
   const [datosEditables, setDatosEditables] = useState(() => ({
@@ -232,6 +235,8 @@ const DetalleProyectoView = () => {
 
   /** ✏ Guardar/editar proyecto */
   const handleEditar = async () => {
+
+    if (!canEditProject) return;
     if (modoEdicion) {
       // ➜ Estamos intentando GUARDAR
       const formErrors = validaFormulario(datosEditables);
@@ -268,6 +273,7 @@ const DetalleProyectoView = () => {
           fechaFin: fechaFinValida,
           imagen: base64Imagen,
         };
+        
 
         if (isOffline) {
           // Guardar cambios en localStorage si no hay conexión
@@ -310,6 +316,8 @@ const DetalleProyectoView = () => {
    * - Si no hay conexión, se guarda la eliminación en localStorage
    */
   const handleEliminar = async () => {
+
+    if (!canDeleteProject) return;
     if (window.confirm("¿Deseás eliminar este proyecto?")) {
       if (isOffline) {
         localStorage.setItem("offlineProjectDeletion", project.id);
@@ -479,6 +487,7 @@ const DetalleProyectoView = () => {
         {/* 🛠 Barra de acciones: editar/guardar y eliminar */}
         <div className="dpv-header">
           {/* Guardar / Editar */}
+          {canEditProject && (
           <button
             type="button"
             className="dpv-btn-icon"
@@ -488,9 +497,10 @@ const DetalleProyectoView = () => {
           >
             <img src={modoEdicion ? checkIcon : editarIcono} alt="" />
           </button>
+          )}
 
           {/* Cancelar (solo visible en edición) */}
-          {modoEdicion && (
+      {modoEdicion && canEditProject && (
             <button
               type="button"
               className="dpv-btn-icon dpv-btn-cancelar"
@@ -503,6 +513,7 @@ const DetalleProyectoView = () => {
           )}
 
           {/* Eliminar */}
+            {canDeleteProject && (
           <button
             type="button"
             className="dpv-btn-icon dpv-btn-eliminar"
@@ -512,6 +523,7 @@ const DetalleProyectoView = () => {
           >
             <img src={eliminarIcono} alt="" />
           </button>
+            )}
         </div>
 
         {/* Imagen del proyecto (con opción de ampliarla en modal) */}
@@ -570,39 +582,42 @@ const DetalleProyectoView = () => {
             )}
 
             <div className="dpv-presupuesto-moneda">
-  <input
-    name="presupuesto"
-    type="number"
-    value={datosEditables.presupuesto}
-    onChange={handleChange}
-    onBlur={handleBlur}
-    className={`dpv-input ${errores.presupuesto ? "dpv-input-error" : ""}`}
-    placeholder="Presupuesto"
-    step="0.01"
-    min="0"
-    onKeyDown={(e) => {
-      if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
-    }}
-  />
+              <input
+                name="presupuesto"
+                type="number"
+                value={datosEditables.presupuesto}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                className={`dpv-input ${
+                  errores.presupuesto ? "dpv-input-error" : ""
+                }`}
+                placeholder="Presupuesto"
+                step="0.01"
+                min="0"
+                onKeyDown={(e) => {
+                  if (["e", "E", "+", "-"].includes(e.key)) e.preventDefault();
+                }}
+              />
 
-  <div className="dpv-moneda">
-    <select
-      name="moneda"
-      value={datosEditables.moneda}
-      onChange={handleChange}
-      onBlur={handleBlur}
-    >
-      <option value="CORD">Córdobas (C$)</option>
-      <option value="USD">Dólar (USD)</option>
-      <option value="EUR">Euro (EUR)</option>
-    </select>
-  </div>
-</div>
+              <div className="dpv-moneda">
+                <select
+                  name="moneda"
+                  value={datosEditables.moneda}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                >
+                  <option value="CORD">Córdobas (C$)</option>
+                  <option value="USD">Dólar (USD)</option>
+                  <option value="EUR">Euro (EUR)</option>
+                </select>
+              </div>
+            </div>
 
-{/* Mensajes de error separados */}
-{errores.presupuesto && <p className="dpv-error">{errores.presupuesto}</p>}
-{errores.moneda && <p className="dpv-error">{errores.moneda}</p>}
-
+            {/* Mensajes de error separados */}
+            {errores.presupuesto && (
+              <p className="dpv-error">{errores.presupuesto}</p>
+            )}
+            {errores.moneda && <p className="dpv-error">{errores.moneda}</p>}
 
             <div className="dpv-fechas-estado">
               <div className="dpv-fecha-item">
