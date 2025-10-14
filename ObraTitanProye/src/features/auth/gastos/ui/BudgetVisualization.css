@@ -81,7 +81,7 @@
 /* Botón de acción principal (naranja de marca) */
 .btn-naranja {
   background-color: #D35400 !important;
-  color: black !important;          /* Alto contraste con el naranja */
+  color: rgb(255, 255, 255) !important;          /* Alto contraste con el naranja */
   font-family: 'Arapey', serif;
   border: none !important;
   padding: 0.6rem 1.5rem;

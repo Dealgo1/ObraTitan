@@ -1,56 +1,46 @@
+// src/views/.../BudgetVisualization.jsx
 /**
  * Vista: BudgetVisualization
  * ---------------------------------------------------------------------------
  * Muestra un resumen financiero del proyecto seleccionado:
- * - Presupuesto inicial del proyecto.
- * - Ingresos adicionales (sumados a partir de transacciones tipo "ingreso").
- * - Monto gastado (sumado a partir de transacciones tipo "gasto").
- * - Saldo disponible = (presupuesto inicial + ingresos) - gastos.
- *
- * Fuente de datos:
- * - `getGastos(projectId)` retorna transacciones del proyecto (gasto/ingreso).
- *
- * Consideraciones:
- * - Convierte todas las transacciones a moneda local (C$) con tasas fijas.
- * - Maneja modo offline: si falla petición y `navigator.onLine === false`,
- *   muestra un aviso y (si hay caché en tu servicio) renderiza con datos previos.
- *
- * Navegación:
- * - Botón "Gastos": ir a listado resumido (/gastos-overview).
- * - Botón "Gastos +": ir a alta de registros (/gastos).
+ * - Presupuesto inicial, ingresos, gastos y saldo disponible (todo en C$).
+ * - Manejo de modo offline (aviso).
+ * - Loader "wave" mientras se cargan los datos.
  */
 
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getGastos } from '../../../../services/gastosService';
 import { useAuth } from '../../../../context/authcontext';
-import Sidebar from "../../../../components/Sidebar";
+import Sidebar from '../../../../components/Sidebar';
+import PantallaCarga from '../../../../components/PantallaCarga'; // ⬅️ Loader wave
 import '../ui/BudgetVisualization.css';
 
 const BudgetVisualization = () => {
   const location = useLocation();
   const navigate = useNavigate();
-const { userData } = useAuth(); // ← de aquí sale userData.tenantId
-  // Proyecto recibido por state desde otra vista
-   const project =
+  const { userData } = useAuth();
+
+  // Proyecto recibido por state o desde localStorage
+  const project =
     location.state?.project ||
     (() => {
       try {
         return JSON.parse(localStorage.getItem('project')) || null;
       } catch {
-       return null;
+        return null;
       }
     })();
 
-  // Acumuladores en Córdobas (moneda local)
+  // Acumuladores en Córdobas (NIO)
   const [totalGastado, setTotalGastado] = useState(0);
   const [totalIngresos, setTotalIngresos] = useState(0);
 
-  // Bandera para UI cuando no hay conexión
+  // Estados UI
   const [offline, setOffline] = useState(false);
+  const [loading, setLoading] = useState(true); // ⬅️ Controla el loader wave
 
   // Tasas de cambio (fijas) → convierten a C$ (NIO)
-  // ⚠ Si quieres tasas en tiempo real, reemplaza por un servicio externo.
   const tasasCambio = {
     USD: 37,
     EUR: 40.77,
@@ -58,10 +48,7 @@ const { userData } = useAuth(); // ← de aquí sale userData.tenantId
   };
 
   /**
-   * Convierte un monto (en su moneda) a Córdobas (NIO) usando `tasasCambio`.
-   * @param {number} monto
-   * @param {'USD'|'EUR'|'NIO'} moneda
-   * @returns {number} monto en C$
+   * Convierte un monto (en su moneda) a Córdobas (NIO).
    */
   const convertirAMonedaLocal = (monto, moneda) => {
     const tasa = tasasCambio[moneda] || 1;
@@ -70,20 +57,22 @@ const { userData } = useAuth(); // ← de aquí sale userData.tenantId
 
   /**
    * Carga transacciones del proyecto, separa gasto/ingreso y acumula en C$.
+   * Muestra loader durante la carga y gestiona modo offline.
    */
   useEffect(() => {
     const fetchTransacciones = async () => {
-      // Reglas de Firestore requieren proyecto + tenant
+      // Si aún no están listos proyecto o tenant, mantenemos loader visible
       if (!project?.id || !userData?.tenantId) return;
 
+      setLoading(true);
+      setOffline(false);
+
       try {
-        // ← ahora enviamos (proyectoId, tenantId)
-const transacciones = await getGastos(project.id, userData.tenantId);
-        // Divide por tipo de transacción
+        const transacciones = await getGastos(project.id, userData.tenantId);
+
         const gastos = transacciones.filter((t) => t.tipo === 'gasto');
         const ingresos = transacciones.filter((t) => t.tipo === 'ingreso');
 
-        // Suma en C$ (conversión según moneda de cada transacción)
         const sumaGastos = gastos.reduce((acc, trans) => {
           const montoCordobas = convertirAMonedaLocal(
             trans.monto || 0,
@@ -104,50 +93,51 @@ const transacciones = await getGastos(project.id, userData.tenantId);
         setTotalIngresos(sumaIngresos);
       } catch (error) {
         console.error('Error obteniendo datos de gastos:', error);
-        if (!navigator.onLine) {
-          setOffline(true); // muestra aviso de modo sin conexión
-        }
+        if (!navigator.onLine) setOffline(true);
+      } finally {
+        setLoading(false); // ⬅️ Oculta el loader
       }
     };
 
     fetchTransacciones();
   }, [project?.id, userData?.tenantId]);
 
-  // Presupuesto inicial del proyecto (ya se asume en C$)
+  // Presupuesto inicial del proyecto (ya en C$)
   const montoInicial = project?.presupuesto ? Number(project.presupuesto) : 0;
 
-  // Presupuesto total y saldo en C$
+  // Totales en C$
   const presupuestoTotal = montoInicial + totalIngresos;
   const saldoDisponible = presupuestoTotal - totalGastado;
 
+  // ⬅️ Loader "wave" mientras carga o mientras aún no hay project/tenant listos
+  if (loading || !project?.id || !userData?.tenantId) {
+    return <PantallaCarga mensaje="Cargando presupuesto del proyecto..." />;
+  }
+
   return (
     <div className="dashboard-container">
-      {/* Sidebar fijo de navegación */}
       <Sidebar />
 
       <div className="contenido-principal">
         <h1 className="titulo-modulo-izquierda">Presupuesto del Proyecto</h1>
 
-        {/* Aviso de modo offline (si `getGastos` falló por desconexión) */}
         {offline && (
-          <div style={{ color: 'orange', marginBottom: '10px' }}>
+          <div className="alerta-offline">
             ⚠ Estás sin conexión. Mostrando datos desde la caché local (si están disponibles).
           </div>
         )}
 
-        {/* Card principal con resumen financiero */}
         <div className="presupuesto-card">
           <div className="nombre-y-botones">
             <span className="nombre-proyecto">
               {project?.nombre || 'Proyecto sin nombre'}
             </span>
 
-            {/* Acciones rápidas: ver listado y crear registro */}
             <div className="botones-superiores">
               <button
                 className="btn-naranja"
                 onClick={() =>
-                 navigate('/gastos-overview', { state: { proyectoId: project.id } })
+                  navigate('/gastos-overview', { state: { proyectoId: project.id } })
                 }
               >
                 Gastos
@@ -155,14 +145,15 @@ const transacciones = await getGastos(project.id, userData.tenantId);
 
               <button
                 className="btn-naranja"
-                onClick={() => navigate('/gastos', { state: { proyectoId: project.id } })}
+                onClick={() =>
+                  navigate('/gastos', { state: { proyectoId: project.id } })
+                }
               >
                 Gastos +
               </button>
             </div>
           </div>
 
-          {/* Métricas principales en C$ (NIO) */}
           <div className="presupuesto-datos">
             <div>
               <p className="presupuesto-label">Monto Inicial :</p>

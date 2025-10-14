@@ -1,20 +1,8 @@
+// src/views/.../PagosListView.jsx
 /**
  * PagosListView.jsx
  * ------------------------------------------------------------
- * Vista de "Caja" para listar, buscar, editar y eliminar pagos
- * asociados a un proyecto. Sincroniza cambios también con la
- * colección `gastos` cuando existe `gastoId` en el pago.
- *
- * Flujo principal:
- * - Al montar (y cuando cambia `project.id`): consulta pagos del proyecto.
- * - Edición inline: inicia edición → guarda cambios en `pagos` y en `gastos`.
- * - Eliminación: borra primero el gasto vinculado (si existe), luego el pago.
- * - Búsqueda: filtra por proveedor, método, moneda o fecha formateada.
- *
- * Dependencias:
- * - Firestore (getDocs, updateDoc, deleteDoc, etc.).
- * - date-fns (format) para formateo de fechas.
- * - React Router (useLocation para obtener `project` del state).
+ * Vista de "Caja" (pagos) con loader "wave" mientras carga.
  */
 
 import React, { useEffect, useState } from 'react';
@@ -32,10 +20,11 @@ import {
 } from 'firebase/firestore';
 import { db } from '../../../../services/firebaseconfig';
 import Sidebar from '../../../../components/Sidebar';
+import PantallaCarga from '../../../../components/PantallaCarga'; // ⬅️ Loader wave
 import '../ui/ListaPagos.css';
 import { format } from 'date-fns';
 
-// Íconos locales
+// Íconos
 import editIcon from '../../../../assets/iconos/edit.png';
 import checkIcon from '../../../../assets/iconos/check.png';
 import deleteIcon from '../../../../assets/iconos/delete.png';
@@ -45,39 +34,50 @@ const PagosListView = () => {
   // Proyecto provisto vía navegación (state)
   const location = useLocation();
   const { project } = location.state || {};
-const { userData } = useAuth(); // <- aquí viene tenantId
-  // Estado local
-  const [pagos, setPagos] = useState([]);               // listado de pagos
-  const [editandoId, setEditandoId] = useState(null);   // id del pago en modo edición
-  const [formEdit, setFormEdit] = useState({});         // estado del formulario inline
-  const [showToast, setShowToast] = useState(false);    // toast de éxito
-  const [filtroBusqueda, setFiltroBusqueda] = useState("");// texto de búsqueda global
+
+  const { userData } = useAuth(); // tenantId
   const navigate = useNavigate();
+
+  // Estado local
+  const [pagos, setPagos] = useState([]);
+  const [editandoId, setEditandoId] = useState(null);
+  const [formEdit, setFormEdit] = useState({});
+  const [showToast, setShowToast] = useState(false);
+  const [filtroBusqueda, setFiltroBusqueda] = useState('');
+  const [loading, setLoading] = useState(true);     // ⬅️ controla loader
+  const [offline, setOffline] = useState(false);    // ⬅️ modo sin conexión
 
   /**
    * Carga inicial de pagos del proyecto actual.
-   * - Consulta `pagos` donde `projectId` == project.id
    */
   useEffect(() => {
     const fetchPagos = async () => {
-      if (project?.id && userData?.tenantId) {
-       const q = query(
-         collection(db, 'pagos'),
-        where('tenantId', '==', userData.tenantId),
-         where('projectId', '==', project.id)
-       );
+      // Mientras no haya project/tenant, mantenemos el loader visible
+      if (!project?.id || !userData?.tenantId) return;
+
+      setLoading(true);
+      setOffline(false);
+      try {
+        const q = query(
+          collection(db, 'pagos'),
+          where('tenantId', '==', userData.tenantId),
+          where('projectId', '==', project.id)
+        );
         const snapshot = await getDocs(q);
-        const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         setPagos(data);
+      } catch (err) {
+        console.error('Error al cargar pagos:', err);
+        if (!navigator.onLine) setOffline(true);
+      } finally {
+        setLoading(false); // ⬅️ oculta loader
       }
     };
-    fetchPagos();
-  }, [project, userData?.tenantId]);
 
-  /**
-   * Inicia edición inline de un pago.
-   * - Convierte la fecha guardada (Timestamp|Date|string) a 'yyyy-MM-dd' para el input.
-   */
+    fetchPagos();
+  }, [project?.id, userData?.tenantId]);
+
+  /** Inicia edición inline de un pago. */
   const iniciarEdicion = (pago) => {
     setEditandoId(pago.id);
     const fechaRaw = pago.fecha?.toDate ? pago.fecha.toDate() : new Date(pago.fecha);
@@ -90,30 +90,21 @@ const { userData } = useAuth(); // <- aquí viene tenantId
     });
   };
 
-  /** Cancela el modo edición y limpia el formulario inline */
+  /** Cancela modo edición */
   const cancelarEdicion = () => {
     setEditandoId(null);
     setFormEdit({});
   };
 
   /**
-   * Guarda cambios del pago editado:
-   * 1) Actualiza doc en `pagos`.
-   * 2) Si existe `gastoId`, sincroniza doc relacionado en `gastos`:
-   *    - proveedorEmpleado → proveedorEmpleado
-   *    - metodoPago → categoria (mapeo)
-   *    - monto, moneda, fecha (string 'YYYY-MM-DD' para el gasto)
-   * 3) Refresca estado local y muestra toast.
+   * Guarda cambios del pago y sincroniza con `gastos` si hay gastoId.
    */
   const guardarCambios = async (id) => {
     try {
       const ref = doc(db, 'pagos', id);
+      const [y, m, d] = formEdit.fecha.split('-');
+      const fechaLocal = new Date(y, m - 1, d);
 
-      // Normaliza fecha 'YYYY-MM-DD' → Date local
-      const [year, month, day] = formEdit.fecha.split("-");
-      const fechaLocal = new Date(year, month - 1, day);
-
-      // Actualiza el pago
       await updateDoc(ref, {
         proveedorEmpleado: formEdit.proveedorEmpleado,
         metodoPago: formEdit.metodoPago,
@@ -122,94 +113,87 @@ const { userData } = useAuth(); // <- aquí viene tenantId
         fecha: fechaLocal
       });
 
-      // Recupera el pago actualizado para obtener el gastoId
       const pagoSnap = await getDoc(ref);
       const pagoActual = pagoSnap.data();
       const gastoId = pagoActual?.gastoId;
 
-      // Si hay gasto vinculado, sincroniza campos principales
       if (gastoId) {
-        await updateDoc(doc(db, "gastos", gastoId), {
+        await updateDoc(doc(db, 'gastos', gastoId), {
           proveedorEmpleado: formEdit.proveedorEmpleado,
           categoria: formEdit.metodoPago, // mapeo simple método→categoría
           monto: parseFloat(formEdit.monto),
-          // Nota: aquí se mapea "C$" → "NIO"; otras monedas se pasan tal cual
-          moneda: formEdit.moneda === "C$" ? "NIO" : formEdit.moneda,
-          fecha: fechaLocal.toISOString().split("T")[0] // 'YYYY-MM-DD'
+          moneda: formEdit.moneda === 'C$' ? 'NIO' : formEdit.moneda,
+          fecha: fechaLocal.toISOString().split('T')[0]
         });
       } else {
-        console.warn("⚠️ El pago no tiene gastoId, no se pudo actualizar el gasto.");
+        console.warn('⚠️ El pago no tiene gastoId, no se actualizó gasto.');
       }
 
-      // Refresca estado local del listado
-      const actualizados = pagos.map(p =>
-        p.id === id ? { ...p, ...formEdit, fecha: fechaLocal } : p
+      setPagos(prev =>
+        prev.map(p => (p.id === id ? { ...p, ...formEdit, fecha: fechaLocal } : p))
       );
-      setPagos(actualizados);
       cancelarEdicion();
 
-      // Toast de éxito
       setShowToast(true);
       setTimeout(() => setShowToast(false), 3000);
     } catch (error) {
-      console.error("Error actualizando pago y gasto:", error);
+      console.error('Error actualizando pago/gasto:', error);
     }
   };
 
   /**
-   * Elimina un pago:
-   * 1) Lee el pago para conocer `gastoId`.
-   * 2) Si hay `gastoId`, borra el doc en `gastos`.
-   * 3) Borra el doc de `pagos`.
-   * 4) Actualiza el estado local.
+   * Elimina un pago (y su gasto vinculado si existe).
    */
   const eliminarPago = async (id) => {
-    if (confirm("¿Deseas eliminar este pago?")) {
+    if (confirm('¿Deseas eliminar este pago?')) {
       try {
         const refPago = doc(db, 'pagos', id);
         const pagoSnap = await getDoc(refPago);
         const pago = pagoSnap.data();
 
         if (pago?.gastoId) {
-          const refGasto = doc(db, 'gastos', pago.gastoId);
-          await deleteDoc(refGasto);
+          await deleteDoc(doc(db, 'gastos', pago.gastoId));
         }
 
         await deleteDoc(refPago);
-        setPagos(pagos.filter(p => p.id !== id));
+        setPagos(prev => prev.filter(p => p.id !== id));
       } catch (error) {
-        console.error("Error eliminando pago y gasto vinculado:", error);
+        console.error('Error eliminando pago/gasto:', error);
       }
     }
   };
 
-  /** Manejador de cambios para inputs/selects del formulario inline de edición */
+  /** Cambios en inputs/selects del formulario inline */
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormEdit(prev => ({ ...prev, [name]: value }));
   };
 
-  /**
-   * Filtro de búsqueda:
-   * - Busca coincidencias en proveedor, método, moneda o fecha (dd/MM/yyyy).
-   */
+  /** Filtro de búsqueda en proveedor, método, moneda o fecha (dd/MM/yyyy) */
   const pagosFiltrados = pagos.filter(p => {
-    const proveedor = p.proveedorEmpleado?.toLowerCase() || "";
-    const metodo = p.metodoPago?.toLowerCase() || "";
-    const moneda = p.moneda?.toLowerCase() || "";
-    const fecha = p.fecha?.toDate ? format(p.fecha.toDate(), 'dd/MM/yyyy') : "";
+    const proveedor = p.proveedorEmpleado?.toLowerCase() || '';
+    const metodo = p.metodoPago?.toLowerCase() || '';
+    const moneda = p.moneda?.toLowerCase() || '';
+    const fecha = p.fecha?.toDate ? format(p.fecha.toDate(), 'dd/MM/yyyy') : '';
+    const q = filtroBusqueda.toLowerCase();
 
     return (
-      proveedor.includes(filtroBusqueda.toLowerCase()) ||
-      metodo.includes(filtroBusqueda.toLowerCase()) ||
-      moneda.includes(filtroBusqueda.toLowerCase()) ||
+      proveedor.includes(q) ||
+      metodo.includes(q) ||
+      moneda.includes(q) ||
       fecha.includes(filtroBusqueda)
     );
   });
 
+  // ⬅️ Pantalla de carga mientras:
+  // - aún no hay projectId/tenantId
+  // - o estamos cargando los pagos
+  if (loading || !project?.id || !userData?.tenantId) {
+    return <PantallaCarga mensaje="Cargando pagos de la caja..." />;
+  }
+
   return (
     <div className="dashboard-container">
-      {/* Sidebar de navegación */}
       <Sidebar />
 
       <div className="contenido-principal fondo-oscuro">
@@ -217,7 +201,14 @@ const { userData } = useAuth(); // <- aquí viene tenantId
 
         <div className="tabla-contenedor tabla-ancha">
           {/* Nombre del proyecto activo */}
-          <h2 className="nombre-proyecto">{project?.nombre}</h2>
+          <h2 className="nombre-proyecto">{project?.nombre || 'Proyecto sin nombre'}</h2>
+
+          {/* Aviso offline */}
+          {offline && (
+            <div style={{ color: 'orange', marginBottom: '10px' }}>
+              ⚠ Estás sin conexión. Mostrando datos desde la caché local (si están disponibles).
+            </div>
+          )}
 
           {/* Barra de búsqueda */}
           <div className="barra-superior-proveedores">
@@ -302,8 +293,6 @@ const { userData } = useAuth(); // <- aquí viene tenantId
                                 onChange={handleChange}
                                 className="moneda-select"
                               >
-                                {/* Nota: aquí se usan etiquetas "US$" y "€$".
-                                   Asegúrate de que coincidan con las que usa tu backend/reportes. */}
                                 <option value="C$">C$</option>
                                 <option value="US$">US$</option>
                                 <option value="€$">€$</option>

@@ -27,7 +27,7 @@ import Sidebar from "../../../../components/Sidebar";
 import GastosForm from "../ui/GastosForm";
 import "../ui/GastosForm.css";
 import { useProject } from "../../../../context/ProjectContext"; // Contexto de proyecto
-
+import Close from "../../../../assets/iconos/close.png";
 const GastosManagement = () => {
   // ⛏️ Toma el proyecto activo del contexto global
   const { project } = useProject();
@@ -86,13 +86,28 @@ const GastosManagement = () => {
             <button className="btn-ver-gastos" onClick={handleVerGastos}>
               Ver Gastos
             </button>
+
+            <button
+              type="button"
+              className="dg-icono2"
+              onClick={() => navigate("/budget-visualization", { state: { projectId: project?.id } })}
+              title="Volver a Budget Visualization"
+            >
+              <img src={Close} alt="Volver" />
+            </button>
+
           </div>
+
+
+
+
+
 
           {/* Formulario para crear registros financieros */}
           <GastosForm projectId={project.id} onGastoCreated={handleGastoCreated} />
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 

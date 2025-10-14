@@ -235,3 +235,31 @@
     font-size: clamp(3rem, 6vw, 6rem); /* título más protagonista */
   }
 }
+.gastos-card { position: relative; } /* asegura posicionamiento del botón */
+
+.go-corner-x{
+  border: 2px solid #D35400;
+  background-color: white;
+  border-radius: 8px;
+  padding: 1px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem !important;
+  margin-top: 0.3rem !important;  
+
+   position: absolute;
+  top: 12px;
+  right: 12px;
+
+}
+.go-corner-x img{
+  width: 18px;
+  height: 18px;
+  pointer-events: none;
+}
+.go-corner-x:hover{ filter: brightness(0.95); }

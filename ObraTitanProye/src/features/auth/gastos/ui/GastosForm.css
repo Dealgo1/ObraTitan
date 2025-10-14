@@ -13,10 +13,14 @@
    Layout base del módulo (fondo oscuro y espacio para sidebar)
    ========================================================================== */
 .layout-formulario-gasto {
-  background-color: #2f2f2f !important;             /* fondo del área */
-  min-height: 100vh !important;                     /* ocupar pantalla completa */
-  padding: 2rem !important;                         /* padding general */
-  padding-left: calc(120px + 2rem) !important;      /* deja espacio para sidebar */
+  background-color: #2f2f2f !important;
+  /* fondo del área */
+  min-height: 100vh !important;
+  /* ocupar pantalla completa */
+  padding: 2rem !important;
+  /* padding general */
+  padding-left: calc(120px + 2rem) !important;
+  /* deja espacio para sidebar */
   box-sizing: border-box !important;
   display: flex !important;
   justify-content: flex-start !important;
@@ -39,14 +43,15 @@
   align-items: center !important;
 }
 
-/* Título grande sobre fondo oscuro */
 .titulo-fondo-oscurito {
   font-size: clamp(2rem, 5vw, 3rem) !important;
   font-weight: 700 !important;
   color: white !important;
   font-family: 'Arapey', serif !important;
   margin: 0 0 2rem 0 !important;
+  text-align: center !important; /* 👈 mueve el texto hacia la derecha */
 }
+
 
 /* ==========================================================================
    Tarjeta blanca que contiene el formulario
@@ -74,7 +79,7 @@
 
 .btn-ver-gastos {
   background-color: #D35400 !important;
-  color: black !important;
+  color: rgb(255, 255, 255) !important;
   font-weight: bold !important;
   border: none !important;
   border-radius: 10px !important;
@@ -84,6 +89,7 @@
   cursor: pointer !important;
   transition: background-color 0.3s ease !important;
 }
+
 .btn-ver-gastos:hover {
   background-color: #b84300 !important;
   color: white !important;
@@ -98,7 +104,7 @@
 /* Botón principal de envío */
 .btn-agregar-registro {
   background-color: #D35400 !important;
-  color: black !important;
+  color: rgb(255, 255, 255) !important;
   font-weight: 600 !important;
   border: none !important;
   padding: 0.6rem 2rem !important;
@@ -108,6 +114,7 @@
   transition: background-color 0.3s ease !important;
   margin-top: 1.5rem !important;
 }
+
 .btn-agregar-registro:hover {
   background-color: #b84300 !important;
   color: white !important;
@@ -127,10 +134,12 @@
   transition: background-color 0.3s ease !important;
   align-items: end !important;
 }
+
 .btn-agregar-categoria:hover {
   background-color: #b84300 !important;
   color: white !important;
 }
+
 .btn-agregar-categoria-container {
   display: flex !important;
   justify-content: flex-end !important;
@@ -151,7 +160,8 @@
 .form-select {
   border: 2px solid #D35400 !important;
   border-radius: 8px !important;
-  background-color: #fffaf3 !important; /* diferencia visual respecto a fondo blanco */
+  background-color: #fffaf3 !important;
+  /* diferencia visual respecto a fondo blanco */
   font-family: 'Arapey', serif !important;
   font-size: 1rem !important;
   padding: 0.5rem 1rem !important;
@@ -198,4 +208,29 @@ input[type="file"].form-control {
   color: rgb(0, 0, 0) !important;
   font-family: 'Arapey', serif !important;
   margin-bottom: 1rem !important;
+}
+
+.dg-icono2 {
+  border: 2px solid #D35400;
+  background-color: white;
+  border-radius: 8px;
+  padding: 1px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 1rem !important;
+  margin-top: 0.3rem !important;  
+}
+
+.dg-icono2 img {
+  width: 20px;
+  height: 20px;
+}
+
+.dg-icono2:hover {
+  transform: scale(1.1);
 }

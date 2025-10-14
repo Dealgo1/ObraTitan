@@ -41,7 +41,7 @@ import "../ui/GastoDetail.css";
 import editIcon from "../../../../assets/iconos/edit.png";
 import checkIcon from "../../../../assets/iconos/check.png";
 import deleteIcon from "../../../../assets/iconos/delete.png";
-
+import Close from "../../../../assets/iconos/close.png";
 /** Normaliza a 'YYYY-MM-DD' para inputs de fecha */
 const formatFechaParaInput = (fecha) => {
   if (typeof fecha === "string") return fecha;
@@ -255,6 +255,9 @@ const GastoDetail = () => {
                 </div>
               )}
 
+
+
+
               {/* Eliminar (bloqueado si proviene de Caja) */}
               {!gasto.esPago ? (
                 <div
@@ -273,8 +276,21 @@ const GastoDetail = () => {
                   <img src={deleteIcon} alt="No se puede eliminar" />
                 </div>
               )}
+
+
+              {/* ❌ Botón para regresar al listado de gastos */}
+              <div
+                className="dg-icono"
+                onClick={() => navigate("/gastos-overview", { state: { projectId } })}
+                title="Volver al listado de gastos"
+              >
+                <img src={Close} alt="Volver" />
+              </div>
             </div>
+
           </div>
+
+
 
           {/* Campo: Categoría */}
           <div className="dg-campo">
