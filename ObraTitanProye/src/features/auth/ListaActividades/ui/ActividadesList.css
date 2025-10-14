@@ -997,6 +997,7 @@ contenido .acciones-tarea-principal .btn-editar-tarea,
   width: 180px;
   font-family: 'Arapey', serif;
   transition: all 0.3s ease;
+  color: #000;
 }
 
 
@@ -1318,4 +1319,22 @@ contenido .acciones-tarea-principal .btn-editar-tarea,
   font-size: 1.5rem;
   margin-top: 0.5rem;
   color: #fff;
+}
+
+/* La tarjeta completa se siente clicable */
+.tarjeta-tarea { cursor: pointer; }
+
+/* Evita el highlight azul al tocar en móviles */
+.tarjeta-tarea * { -webkit-tap-highlight-color: rgba(0,0,0,0); }
+
+/* Los controles internos NO deben mostrar cursor de link */
+.btn-accion,
+.btn-estado,
+.btn-tres-puntos,
+.acciones-tarea-principal button,
+.form-editar-tarea input,
+.form-editar-tarea button,
+.agregar-subtarea input,
+.agregar-subtarea button {
+  cursor: auto;
 }

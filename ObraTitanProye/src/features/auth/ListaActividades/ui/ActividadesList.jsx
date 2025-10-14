@@ -62,7 +62,7 @@ const ActividadesList = () => {
 
   const [menuAbierto, setMenuAbierto] = useState(null);
   const [visibles, setVisibles] = useState({});
-const [loadingFull, setLoadingFull] = useState(true);
+  const [loadingFull, setLoadingFull] = useState(true);
   const [contadores, setContadores] = useState({
     finalizado: 0,
     enProceso: 0,
@@ -131,7 +131,6 @@ const [loadingFull, setLoadingFull] = useState(true);
   useEffect(() => {
     if (projectId && userData?.tenantId) {
       obtenerActividades(projectId, userData.tenantId, { full: true });
-
     }
   }, [projectId, userData?.tenantId]);
 
@@ -161,28 +160,30 @@ const [loadingFull, setLoadingFull] = useState(true);
    * Obtiene actividades para el proyecto actual desde Firestore.
    * @param {string} projectId
    */
-  const obtenerActividades = async (projectId, tenantId, { full = false } = {}) => {
-  if (!projectId || !tenantId) return;
+  const obtenerActividades = async (
+    projectId,
+    tenantId,
+    { full = false } = {}
+  ) => {
+    if (!projectId || !tenantId) return;
 
-  if (full) setLoadingFull(true); // solo muestra pantalla completa si lo pides
-  try {
-    const q = query(
-      collection(db, "actividades"),
-      where("projectId", "==", projectId),
-      where("tenantId", "==", tenantId)
-    );
-    const snap = await getDocs(q);
-    const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-    setActividades(items);
-    contarEstados(items);
-  } catch (error) {
-    console.error("Error al cargar actividades:", error);
-  } finally {
-    if (full) setLoadingFull(false);
-  }
-};
-
-
+    if (full) setLoadingFull(true); // solo muestra pantalla completa si lo pides
+    try {
+      const q = query(
+        collection(db, "actividades"),
+        where("projectId", "==", projectId),
+        where("tenantId", "==", tenantId)
+      );
+      const snap = await getDocs(q);
+      const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setActividades(items);
+      contarEstados(items);
+    } catch (error) {
+      console.error("Error al cargar actividades:", error);
+    } finally {
+      if (full) setLoadingFull(false);
+    }
+  };
 
   /**
    * Crea una nueva actividad para el proyecto actual
@@ -302,7 +303,7 @@ const [loadingFull, setLoadingFull] = useState(true);
     setSubtareaInput({ ...subtareaInput, [id]: "" });
     setMenuAbierto(null); // si se usa un menú contextual
 
-   await obtenerActividades(projectId, userData?.tenantId, { full: false });
+    await obtenerActividades(projectId, userData?.tenantId, { full: false });
 
     triggerToast(); // 🔔
 
@@ -343,28 +344,28 @@ const [loadingFull, setLoadingFull] = useState(true);
   /**
    * Marca/desmarca una subtarea y setea/borra su fechaCompletado
    */
- const toggleSubtarea = async (actividadId, index) => {
-  const actividad = actividades.find((a) => a.id === actividadId);
-  if (!actividad) return;
+  const toggleSubtarea = async (actividadId, index) => {
+    const actividad = actividades.find((a) => a.id === actividadId);
+    if (!actividad) return;
 
-  const nuevasSubtareas = [...(actividad.subtareas || [])];
-  const actual = nuevasSubtareas[index];
-  if (!actual) return;
+    const nuevasSubtareas = [...(actividad.subtareas || [])];
+    const actual = nuevasSubtareas[index];
+    if (!actual) return;
 
-  // Alternar estado y fecha
-  actual.completado = !actual.completado;
-  actual.fechaCompletado = actual.completado ? hoyLocalYMD() : null;
+    // Alternar estado y fecha
+    actual.completado = !actual.completado;
+    actual.fechaCompletado = actual.completado ? hoyLocalYMD() : null;
 
-  await updateDoc(doc(db, "actividades", actividadId), {
-    subtareas: nuevasSubtareas,
-    ...estadoDesdeSubtareas(nuevasSubtareas),
-  });
+    await updateDoc(doc(db, "actividades", actividadId), {
+      subtareas: nuevasSubtareas,
+      ...estadoDesdeSubtareas(nuevasSubtareas),
+    });
 
-  // Recarga interna sin pantalla completa
-  await obtenerActividades(projectId, userData?.tenantId, { full: false });
+    // Recarga interna sin pantalla completa
+    await obtenerActividades(projectId, userData?.tenantId, { full: false });
 
-  triggerToast();
-};
+    triggerToast();
+  };
 
   /**
    * Marca/desmarca TODAS las subtareas desde el checkbox principal
@@ -449,7 +450,9 @@ const [loadingFull, setLoadingFull] = useState(true);
           ...estadoDesdeSubtareas(nuevas), // mantiene estado/fecha de la tarjeta
         });
 
-        await obtenerActividades(projectId, userData?.tenantId, { full: false });
+        await obtenerActividades(projectId, userData?.tenantId, {
+          full: false,
+        });
 
         triggerToast();
       },
@@ -467,7 +470,9 @@ const [loadingFull, setLoadingFull] = useState(true);
       showCancel: true,
       onConfirm: async () => {
         await deleteDoc(doc(db, "actividades", id));
-       await obtenerActividades(projectId, userData?.tenantId, { full: false });
+        await obtenerActividades(projectId, userData?.tenantId, {
+          full: false,
+        });
 
         triggerToast();
       },
@@ -507,7 +512,9 @@ const [loadingFull, setLoadingFull] = useState(true);
               estado: "cancelado",
               fechaFinalizado: null,
             });
-            await obtenerActividades(projectId, userData?.tenantId, { full: false });
+            await obtenerActividades(projectId, userData?.tenantId, {
+              full: false,
+            });
 
             triggerToast();
           },
@@ -558,20 +565,19 @@ const [loadingFull, setLoadingFull] = useState(true);
   };
 
   if (loadingFull) {
-
-  return (
-    <div className="pantalla-carga">
-      <div className="wave-loader">
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
+    return (
+      <div className="pantalla-carga">
+        <div className="wave-loader">
+          <div className="wave"></div>
+          <div className="wave"></div>
+          <div className="wave"></div>
+          <div className="wave"></div>
+          <div className="wave"></div>
+        </div>
+        <p className="texto-cargando">Cargando actividades...</p>
       </div>
-      <p className="texto-cargando">Cargando actividades...</p>
-    </div>
-  );
-}
+    );
+  }
 
   return (
     <div className="layout">
@@ -661,6 +667,13 @@ const [loadingFull, setLoadingFull] = useState(true);
                   className={`tarjeta-tarea fade-in ${
                     act.estado === "finalizado" ? "tarea-completada" : ""
                   }`}
+                  onClick={() => toggleVisibilidad(act.id)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) =>
+                    (e.key === "Enter" || e.key === " ") &&
+                    toggleVisibilidad(act.id)
+                  }
                 >
                   <div className="info-tarea">
                     {/* Checkbox maestro: marca todas si ya están completas (validado) */}
@@ -682,10 +695,7 @@ const [loadingFull, setLoadingFull] = useState(true);
                     />
 
                     {/* Título clickable: expande/colapsa subtareas */}
-                    <div
-                      style={{ cursor: "pointer", flex: 1 }}
-                      onClick={() => toggleVisibilidad(act.id)}
-                    >
+                    <div style={{ flex: 1 }}>
                       <strong
                         className={
                           act.estado === "finalizado" ? "titulo-tachado" : ""
@@ -715,7 +725,10 @@ const [loadingFull, setLoadingFull] = useState(true);
                       )}
                       <button
                         className="btn-estado"
-                        onClick={() => cambiarEstadoCiclo(act)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          cambiarEstadoCiclo(act);
+                        }}
                         style={{ backgroundColor: colorEstado(act.estado) }}
                         aria-label={`Cambiar estado (${act.estado})`}
                       />
@@ -725,14 +738,20 @@ const [loadingFull, setLoadingFull] = useState(true);
                   {/* Botón de leyenda de colores (⋯) */}
                   <div style={{ position: "relative" }}>
                     <button
-                      onClick={() => toggleLeyenda(act.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleLeyenda(act.id);
+                      }}
                       className="btn-tres-puntos"
                     >
                       ⋯
                     </button>
 
                     {leyendaVisible[act.id] && (
-                      <div className="leyenda-colores">
+                      <div
+                        className="leyenda-colores"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <strong>Estado:</strong>
                         <div>
                           <span className="punto verde" /> Finalizado
@@ -749,7 +768,10 @@ const [loadingFull, setLoadingFull] = useState(true);
 
                   {/* Formulario de edición inline de la actividad */}
                   {editandoId === act.id && (
-                    <div className="form-editar-tarea">
+                    <div
+                      className="form-editar-tarea"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <input
                         type="text"
                         value={editDatos.nombre}
@@ -801,10 +823,20 @@ const [loadingFull, setLoadingFull] = useState(true);
                         }
                       />
                       <div className="botones-editar">
-                        <button onClick={guardarEdicion}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            guardarEdicion();
+                          }}
+                        >
                           <img src={checkIcon} alt="guardar" />
                         </button>
-                        <button onClick={cancelarEdicion}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            cancelarEdicion();
+                          }}
+                        >
                           <img src={closeIcon} alt="cancelar" />
                         </button>
                       </div>
@@ -813,7 +845,10 @@ const [loadingFull, setLoadingFull] = useState(true);
 
                   {/* Área para agregar subtareas cuando está expandida */}
                   {visibles[act.id] && (
-                    <div className="agregar-subtarea">
+                    <div
+                      className="agregar-subtarea"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <input
                         type="text"
                         placeholder="Nueva subtarea"
@@ -825,22 +860,38 @@ const [loadingFull, setLoadingFull] = useState(true);
                           })
                         }
                       />
-                      <button onClick={() => agregarSubtarea(act.id)}>+</button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          agregarSubtarea(act.id);
+                        }}
+                      >
+                        +
+                      </button>
                     </div>
                   )}
                 </div>
 
                 {/* Acciones de actividad (fuera de la tarjeta) */}
-                <div className="acciones-tarea-principal acciones-abajo">
+                <div
+                  className="acciones-tarea-principal acciones-abajo"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <button
                     className="btn-accion edit-btn"
-                    onClick={() => handleEditActividad(act)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEditActividad(act);
+                    }}
                   >
                     <img src={editIcon} alt="editar" />
                   </button>
                   <button
                     className="btn-accion delete-btn"
-                    onClick={() => eliminarActividad(act.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      eliminarActividad(act.id);
+                    }}
                   >
                     <img src={deleteIcon} alt="eliminar" />
                   </button>
@@ -855,12 +906,14 @@ const [loadingFull, setLoadingFull] = useState(true);
                         className={`subtarea-card fade-in ${
                           sub.completado ? "subtarea-completada" : ""
                         }`}
+                        onClick={(e) => e.stopPropagation()}
                       >
                         <div className="contenido-subtarea">
                           <input
                             type="checkbox"
                             className="checkbox-subtarea"
                             checked={sub.completado}
+                            onClick={(e) => e.stopPropagation()}
                             onChange={() => toggleSubtarea(act.id, idx)}
                           />
 
@@ -895,18 +948,20 @@ const [loadingFull, setLoadingFull] = useState(true);
                           {editandoSubtarea[act.id] === idx ? (
                             <>
                               <button
-                                onClick={() =>
+                                onClick={(e) => {
+                                  e.stopPropagation();
                                   guardarEdicionSubtarea(
                                     act.id,
                                     idx,
                                     nuevoNombreSubtarea[act.id]
-                                  )
-                                }
+                                  );
+                                }}
                               >
                                 <img src={checkIcon} alt="guardar" />
                               </button>
+
                               <button
-                                onClick={() => cancelarEdicionSubtarea(act.id)}
+                               onClick={(e) => { e.stopPropagation(); cancelarEdicionSubtarea(act.id);}}
                               >
                                 <img src={closeIcon} alt="cancelar" />
                               </button>
