@@ -1,0 +1,51 @@
+.ot-modal-backdrop{
+  position: fixed; inset: 0; background:#0008;
+  display:flex; align-items:center; justify-content:center;
+  z-index: 10000; backdrop-filter: blur(2px);
+}
+
+.ot-modal{
+  width:min(560px, 92vw);
+  background:#FFF7F0;
+  border:3px solid #d35400;
+  border-radius:14px;
+  padding:28px 24px;
+  box-shadow:0 10px 30px #0000002a;
+  text-align:center;
+  animation: ot-pop .15s ease-out;
+}
+
+@keyframes ot-pop {
+  from{ transform: scale(.96); opacity:.5 }
+  to{ transform: scale(1); opacity:1 }
+}
+
+.ot-modal-icon{
+  width:72px; height:72px; border-radius:50%;
+  margin: 0 auto 10px; display:grid; place-items:center;
+  font-weight:700; font-size:36px; color:#fff;
+}
+.ot-modal-icon.info{ background:#0ea5e9 }
+.ot-modal-icon.warning{ background:#f59e0b }
+.ot-modal-icon.error{ background:#ef4444 }
+
+.ot-modal-title{
+  font-size:1.4rem; margin:.25rem 0 .5rem; color:#1f2937;
+  font-weight:700;
+}
+.ot-modal-msg{
+  color:#374151; margin:0 0 1.2rem; line-height:1.45;
+}
+
+.ot-modal-actions{
+  display:flex; gap:.6rem; justify-content:center;
+}
+
+.ot-btn{
+  border:none; border-radius:10px; cursor:pointer;
+  padding:.65rem 1.1rem; font-weight:700; font-size:1rem;
+}
+.ot-btn-primary{ background:#d35400; color:#fff }
+.ot-btn-primary:hover{ background:#e67e22 }
+.ot-btn-secondary{ background:#111827; color:#fff }
+.ot-btn-secondary:hover{ background:#0b1220 }
