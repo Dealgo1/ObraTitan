@@ -62,7 +62,7 @@ const ActividadesList = () => {
 
   const [menuAbierto, setMenuAbierto] = useState(null);
   const [visibles, setVisibles] = useState({});
-const [loading, setLoading] = useState(true);
+const [loadingFull, setLoadingFull] = useState(true);
   const [contadores, setContadores] = useState({
     finalizado: 0,
     enProceso: 0,
@@ -130,7 +130,8 @@ const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (projectId && userData?.tenantId) {
-      obtenerActividades(projectId, userData.tenantId);
+      obtenerActividades(projectId, userData.tenantId, { full: true });
+
     }
   }, [projectId, userData?.tenantId]);
 
@@ -160,30 +161,27 @@ const [loading, setLoading] = useState(true);
    * Obtiene actividades para el proyecto actual desde Firestore.
    * @param {string} projectId
    */
-  const obtenerActividades = async (projectId, tenantId) => {
+  const obtenerActividades = async (projectId, tenantId, { full = false } = {}) => {
   if (!projectId || !tenantId) return;
 
-  // ✅ Activa la pantalla de carga
-  setLoading(true);
+  if (full) setLoadingFull(true); // solo muestra pantalla completa si lo pides
   try {
     const q = query(
       collection(db, "actividades"),
       where("projectId", "==", projectId),
       where("tenantId", "==", tenantId)
     );
-
     const snap = await getDocs(q);
     const items = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
-
     setActividades(items);
     contarEstados(items);
   } catch (error) {
     console.error("Error al cargar actividades:", error);
   } finally {
-    // ✅ Desactiva la pantalla de carga
-    setLoading(false);
+    if (full) setLoadingFull(false);
   }
 };
+
 
 
   /**
@@ -220,7 +218,8 @@ const [loading, setLoading] = useState(true);
     setFechaInicio("");
     setFechaFin("");
 
-    await obtenerActividades(projectId, userData?.tenantId);
+    await obtenerActividades(projectId, userData?.tenantId, { full: false });
+
     triggerToast(); // 🔔
   };
 
@@ -277,7 +276,8 @@ const [loading, setLoading] = useState(true);
 
     setEditandoId(null);
 
-    await obtenerActividades(projectId, userData?.tenantId);
+    await obtenerActividades(projectId, userData?.tenantId, { full: false });
+
     triggerToast(); // 🔔
   };
 
@@ -302,7 +302,8 @@ const [loading, setLoading] = useState(true);
     setSubtareaInput({ ...subtareaInput, [id]: "" });
     setMenuAbierto(null); // si se usa un menú contextual
 
-    obtenerActividades(project?.id);
+   await obtenerActividades(projectId, userData?.tenantId, { full: false });
+
     triggerToast(); // 🔔
 
     obtenerActividades(projectId, userData?.tenantId);
@@ -326,7 +327,8 @@ const [loading, setLoading] = useState(true);
     setEditandoSubtarea({ ...editandoSubtarea, [actividadId]: null });
     setNuevoNombreSubtarea({ ...nuevoNombreSubtarea, [actividadId]: "" });
 
-    obtenerActividades(project?.id);
+    await obtenerActividades(projectId, userData?.tenantId, { full: false });
+
     triggerToast(); // 🔔
 
     obtenerActividades(projectId, userData?.tenantId);
@@ -341,22 +343,28 @@ const [loading, setLoading] = useState(true);
   /**
    * Marca/desmarca una subtarea y setea/borra su fechaCompletado
    */
-  const toggleSubtarea = async (actividadId, index) => {
-    const actividad = actividades.find((a) => a.id === actividadId);
-    const nuevasSubtareas = [...actividad.subtareas];
-    const actual = nuevasSubtareas[index];
+ const toggleSubtarea = async (actividadId, index) => {
+  const actividad = actividades.find((a) => a.id === actividadId);
+  if (!actividad) return;
 
-    actual.completado = !actual.completado;
-    actual.fechaCompletado = actual.completado ? hoyLocalYMD() : null;
+  const nuevasSubtareas = [...(actividad.subtareas || [])];
+  const actual = nuevasSubtareas[index];
+  if (!actual) return;
 
-    await updateDoc(doc(db, "actividades", actividadId), {
-      subtareas: nuevasSubtareas,
-      ...estadoDesdeSubtareas(nuevasSubtareas),
-    });
+  // Alternar estado y fecha
+  actual.completado = !actual.completado;
+  actual.fechaCompletado = actual.completado ? hoyLocalYMD() : null;
 
-    obtenerActividades(projectId, userData?.tenantId);
-    triggerToast();
-  };
+  await updateDoc(doc(db, "actividades", actividadId), {
+    subtareas: nuevasSubtareas,
+    ...estadoDesdeSubtareas(nuevasSubtareas),
+  });
+
+  // Recarga interna sin pantalla completa
+  await obtenerActividades(projectId, userData?.tenantId, { full: false });
+
+  triggerToast();
+};
 
   /**
    * Marca/desmarca TODAS las subtareas desde el checkbox principal
@@ -441,7 +449,8 @@ const [loading, setLoading] = useState(true);
           ...estadoDesdeSubtareas(nuevas), // mantiene estado/fecha de la tarjeta
         });
 
-        await obtenerActividades(projectId, userData?.tenantId);
+        await obtenerActividades(projectId, userData?.tenantId, { full: false });
+
         triggerToast();
       },
     });
@@ -458,7 +467,8 @@ const [loading, setLoading] = useState(true);
       showCancel: true,
       onConfirm: async () => {
         await deleteDoc(doc(db, "actividades", id));
-        await obtenerActividades(projectId, userData?.tenantId);
+       await obtenerActividades(projectId, userData?.tenantId, { full: false });
+
         triggerToast();
       },
     });
@@ -497,7 +507,8 @@ const [loading, setLoading] = useState(true);
               estado: "cancelado",
               fechaFinalizado: null,
             });
-            await obtenerActividades(projectId, userData?.tenantId);
+            await obtenerActividades(projectId, userData?.tenantId, { full: false });
+
             triggerToast();
           },
         });
@@ -546,7 +557,8 @@ const [loading, setLoading] = useState(true);
     toggleMenu(null);
   };
 
-  if (loading) {
+  if (loadingFull) {
+
   return (
     <div className="pantalla-carga">
       <div className="wave-loader">
