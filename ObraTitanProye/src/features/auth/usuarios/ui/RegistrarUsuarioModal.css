@@ -83,3 +83,180 @@ select {
   border-radius: 8px;
   margin-bottom: 0.5rem;
 }
+
+/* ===== Registrar Usuario (Modal) ===== */
+.registrar-modal__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  z-index: 1200;
+}
+
+.registrar-modal__card {
+  background: #ffffff;
+  border-radius: 20px;
+  width: min(860px, 96vw);
+  box-shadow: 0 20px 80px rgba(0,0,0,.35);
+  display: flex;
+  flex-direction: column;
+  animation: regModalIn .25s ease;
+  max-height: 92vh;
+  overflow: auto;
+}
+
+@keyframes regModalIn {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.registrar-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #eee;
+}
+
+.registrar-modal__header h2 {
+  margin: 0;
+  font-family: 'Arapey', serif;
+  font-size: clamp(1.25rem, 2.2vw, 1.6rem);
+  color: #1E293B;
+}
+
+.registrar-modal__close {
+  border: none;
+  background: #f3f4f6;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  transition: transform .15s ease, background .2s ease;
+}
+.registrar-modal__close:hover { transform: scale(1.05); background: #e5e7eb; }
+
+.registrar-modal__form {
+  padding: 1.25rem;
+}
+
+.registrar-modal__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+}
+
+.registrar-field {
+  display: flex;
+  flex-direction: column;
+  gap: .45rem;
+}
+
+.registrar-field label {
+  font-weight: 700;
+  color: #374151;
+  font-size: .98rem;
+}
+
+.registrar-field input,
+.registrar-field select {
+  appearance: none;
+  width: 100%;
+  border: 2px solid #D35400;
+  border-radius: 12px;
+  padding: .65rem .8rem;
+  font-size: 1rem;
+  outline: none;
+  transition: box-shadow .15s ease, border-color .15s ease;
+  background: #fff;
+  color: #000;
+}
+
+.registrar-field input:focus,
+.registrar-field select:focus {
+  box-shadow: 0 0 0 3px rgba(211,84,0,.2);
+  border-color: #D35400;
+}
+
+.registrar-field .error {
+  color: #b91c1c;
+  font-size: .9rem;
+}
+
+.registrar-field--password .password-wrap {
+  position: relative;
+  display: flex;
+}
+.password-wrap input {
+  flex: 1;
+  padding-right: 3rem;
+}
+.password-wrap .toggle-pass {
+  position: absolute;
+  right: .35rem;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.registrar-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: .8rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-save,
+.btn-cancel {
+  height: 48px;
+  min-width: 190px;
+  padding: 0 1.25rem;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .15s ease, background .2s ease, color .2s ease;
+  box-shadow: 0 4px 10px rgba(0,0,0,.08);
+}
+
+.btn-save {
+  background: #D35400;
+  color: #fff;
+}
+.btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(0,0,0,.12); }
+.btn-save:disabled { opacity: .6; cursor: not-allowed; }
+
+.btn-cancel {
+  background: #e5e7eb;
+  color: #111827;
+}
+.btn-cancel:hover { background: #d1d5db; }
+
+.password-hint {
+  margin-top: .75rem;
+  color: #6b7280;
+  font-size: .95rem;
+}
+
+/* Responsive */
+@media (max-width: 820px) {
+  .registrar-modal__grid {
+    grid-template-columns: 1fr;
+  }
+  .btn-save, .btn-cancel {
+    width: 100%;
+    min-width: unset;
+    height: 50px;
+  }
+}
