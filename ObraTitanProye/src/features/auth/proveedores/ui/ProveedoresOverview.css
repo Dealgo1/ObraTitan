@@ -202,3 +202,155 @@
   border: 1px solid #ccc;
   font-family: 'Arapey', serif;
 }
+
+
+/* ===============================
+   📱 Responsive extra pequeño (≤ 380px)
+   =============================== */
+@media (max-width: 380px) {
+  /* Reduce padding y tamaño general */
+  .layout-proveedores {
+    padding: 0.5rem;
+  }
+
+  .titulo-fondo-oscuro {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+
+  .proveedores-card {
+    padding: 0.8rem;
+    gap: 0.8rem;
+    border-radius: 14px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
+  }
+
+  .barra-superior-proveedores {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-bottom: 0.5rem;
+  }
+
+  .input-busqueda {
+    height: 34px;
+    font-size: 14px;
+    padding: 0.4rem 0.4rem 0.4rem 36px;
+  }
+
+  .icono-dentro-input {
+    width: 16px;
+    height: 16px;
+    left: 10px;
+  }
+
+  .lista-proveedores {
+    gap: 0.6rem;
+  }
+
+  .proveedor-item {
+    padding: 0.8rem 1rem;
+    border-width: 1.5px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+  }
+
+  .proveedor-nombre {
+    font-size: 1.1rem;
+  }
+
+  .flecha-derecha {
+    width: 20px;
+  }
+
+  .btn-agregar-proveedor {
+    font-size: 0.9rem;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    width: 100%;
+  }
+
+  /* Ajuste del contenedor del botón */
+  .contenedor-boton-agregar {
+    margin-top: 0.5rem;
+  }
+}
+/* ====== FIX 1: tarjeta y fila superior sin padding que “empuje” el input ====== */
+.proveedores-card{
+  overflow: hidden;                 /* recorta dentro del borde redondeado */
+  padding: 1rem 1rem 1.25rem 1rem;  /* más compacto y simétrico */
+}
+
+.barra-superior-proveedores{
+  display: grid;
+  grid-template-columns: 1fr auto;  /* buscador se estira, badge a la derecha */
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 .75rem 0;
+  padding: 0;                       /* <— quita el 0 1rem que descuadraba */
+}
+
+/* ====== FIX 2: wrapper del input completamente fluido ====== */
+.input-con-icono{
+  position: relative;
+  display: block;
+  width: 100%;
+  max-width: none;                  /* <— evita tope de 400px en móviles */
+  min-width: 0;                     /* <— permite encoger dentro del grid */
+}
+
+/* Input estable: altura/line-height iguales + box-sizing */
+.input-busqueda{
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  line-height: 36px;                /* alinea texto verticalmente */
+  font-size: 14px;                  /* evita zoom en iOS pero cabe en 343px */
+  padding: 0 12px 0 36px;           /* espacio exacto para el icono */
+  border-radius: 10px;
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+}
+
+/* Icono centrado sin “bailes” al variar la altura */
+.icono-dentro-input{
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);      /* se mantiene centrado verticalmente */
+  width: 16px;
+  height: 16px;
+  opacity: .7;
+  pointer-events: none;
+}
+
+/* ====== FIX 3: ultra-compacto para móviles angostos (≤ 380px) ====== */
+@media (max-width: 380px){
+  .layout-proveedores{ padding: .5rem; }
+  .proveedores-card{ padding: .75rem .75rem 1rem; border-radius: 14px; }
+  .barra-superior-proveedores{ gap: 6px; margin-bottom: .5rem; }
+  .input-busqueda{
+    height: 32px;
+    line-height: 32px;
+    font-size: 13px;
+    padding-left: 34px;             /* icono más cerca en pantallas pequeñas */
+  }
+  .icono-dentro-input{ width: 14px; height: 14px; left: 9px; }
+  .proveedor-item{ padding: .8rem 1rem; }
+  .btn-agregar-proveedor{ width: 100%; padding: .6rem 1rem; font-size: .95rem; }
+}
+
+/* ====== Detalle: si usas badge offline, que no rompa el layout ====== */
+.badge-offline{
+  justify-self: end;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  border: 1px solid #999;
+  background: #fff;
+  white-space: nowrap;
+}
+
+/* (Opcional) Evita que cualquier hijo sobresalga del borde curvo de la tarjeta */
+.proveedores-card > *{ min-width: 0; }

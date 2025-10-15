@@ -207,3 +207,69 @@ textarea.input-servicios {
     justify-content: center; /* Centra los botones */
   }
 }
+
+
+/* ===============================
+   📱 Responsividad botones y campos (≤ 380 px)
+   =============================== */
+@media (max-width: 380px) {
+  .proveedor-detalle-card {
+    padding: 1rem;
+    border-radius: 14px;
+  }
+
+  /* Campos más compactos */
+  .campo-horizontal label {
+    font-size: 1rem;
+    min-width: 100%;      /* etiqueta ocupa toda la fila */
+  }
+  .input-nombre,
+  .input-empresa,
+  .input-servicios,
+  .input-telefono,
+  .input-monto,
+  .input-fecha,
+  .input-estado {
+    font-size: 1rem;
+    padding: 0.7rem;
+    max-width: 100%;
+  }
+
+  /* 🔘 Botones adaptativos */
+  .botones-formulario {
+    flex-direction: column;   /* apilados verticalmente */
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+    width: 100%;
+  }
+
+  .btn-agregar,
+  .btn-cancelar {
+    width: 100%;              /* ocupan todo el ancho */
+    min-width: unset;
+    font-size: 0.95rem;
+    height: 44px;
+    padding: 0.6rem;
+    border-radius: 10px;
+  }
+}
+
+/* ===============================
+   📱 Ultra-compacto (≤ 320 px)
+   =============================== */
+@media (max-width: 320px) {
+  .layout-proveedores {
+    padding: 0.5rem;
+  }
+  .proveedor-detalle-card {
+    padding: 0.8rem;
+  }
+  .campo-horizontal {
+    gap: 0.5rem;
+  }
+  .btn-agregar,
+  .btn-cancelar {
+    font-size: 0.9rem;
+    height: 40px;
+  }
+}

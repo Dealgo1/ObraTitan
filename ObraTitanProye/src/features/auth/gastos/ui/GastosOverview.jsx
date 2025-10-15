@@ -172,51 +172,47 @@ const GastosOverview = () => {
           )}
 
           {/* 🔎 Búsqueda + rango de fechas */}
-          <div
-            className="barra-superior-proveedores"
-            style={{ gap: 12, display: "flex", flexWrap: "wrap", alignItems: "center" }}
-          >
-            <div className="input-con-icono" style={{ flex: "1 1 260px", minWidth: 240 }}>
-              <img src={iconoBuscar} alt="Buscar" className="icono-dentro-input" />
-              <input
-                type="text"
-                className="input-busqueda"
-                placeholder="Buscar por categoría, tipo o fecha..."
-                value={filtro}
-                onChange={(e) => setFiltro(e.target.value)}
-              />
+
+          <div className="filtros-gastos">
+            {/* Buscador ocupa toda la fila en móvil */}
+            <div className="filtro-busqueda">
+              <div className="input-con-icono">
+                <img src={iconoBuscar} alt="Buscar" className="icono-dentro-input" />
+                <input
+                  type="text"
+                  className="input-busqueda"
+                  placeholder="Buscar por categoría, tipo o fecha..."
+                  value={filtro}
+                  onChange={(e) => setFiltro(e.target.value)}
+                />
+              </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flex: "0 0 auto" }}>
-              <label style={{ fontSize: 12, opacity: 0.8 }}>Desde</label>
+            {/* Rango de fechas compacto en desktop y apilado en móvil */}
+            <div className="filtro-rango">
+              <label className="rango-label">Desde</label>
               <input
                 type="date"
                 value={fechaDesde}
                 onChange={(e) => setFechaDesde(e.target.value)}
-                className="input-busqueda"
-                style={{ paddingLeft: 10, height: 38 }}
+                className="input-date"
+                inputMode="none"
               />
-              <label style={{ fontSize: 12, opacity: 0.8 }}>Hasta</label>
+
+              <label className="rango-label">Hasta</label>
               <input
                 type="date"
                 value={fechaHasta}
                 onChange={(e) => setFechaHasta(e.target.value)}
-                className="input-busqueda"
-                style={{ paddingLeft: 10, height: 38 }}
+                className="input-date"
+                inputMode="none"
               />
+
               {(fechaDesde || fechaHasta) && (
                 <button
                   type="button"
                   onClick={limpiarFechas}
-                  className="btn btn-sm"
-                  style={{
-                    height: 38,
-                    padding: "0 12px",
-                    borderRadius: 8,
-                    border: "1px solid #999",
-                    background: "transparent",
-                    cursor: "pointer",
-                  }}
+                  className="btn-limpiar-rango"
                   title="Limpiar rango"
                 >
                   Limpiar
@@ -224,6 +220,7 @@ const GastosOverview = () => {
               )}
             </div>
           </div>
+
 
           {/* Listado */}
           <ListGroup className="lista-gastos">
