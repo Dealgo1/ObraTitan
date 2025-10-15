@@ -1,129 +1,111 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { db } from "../../../../services/firebaseconfig"; // Configuración de Firebase
+import { db } from "../../../../services/firebaseconfig";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import Sidebar from "../../../../components/Sidebar";
+import PantallaCarga from "../../../../components/PantallaCarga"; // ⬅️ IMPORTANTE
 import flecha from "../../../../assets/iconos/flecha.png";
 import iconoBuscar from "../../../../assets/iconos/search.png";
-import {  } from "../../../../services/proveedoresService"; // Reservado por si necesitas servicios extra
+import { } from "../../../../services/proveedoresService";
 import "../../proveedores/ui/ProveedoresOverview.css";
 import { useAuth } from "../../../../context/authcontext";
-/**
- * 📌 Componente: ProveedoresOverview
- * Vista que muestra el listado de proveedores de un proyecto,
- * permite filtrarlos por nombre/empresa, detecta estado offline
- * y redirige a detalles o agregar un nuevo proveedor.
- */
+
 const ProveedoresOverview = () => {
-  // Estado para la lista de proveedores obtenidos de Firestore
   const [proveedores, setProveedores] = useState([]);
-
-  // Estado para el filtro de búsqueda
   const [filtro, setFiltro] = useState("");
-
-  // Estado que indica si el usuario está offline
   const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [isLoading, setIsLoading] = useState(true); // ⬅️ Loader ON
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Obtenemos el proyecto desde la navegación o localStorage
- const { project } = location.state || {};
+  // Evita crash si no viene state
+  const { project } = (location && location.state) || {};
   const projectId = project?.id || localStorage.getItem("projectId");
+
   const { userData } = useAuth(); // tenantId aquí
 
-  /**
-   * 📌 Hook: detección de conexión
-   * Escucha cambios en la conexión a internet y actualiza isOffline.
-   */
+  // Conectividad
   useEffect(() => {
     const handleOnline = () => setIsOffline(false);
     const handleOffline = () => setIsOffline(true);
-
-    // Eventos para detectar conexión
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
-
-    // Estado inicial
     setIsOffline(!navigator.onLine);
-
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
     };
   }, []);
 
-  /**
-   * 📌 Hook: escucha en tiempo real de proveedores
-   * Se suscribe a Firestore para recibir cambios en la colección de proveedores
-   * del proyecto actual, con soporte para caché offline.
-   */
-   useEffect(() => {
-   if (!projectId || !userData?.tenantId) return; // evita query inválida
+  // Mantén loader si falta contexto
+  useEffect(() => {
+    if (!projectId || !userData?.tenantId) setIsLoading(true);
+  }, [projectId, userData?.tenantId]);
+
+  // Snapshot (apaga loader al primer resultado)
+  useEffect(() => {
+    if (!projectId || !userData?.tenantId) return;
+
+    setIsLoading(true);
     const q = query(
       collection(db, "proveedores"),
-       
       where("tenantId", "==", userData.tenantId),
-      where("projectId", "==", projectId)// Solo proveedores del proyecto actual
+      where("projectId", "==", projectId)
     );
 
     const unsubscribe = onSnapshot(
       q,
       (snapshot) => {
-        // Mapea los datos de Firestore en un array con id incluido
-        const data = snapshot.docs.map((doc) => ({
-          ...doc.data(),
-          id: doc.id,
-        }));
+        const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         setProveedores(data);
-
-        if (isOffline) {
-          console.log("Offline: mostrando datos desde la caché local.");
-        }
+        setIsLoading(false); // ⬅️ ya cargó
+        if (isOffline) console.log("Offline: datos desde caché.");
       },
       (error) => {
         console.error("Error al escuchar proveedores:", error);
-        if (isOffline) {
-          console.log("Offline: mostrando datos cacheados si están disponibles.");
-        } else {
-          alert("Error al cargar proveedores: " + error.message);
-        }
+        setIsLoading(false);
+        if (!isOffline) alert("Error al cargar proveedores: " + error.message);
       }
     );
 
-    return () => unsubscribe(); // Limpieza al desmontar
-  }, [projectId, userData?.tenantId]);
+    return () => unsubscribe();
+  }, [projectId, userData?.tenantId, isOffline]);
 
-  /**
-   * 📌 handleSelectProveedor
-   * Redirige al detalle de un proveedor seleccionado.
-   */
   const handleSelectProveedor = (proveedor) => {
     navigate("/detalle-proveedor", { state: { proveedor } });
   };
 
-  /**
-   * 📌 handleAgregarProveedor
-   * Redirige al formulario para agregar un nuevo proveedor.
-   */
   const handleAgregarProveedor = () => {
     navigate("/agregar-proveedor", { state: { projectId } });
   };
 
-  /**
-   * 📌 Filtrado de proveedores
-   * Se filtra por nombre o empresa en minúsculas.
-   */
   const proveedoresFiltrados = proveedores.filter((prov) => {
     const empresa = prov.empresa?.toLowerCase() || "";
     const nombre = prov.nombre?.toLowerCase() || "";
-    return (
-      empresa.includes(filtro.toLowerCase()) ||
-      nombre.includes(filtro.toLowerCase())
-    );
+    const needle = filtro.toLowerCase();
+    return empresa.includes(needle) || nombre.includes(needle);
   });
 
-  // 📌 Renderizado
+  // === Renders con loader/guards ===
+  if (!projectId || !userData?.tenantId) {
+    return (
+      <div className="layout-proveedores">
+        <Sidebar />
+        <PantallaCarga mensaje="Obteniendo contexto del proyecto..." />
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="layout-proveedores">
+        <Sidebar />
+        <PantallaCarga mensaje="Cargando proveedores..." />
+      </div>
+    );
+  }
+
   return (
     <div className="layout-proveedores">
       <Sidebar />
@@ -131,8 +113,7 @@ const ProveedoresOverview = () => {
 
       <div className="proveedores-container">
         <div className="proveedores-card">
-
-          {/* 🔍 Barra de búsqueda */}
+          {/* 🔍 Búsqueda */}
           <div className="barra-superior-proveedores">
             <div className="input-con-icono">
               <img src={iconoBuscar} alt="Buscar" className="icono-dentro-input" />
@@ -144,30 +125,38 @@ const ProveedoresOverview = () => {
                 onChange={(e) => setFiltro(e.target.value)}
               />
             </div>
+            {isOffline && (
+              <span className="badge-offline" title="Modo sin conexión">Offline</span>
+            )}
           </div>
 
-          {/* 📋 Lista de proveedores */}
+          {/* 📋 Lista */}
           <div className="lista-proveedores">
-            {proveedoresFiltrados.map((prov) => (
-              <div
-                key={prov.id}
-                className="proveedor-item"
-                onClick={() => handleSelectProveedor(prov)}
-              >
-                <div className="proveedor-nombre">{prov.empresa}</div>
-                <div className="proveedor-arrow">
-                  <img src={flecha} alt="Flecha" className="flecha-derecha" />
-                </div>
+            {proveedoresFiltrados.length === 0 ? (
+              <div className="estado-vacio">
+                {filtro
+                  ? "No se encontraron proveedores que coincidan con la búsqueda."
+                  : "Aún no has agregado proveedores en este proyecto."}
               </div>
-            ))}
+            ) : (
+              proveedoresFiltrados.map((prov) => (
+                <div
+                  key={prov.id}
+                  className="proveedor-item"
+                  onClick={() => handleSelectProveedor(prov)}
+                >
+                  <div className="proveedor-nombre">{prov.empresa || prov.nombre}</div>
+                  <div className="proveedor-arrow">
+                    <img src={flecha} alt="Flecha" className="flecha-derecha" />
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
-          {/* ➕ Botón para agregar nuevo proveedor */}
+          {/* ➕ Agregar */}
           <div className="contenedor-boton-agregar">
-            <button
-              className="btn-agregar-proveedor"
-              onClick={handleAgregarProveedor}
-            >
+            <button className="btn-agregar-proveedor" onClick={handleAgregarProveedor}>
               + Agregar Proveedor
             </button>
           </div>

@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import KPI2Presupuesto from "./KPI2Presupuesto";
 import KPI3EstadoCaja from "./KPI3EstadoCaja";
 import KPI4PagosMensuales from "./KPI4PagosMensuales";
 import Sidebar from "../../../../components/Sidebar";
+import PantallaCarga from "../../../../components/PantallaCarga"; // ⬅️ Agregada
 import "../ui/KPIDashboard.css";
 
 /**
@@ -19,6 +20,25 @@ import "../ui/KPIDashboard.css";
  *   3. Pagos mensuales (KPI4PagosMensuales)
  */
 const KPIDashboard = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulación de carga inicial
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 1200); // 1.2 segundos de carga visual
+    return () => clearTimeout(timeout);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="layout-kpi-dashboard">
+        <Sidebar />
+        <PantallaCarga mensaje="Cargando indicadores del proyecto..." />
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Sidebar de navegación */}
@@ -26,7 +46,7 @@ const KPIDashboard = () => {
 
       {/* Contenedor principal del dashboard */}
       <div className="kpi-dashboard-container">
-        <h2>Dashboard de KPIs - Obra Titan</h2>
+        <h2 className="titulo-fondo-oscuro">Dashboard de KPIs - Obra Titan</h2>
 
         <p>
           Este panel presenta un análisis visual de los indicadores clave del sistema Obra Titan.
