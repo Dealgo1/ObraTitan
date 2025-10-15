@@ -2,7 +2,7 @@
 // ⚙️ Service Worker — ObraTitan (seguro)
 // =========================================
 
-const CACHE_NAME = 'obra-titan-cache-v6';
+const CACHE_NAME = 'obra-titan-cache-v7';
 const URLS_TO_CACHE = [
   '/', '/index.html', '/manifest.webmanifest',
   '/logo-192.png', '/logo-512.png', '/vite.svg'
