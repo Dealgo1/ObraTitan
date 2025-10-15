@@ -166,21 +166,9 @@ const Login = () => {
           Iniciar Sesión
         </span>
 
-        <label className="switch">
-          <input
-            type="checkbox"
-            checked={isFlipped}
-            onChange={() => handleToggleFlip(!isFlipped)}
-          />
-          <span className="slider" />
-        </label>
+        
 
-        <span
-          className={isFlipped ? "activo" : ""}
-          onClick={() => handleToggleFlip(true)}
-        >
-          Registrarse
-        </span>
+        
       </div>
 
       {/* Tarjeta con caras (frente: login | reverso: registro) */}
