@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../../../services/firebaseconfig"; // <-- ajusta si tu config exporta diferente
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "../../../../context/authcontext";
-
+import "../ui/RegistrarUsuarioModal.css";
 const ROLES_PERMITIDOS = ["administrador", "ingeniero", "contador", "lector"];
 const EMAIL_REGEX =
   /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;

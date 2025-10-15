@@ -130,17 +130,37 @@ select {
 }
 
 .registrar-modal__close {
+  display: inline-flex;           /* centra el contenido */
+  align-items: center;
+  justify-content: center;
+  width: 42px;                    /* un poco más grande */
+  height: 42px;
+  padding: 0;                     /* evita desajustes verticales */
   border: none;
-  background: #f3f4f6;
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
+  border-radius: 14px;
+  background: #D35400;
+  color: #fff;                    /* X en blanco */
+  font-size: 22px;                /* X más grande */
+  line-height: 1;                 /* corrige “desvío” vertical */
   cursor: pointer;
-  font-size: 1.25rem;
-  line-height: 1;
-  transition: transform .15s ease, background .2s ease;
+  transition: transform .15s ease, background .2s ease, box-shadow .2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,.15);
 }
-.registrar-modal__close:hover { transform: scale(1.05); background: #e5e7eb; }
+
+.registrar-modal__close:hover {
+  background: #e0671a;           /* tono más claro en hover */
+  transform: translateY(-1px);
+}
+
+.registrar-modal__close:active {
+  transform: translateY(0);
+}
+
+.registrar-modal__close:focus-visible {
+  outline: 3px solid rgba(211,84,0,.35);
+  outline-offset: 2px;
+}
+
 
 .registrar-modal__form {
   padding: 1.25rem;
