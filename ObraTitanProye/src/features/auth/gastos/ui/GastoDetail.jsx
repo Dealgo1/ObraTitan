@@ -37,6 +37,7 @@ import {
   guardarNuevaCategoria,
 } from "../../../../services/categoriasService";
 import "../ui/GastoDetail.css";
+import ConfirmModal from "../../../../components/ConfirmModal";
 
 import editIcon from "../../../../assets/iconos/edit.png";
 import checkIcon from "../../../../assets/iconos/check.png";
@@ -48,6 +49,15 @@ const formatFechaParaInput = (fecha) => {
   const date = fecha?.toDate ? fecha.toDate() : new Date(fecha);
   return date.toISOString().split("T")[0];
 };
+
+ const [infoModal, setInfoModal] = useState({
+   open: false,
+   variant: "error",
+   title: "",
+  message: "",
+   confirmText: "Entendido",
+ });
+
 
 /** Devuelve símbolo de moneda a partir de ISO */
 const getSimboloMoneda = (codigo) => {
@@ -155,7 +165,13 @@ const GastoDetail = () => {
    */
   const handleGuardar = async () => {
     if (gasto.esPago) {
-      alert("❌ Este gasto proviene de un pago (Caja) y no puede editarse.");
+     setInfoModal({
+       open: true,
+       variant: "error",
+       title: "Acción no permitida",
+      message: "Este gasto proviene de un pago (Caja) y no puede editarse.",
+      confirmText: "Entendido",
+    });
       setModoEdicion(false);
       return;
     }

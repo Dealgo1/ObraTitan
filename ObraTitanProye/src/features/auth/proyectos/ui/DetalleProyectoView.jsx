@@ -13,6 +13,8 @@ import { useNavigate } from "react-router-dom";
 import PantallaCarga from "../../../../components/PantallaCarga"; // ✅ Componente de carga
 import { getProjectById } from "../../../../services/projectsService";
 import { useAuth } from "../../../../context/authcontext";
+import ConfirmModal from "../../../../components/ConfirmModal";
+
 const DetalleProyectoView = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true); // 🔄 Estado de pantalla de carga
@@ -28,6 +30,7 @@ const DetalleProyectoView = () => {
   const [nuevaImagen, setNuevaImagen] = useState(null); // Archivo de nueva imagen
   const [mostrarModalImagen, setMostrarModalImagen] = useState(false); // Modal para ampliar imagen
   const [isOffline, setIsOffline] = useState(!navigator.onLine); // 🌐 Estado de conexión
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // 👉 Estado de errores por campo
   const [errores, setErrores] = useState({});
@@ -273,7 +276,7 @@ const DetalleProyectoView = () => {
           fechaFin: fechaFinValida,
           imagen: base64Imagen,
         };
-        
+
 
         if (isOffline) {
           // Guardar cambios en localStorage si no hay conexión
@@ -316,19 +319,10 @@ const DetalleProyectoView = () => {
    * - Si no hay conexión, se guarda la eliminación en localStorage
    */
   const handleEliminar = async () => {
-
     if (!canDeleteProject) return;
-    if (window.confirm("¿Deseás eliminar este proyecto?")) {
-      if (isOffline) {
-        localStorage.setItem("offlineProjectDeletion", project.id);
-        alert("Estás offline. Se eliminará cuando vuelvas a conectarte.");
-      } else {
-        await deleteProject(project.id);
-        alert("Proyecto eliminado.");
-        navigate("/proyecto");
-      }
-    }
+    setShowDeleteModal(true);
   };
+
 
   /** 🔄 Actualizar campos editables del form */
   const handleChange = (e) => {
@@ -481,26 +475,61 @@ const DetalleProyectoView = () => {
     return amountInCord / rateToTarget;
   };
 
+
+
+
+
   return (
     <div className="dpv-wrapper">
+
+
+      {/* Modal de confirmación para eliminar */}
+      <ConfirmModal
+        open={showDeleteModal}
+        variant="warning"
+        title="¿Eliminar proyecto?"
+        message={`¿Deseás eliminar el proyecto "${project?.nombre}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        showCancel={true}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={async () => {
+          try {
+            if (isOffline) {
+              localStorage.setItem("offlineProjectDeletion", project.id);
+              setDpvToastMsg("📴 Estás offline. Se eliminará al reconectarte.");
+              setDpvShowToast(true);
+            } else {
+              await deleteProject(project.id);
+              setDpvToastMsg("✅ Proyecto eliminado con éxito.");
+              setDpvShowToast(true);
+              setTimeout(() => navigate("/proyecto"), 1000);
+            }
+          } catch (err) {
+            console.error(err);
+            setDpvToastMsg("❌ Error al eliminar el proyecto.");
+            setDpvShowToast(true);
+          }
+        }}
+      />
       <div className="dpv-card">
         {/* 🛠 Barra de acciones: editar/guardar y eliminar */}
         <div className="dpv-header">
           {/* Guardar / Editar */}
           {canEditProject && (
-          <button
-            type="button"
-            className="dpv-btn-icon"
-            onClick={handleEditar}
-            title={modoEdicion ? "Guardar cambios" : "Editar proyecto"}
-            aria-label={modoEdicion ? "Guardar cambios" : "Editar proyecto"}
-          >
-            <img src={modoEdicion ? checkIcon : editarIcono} alt="" />
-          </button>
+            <button
+              type="button"
+              className="dpv-btn-icon"
+              onClick={handleEditar}
+              title={modoEdicion ? "Guardar cambios" : "Editar proyecto"}
+              aria-label={modoEdicion ? "Guardar cambios" : "Editar proyecto"}
+            >
+              <img src={modoEdicion ? checkIcon : editarIcono} alt="" />
+            </button>
           )}
 
           {/* Cancelar (solo visible en edición) */}
-      {modoEdicion && canEditProject && (
+          {modoEdicion && canEditProject && (
             <button
               type="button"
               className="dpv-btn-icon dpv-btn-cancelar"
@@ -513,17 +542,17 @@ const DetalleProyectoView = () => {
           )}
 
           {/* Eliminar */}
-            {canDeleteProject && (
-          <button
-            type="button"
-            className="dpv-btn-icon dpv-btn-eliminar"
-            onClick={handleEliminar}
-            title="Eliminar proyecto"
-            aria-label="Eliminar proyecto"
-          >
-            <img src={eliminarIcono} alt="" />
-          </button>
-            )}
+          {canDeleteProject && (
+            <button
+              type="button"
+              className="dpv-btn-icon dpv-btn-eliminar"
+              onClick={handleEliminar}
+              title="Eliminar proyecto"
+              aria-label="Eliminar proyecto"
+            >
+              <img src={eliminarIcono} alt="" />
+            </button>
+          )}
         </div>
 
         {/* Imagen del proyecto (con opción de ampliarla en modal) */}
@@ -558,9 +587,8 @@ const DetalleProyectoView = () => {
               value={datosEditables.cliente}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={`dpv-input ${
-                errores.cliente ? "dpv-input-error" : ""
-              }`}
+              className={`dpv-input ${errores.cliente ? "dpv-input-error" : ""
+                }`}
               placeholder="Cliente"
               maxLength={80}
             />
@@ -571,9 +599,8 @@ const DetalleProyectoView = () => {
               value={datosEditables.descripcion}
               onChange={handleChange}
               onBlur={handleBlur}
-              className={`dpv-textarea ${
-                errores.descripcion ? "dpv-input-error" : ""
-              }`}
+              className={`dpv-textarea ${errores.descripcion ? "dpv-input-error" : ""
+                }`}
               placeholder="Descripción"
               maxLength={1000}
             />
@@ -588,9 +615,8 @@ const DetalleProyectoView = () => {
                 value={datosEditables.presupuesto}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                className={`dpv-input ${
-                  errores.presupuesto ? "dpv-input-error" : ""
-                }`}
+                className={`dpv-input ${errores.presupuesto ? "dpv-input-error" : ""
+                  }`}
                 placeholder="Presupuesto"
                 step="0.01"
                 min="0"

@@ -15,144 +15,150 @@ import {
   Legend,
 } from "chart.js";
 
-// Registra los componentes necesarios de Chart.js
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 /**
  * 📊 KPI3EstadoCaja
- * Compara ingresos vs egresos por mes para el proyecto activo
- * y muestra el saldo acumulado (ingresos - egresos).
- * Permite descargar la tarjeta completa como imagen (PNG) con html2canvas.
+ * - Ingresos: documentos en `gastos` con tipo === "ingreso"
+ * - Egresos: documentos en `gastos` con tipo === "gasto" + todos los `pagos`
+ * - Saldo: (presupuestoInicial || 0) + totalIngresos - totalEgresos
  */
 const KPI3EstadoCaja = () => {
   const { project } = useProject();
 
-  // Series por mes (enero-diciembre)
   const [ingresosMes, setIngresosMes] = useState(Array(12).fill(0));
   const [egresosMes, setEgresosMes] = useState(Array(12).fill(0));
-
-  // Totales acumulados
   const [totalIngresos, setTotalIngresos] = useState(0);
   const [totalEgresos, setTotalEgresos] = useState(0);
+  const [presupuestoInicial, setPresupuestoInicial] = useState(0);
 
-  // Refs para exportar la tarjeta sin el botón
   const cardRef = useRef(null);
   const botonRef = useRef(null);
 
-  /**
-   * 🖼️ Descargar KPI completo (tarjeta) como PNG.
-   * - Oculta el botón mientras captura
-   * - Exporta a imagen con fondo blanco y escala 2x
-   */
+  const toDateSafe = (raw) => {
+    if (!raw) return null;
+    if (typeof raw?.toDate === "function") return raw.toDate();
+    const d = new Date(raw);
+    return isNaN(d) ? null : d;
+  };
+
+  const toNumberSafe = (n) => {
+    const v = parseFloat(n);
+    return isNaN(v) ? 0 : v;
+  };
+
   const descargarKPI = async () => {
     if (!cardRef.current) return;
-
     if (botonRef.current) botonRef.current.style.display = "none";
-
-    const canvas = await html2canvas(cardRef.current, {
-      backgroundColor: "#ffffff",
-      scale: 2,
-    });
-
+    const canvas = await html2canvas(cardRef.current, { backgroundColor: "#ffffff", scale: 2 });
     if (botonRef.current) botonRef.current.style.display = "block";
-
     const link = document.createElement("a");
     link.href = canvas.toDataURL();
     link.download = "kpi3_estado_caja.png";
     link.click();
   };
 
-  /**
-   * 🔎 Carga datos de Firestore:
-   * - Pagos = ingresos
-   * - Gastos = egresos
-   * Calcula montos por mes (0-11) y totales acumulados.
-   */
   useEffect(() => {
     const obtenerDatos = async () => {
       if (!project?.id) return;
 
+      // toma presupuesto inicial del objeto del proyecto (nombra tus campos aquí)
+     const pInit =
+  toNumberSafe(project?.presupuesto) || // ← tu campo real
+  toNumberSafe(project?.presupuestoInicial) ||
+  toNumberSafe(project?.budgetInicial) ||
+  toNumberSafe(project?.budget) ||
+  0;
+
+      setPresupuestoInicial(pInit);
+
       try {
-        // ============ Ingresos ============
-        const pagosRef = collection(db, "pagos");
-        const pagosQuery = query(pagosRef, where("projectId", "==", project.id));
-        const pagosSnap = await getDocs(pagosQuery);
+        // ===== GASTOS: ingresos (tipo=ingreso) y egresos (tipo=gasto)
+        const gastosRef = collection(db, "gastos");
+
+        const qIngresos = query(
+          gastosRef,
+          where("projectId", "==", project.id),
+          where("tipo", "==", "ingreso")
+        );
+        const qEgresos = query(
+          gastosRef,
+          where("projectId", "==", project.id),
+          where("tipo", "==", "gasto")
+        );
+
+        const [snapIngresos, snapEgresos] = await Promise.all([getDocs(qIngresos), getDocs(qEgresos)]);
 
         const ingresos = Array(12).fill(0);
+        const egresos = Array(12).fill(0);
+
         let sumaIngresos = 0;
+        let sumaEgresos = 0;
 
-        pagosSnap.docs.forEach((docSnap) => {
-          const data = docSnap.data();
-          // Soporta Timestamp de Firestore (toDate) y string/Date
-          const fechaRaw = data.fecha;
-          if (!fechaRaw) return;
-
-          const fecha = fechaRaw?.seconds
-            ? new Date(fechaRaw.seconds * 1000)
-            : new Date(fechaRaw);
-          if (isNaN(fecha)) return;
-
-          const mes = fecha.getMonth(); // 0-11
-          const monto = parseFloat(data.monto || 0);
-          if (mes >= 0 && mes <= 11 && !isNaN(monto)) {
+        snapIngresos.docs.forEach((d) => {
+          const data = d.data();
+          const fecha = toDateSafe(data.fecha);
+          if (!fecha) return;
+          const mes = fecha.getMonth();
+          const monto = toNumberSafe(data.monto);
+          if (mes >= 0 && mes < 12) {
             ingresos[mes] += monto;
             sumaIngresos += monto;
           }
         });
 
-        setIngresosMes(ingresos);
-        setTotalIngresos(sumaIngresos);
-
-        // ============ Egresos ============
-        const gastosRef = collection(db, "gastos");
-        const gastosQuery = query(gastosRef, where("projectId", "==", project.id));
-        const gastosSnap = await getDocs(gastosQuery);
-
-        const egresos = Array(12).fill(0);
-        let sumaEgresos = 0;
-
-        gastosSnap.docs.forEach((docSnap) => {
-          const data = docSnap.data();
-          const fechaRaw = data.fecha;
-          if (!fechaRaw) return;
-
-          const fecha = fechaRaw?.seconds
-            ? new Date(fechaRaw.seconds * 1000)
-            : new Date(fechaRaw);
-          if (isNaN(fecha)) return;
-
+        snapEgresos.docs.forEach((d) => {
+          const data = d.data();
+          const fecha = toDateSafe(data.fecha);
+          if (!fecha) return;
           const mes = fecha.getMonth();
-          const monto = parseFloat(data.monto || 0);
-          if (mes >= 0 && mes <= 11 && !isNaN(monto)) {
+          const monto = toNumberSafe(data.monto);
+          if (mes >= 0 && mes < 12) {
             egresos[mes] += monto;
             sumaEgresos += monto;
           }
         });
 
+        // ===== PAGOS: cuentan como EGRESOS
+        const pagosRef = collection(db, "pagos");
+        const qPagos = query(pagosRef, where("projectId", "==", project.id));
+        const snapPagos = await getDocs(qPagos);
+
+        snapPagos.docs.forEach((d) => {
+          const data = d.data();
+          const fecha = toDateSafe(data.fechaPago) || toDateSafe(data.fecha);
+          if (!fecha) return;
+          const mes = fecha.getMonth();
+          const monto = toNumberSafe(data.monto);
+          if (mes >= 0 && mes < 12) {
+            egresos[mes] += monto;
+            sumaEgresos += monto;
+          }
+        });
+
+        setIngresosMes(ingresos);
         setEgresosMes(egresos);
+        setTotalIngresos(sumaIngresos);
         setTotalEgresos(sumaEgresos);
       } catch (error) {
-        console.error("Error al obtener ingresos y egresos:", error);
+        console.error("Error al obtener estado de caja:", error);
       }
     };
 
     obtenerDatos();
   }, [project]);
 
-  // Saldo acumulado (puede ser negativo)
-  const saldo = totalIngresos - totalEgresos;
+  const saldo = presupuestoInicial + totalIngresos - totalEgresos;
 
-  // Etiquetas para el eje X
-  const meses = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+  const meses = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 
-  // Dataset de Chart.js
   const data = {
     labels: meses,
     datasets: [
       {
         label: "Ingresos",
         data: ingresosMes,
-        backgroundColor: "#E3A008", // dorado
+        backgroundColor: "#E3A008",
         borderColor: "white",
         borderWidth: 2,
         borderRadius: 5,
@@ -160,7 +166,7 @@ const KPI3EstadoCaja = () => {
       {
         label: "Egresos",
         data: egresosMes,
-        backgroundColor: "#D35400", // naranja
+        backgroundColor: "#D35400",
         borderColor: "white",
         borderWidth: 2,
         borderRadius: 5,
@@ -168,21 +174,13 @@ const KPI3EstadoCaja = () => {
     ],
   };
 
-  // Opciones del gráfico
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        labels: { color: "black" },
-      },
-      title: {
-        display: true,
-        text: "Ingresos vs Egresos por mes",
-        color: "black",
-      },
+      legend: { labels: { color: "black" } },
+      title: { display: true, text: "Ingresos vs Egresos por mes", color: "black" },
       tooltip: {
         callbacks: {
-          // Formatea como moneda local (C$) si lo deseas luego
           label: (ctx) => {
             const v = Number(ctx.raw) || 0;
             return `${ctx.dataset.label}: C$${v.toLocaleString("es-NI")}`;
@@ -192,10 +190,7 @@ const KPI3EstadoCaja = () => {
     },
     scales: {
       x: { ticks: { color: "black" } },
-      y: {
-        beginAtZero: true,
-        ticks: { color: "black" },
-      },
+      y: { beginAtZero: true, ticks: { color: "black" } },
     },
   };
 
@@ -203,53 +198,36 @@ const KPI3EstadoCaja = () => {
     <div
       ref={cardRef}
       className="kpi-card"
-      style={{
-        backgroundColor: "white",
-        border: "2px solid #D35400",
-        borderRadius: "15px",
-        padding: "1.5rem",
-      }}
+      style={{ backgroundColor: "white", border: "2px solid #D35400", borderRadius: "15px", padding: "1.5rem" }}
     >
-      {/* Gráfico de barras: Ingresos vs Egresos */}
       <Bar data={data} options={options} />
 
-      {/* Resumen con el saldo actual */}
       <div
         className="kpi-summary"
-        style={{
-          marginTop: "1.5rem",
-          border: "2px solid #D35400",
-          borderRadius: "10px",
-          padding: "1rem",
-          textAlign: "center",
-          fontSize: "1.3rem",
-          color: "black",
-        }}
+        style={{ marginTop: "1.5rem", border: "2px solid #D35400", borderRadius: "10px", padding: "1rem", textAlign: "center", fontSize: "1.1rem", color: "black" }}
       >
+        <div style={{ marginBottom: ".5rem" }}>
+          <strong>Presupuesto inicial:&nbsp;</strong>
+          <span> C${(presupuestoInicial || 0).toLocaleString("es-NI")}</span>
+        </div>
+        <div style={{ marginBottom: ".5rem" }}>
+          <strong>Total ingresos:&nbsp;</strong>
+          <span> C${(totalIngresos || 0).toLocaleString("es-NI")}</span>
+        </div>
+        <div style={{ marginBottom: ".75rem" }}>
+          <strong>Total egresos:&nbsp;</strong>
+          <span> C${(totalEgresos || 0).toLocaleString("es-NI")}</span>
+        </div>
+
         <strong style={{ fontSize: "1.6rem" }}>
-          {/* Formato moneda Nicaragua */}
-          C${saldo.toLocaleString("es-NI")}
+          Saldo gastado: C${saldo.toLocaleString("es-NI")}
         </strong>
-        <br />
-        Saldo actual de la caja
       </div>
 
-      {/* Botón para exportar la tarjeta como imagen */}
       <button
         ref={botonRef}
         onClick={descargarKPI}
-        style={{
-          marginTop: "1rem",
-          padding: "0.6rem 1.2rem",
-          backgroundColor: "#D35400",
-          color: "white",
-          border: "none",
-          borderRadius: "8px",
-          cursor: "pointer",
-          display: "block",
-          marginLeft: "auto",
-          marginRight: "auto",
-        }}
+        style={{ marginTop: "1rem", padding: "0.6rem 1.2rem", backgroundColor: "#D35400", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", display: "block", marginLeft: "auto", marginRight: "auto" }}
       >
         Descargar KPI completo
       </button>

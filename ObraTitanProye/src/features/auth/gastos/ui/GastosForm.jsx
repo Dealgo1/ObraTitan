@@ -63,6 +63,8 @@ const GastosForm = ({ projectId: propProjectId, onGastoCreated }) => {
   const [facturaBase64, setFacturaBase64] = useState(null);
   const [nombreArchivo, setNombreArchivo] = useState(""); // nombre de la factura
   const [error, setError] = useState(null);
+const [showSuccess, setShowSuccess] = useState(false);
+const [successMsg, setSuccessMsg] = useState("");
 
   // Categorías (y UI para crear nuevas)
   const [categorias, setCategorias] = useState([]);
@@ -218,6 +220,11 @@ const GastosForm = ({ projectId: propProjectId, onGastoCreated }) => {
         String(userData.tenantId),
         projectId
       );
+setSuccessMsg("✅ Registro guardado con éxito.");
+setShowSuccess(true);
+
+// Oculta automáticamente el mensaje después de 3 segundos
+setTimeout(() => setShowSuccess(false), 3000);
 
       // Reset del formulario
       setTipo("");
@@ -244,6 +251,27 @@ const GastosForm = ({ projectId: propProjectId, onGastoCreated }) => {
   };
 
   return (
+
+      <>
+    {showSuccess && (
+      <div
+        style={{
+          background: "rgba(16,185,129,0.15)",
+          color: "#10b981",
+          fontWeight: 600,
+          border: "1px solid rgba(16,185,129,0.3)",
+          borderRadius: 10,
+          padding: "10px 14px",
+          marginBottom: "1rem",
+          textAlign: "center",
+          transition: "opacity 0.3s ease",
+        }}
+      >
+        {successMsg}
+      </div>
+    )}
+
+
     <Form onSubmit={handleSubmit}>
       {/* Mensaje de error general */}
       {error && <Alert variant="danger">{error}</Alert>}
@@ -348,6 +376,7 @@ const GastosForm = ({ projectId: propProjectId, onGastoCreated }) => {
         </Button>
       </div>
     </Form>
+     </>
   );
 };
 
