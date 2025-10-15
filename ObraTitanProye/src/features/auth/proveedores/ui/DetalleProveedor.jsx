@@ -1,26 +1,10 @@
-//DetalleProveedorView.jsx
+// src/views/.../DetalleProveedorView.jsx
 /**
  * Vista: DetalleProveedorView
  * ----------------------------------------------------------------------------
- * Propósito:
- *   - Mostrar el detalle de un proveedor seleccionado (llegado por `location.state`).
- *   - Permitir editar campos básicos y el historial del último pago.
- *   - Soportar escenarios offline: si no hay internet, se alerta y se sincroniza luego.
- *
- * Flujo principal:
- *   1) Se carga el proveedor desde location.state.
- *   2) Con "Editar" se habilitan inputs; con "Guardar" se persisten cambios.
- *   3) "Eliminar" borra el proveedor y regresa a la lista.
- *   4) "Volver" navega a /proveedores.
- *
- * Persistencia:
- *   - `actualizarProveedor` y `eliminarProveedor` (services/firebaseProveedores).
- *   - Se incluye una ruta alternativa `handleEditCategoria` que usa `updateDoc` directo.
- *
- * UI:
- *   - Sidebar fijo + Card con datos editable/no editable.
- *   - Botones superiores con iconos (editar/guardar, eliminar, volver).
- *   - Toast de éxito temporal al guardar.
+ * - Muestra y edita datos de un proveedor.
+ * - Elimina proveedor con confirmación.
+ * - Usa ConfirmModal para alertas/confirmaciones.
  */
 
 import React, { useState } from "react";
@@ -29,8 +13,9 @@ import {
   actualizarProveedor,
   eliminarProveedor,
 } from "../../../../services/proveedoresService";
-import { doc, updateDoc } from "firebase/firestore"; // Para actualización directa (ruta alternativa)
+import { doc, updateDoc } from "firebase/firestore"; // (ruta alternativa no usada por defecto)
 import Sidebar from "../../../../components/Sidebar";
+import ConfirmModal from "../../../../components/ConfirmModal";
 import editIcon from "../../../../assets/iconos/edit.png";
 import checkIcon from "../../../../assets/iconos/check.png";
 import deleteIcon from "../../../../assets/iconos/delete.png";
@@ -41,24 +26,17 @@ const DetalleProveedorView = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Proveedor recibido desde la vista anterior
   const proveedor = location.state?.proveedor;
-  // Recupera el proyecto actual (por si venía desde ProveedoresOverview)
   const project = location.state?.project;
 
-  // Usa varias opciones seguras para obtener el ID del proyecto actual
   const projectId =
     project?.id ||
-    proveedor?.projectId || // en caso de venir dentro del proveedor
-    localStorage.getItem("projectId"); // respaldo desde el almacenamiento local
+    proveedor?.projectId ||
+    localStorage.getItem("projectId");
 
-  // Modo edición ON/OFF
   const [editando, setEditando] = useState(false);
-
-  // Toast de confirmación tras guardar
   const [showToast, setShowToast] = useState(false);
 
-  // Form state controlado (datos editables del proveedor)
   const [formulario, setFormulario] = useState({
     nombre: proveedor?.nombre || "",
     empresa: proveedor?.empresa || "",
@@ -71,19 +49,30 @@ const DetalleProveedorView = () => {
     },
   });
 
-  // Estado de conectividad (para alertar y/o diferir sincronización)
   const [isOffline] = useState(!navigator.onLine);
 
-  // Si no viene proveedor por navegación, se avisa
-  if (!proveedor) return <p>Error: No se proporcionó proveedor.</p>;
+  // ⚠️ Modal informativo (sustituye alert)
+  const [infoModal, setInfoModal] = useState({
+    open: false,
+    variant: "warning", // "success" | "warning" | "error" | "info"
+    title: "",
+    message: "",
+    confirmText: "Entendido",
+  });
 
-  /**
-   * Manejador de cambios: soporta campos simples y anidados (historialPago.*)
-   */
+  // 🗑️ Modal de confirmación de eliminación
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  if (!proveedor) {
+    return (
+      <div style={{ padding: 24 }}>
+        <p>Error: No se proporcionó proveedor.</p>
+      </div>
+    );
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    // Cuando el name es "historialPago.campo" se actualiza de forma anidada
     if (name.startsWith("historialPago.")) {
       const campo = name.split(".")[1];
       setFormulario((prev) => ({
@@ -95,12 +84,6 @@ const DetalleProveedorView = () => {
     }
   };
 
-  /**
-   * Guardar cambios del formulario usando el servicio `actualizarProveedor`.
-   * - Convierte monto a número.
-   * - Si no hay conexión, alerta y confía en sincronización posterior.
-   * - Muestra toast de éxito y cierra modo edición.
-   */
   const handleGuardar = async () => {
     const datosActualizados = {
       ...formulario,
@@ -112,12 +95,16 @@ const DetalleProveedorView = () => {
     };
 
     if (isOffline) {
-      alert(
-        "Sin conexión: Proveedor actualizado localmente. Se sincronizará cuando haya internet."
-      );
+      setInfoModal({
+        open: true,
+        variant: "warning",
+        title: "Sin conexión",
+        message:
+          "Proveedor actualizado localmente. Se sincronizará cuando haya internet.",
+        confirmText: "Entendido",
+      });
     }
 
-    // Actualiza a través del service (puede hacer manejo adicional de offline)
     await actualizarProveedor(proveedor.id, datosActualizados);
 
     setEditando(false);
@@ -125,75 +112,45 @@ const DetalleProveedorView = () => {
     setTimeout(() => setShowToast(false), 3000);
   };
 
-  /**
-   * Eliminar proveedor y volver a la lista.
-   */
   const handleEliminar = async () => {
-    if (window.confirm("¿Estás seguro de eliminar este proveedor?")) {
+    setShowDeleteModal(true);
+  };
+
+  const confirmEliminar = async () => {
+    try {
       await eliminarProveedor(proveedor.id);
+      setShowDeleteModal(false);
       navigate("/proveedores", { state: { project: { id: projectId } } });
+    } catch (err) {
+      setShowDeleteModal(false);
+      setInfoModal({
+        open: true,
+        variant: "error",
+        title: "Error al eliminar",
+        message: "No se pudo eliminar el proveedor. Intenta de nuevo.",
+        confirmText: "Cerrar",
+      });
     }
   };
 
-  /**
-   * Alternativa de edición directa con Firestore (`updateDoc`).
-   * Nota: Esta función no se invoca en los botones por defecto. Mantener
-   * una sola vía de actualización (servicio o directa) para evitar duplicación.
-   */
+  // (Opcional) Alternativa directa con Firestore; no se usa por defecto
   const handleEditCategoria = async () => {
-    if (!formulario.nombre || !formulario.empresa) {
-      alert("Por favor, completa todos los campos antes de actualizar.");
-      return;
-    }
-
-    setEditando(false);
-
-    // ⚠️ Requiere `db` importada desde tu config de Firebase:
-    // import { db } from '.../firebaseconfig'
-    const proveedorRef = doc(db, "proveedores", proveedor.id);
-
-    try {
-      await updateDoc(proveedorRef, {
-        nombre: formulario.nombre,
-        empresa: formulario.empresa,
-        servicios: formulario.servicios,
-        telefono: formulario.telefono,
-        historialPago: formulario.historialPago,
-      });
-
-      if (isOffline) {
-        // Refresco local si no hay conexión
-        // (En escenarios reales, podrías guardar en cola local)
-        // Aquí solo mantenemos el estado actual
-        alert(
-          "Sin conexión: Proveedor actualizado localmente. Se sincronizará cuando haya internet."
-        );
-      } else {
-        // Ok en la nube
-        // (Podrías mostrar un toast también)
-      }
-    } catch (error) {
-      console.error("Error al actualizar el proveedor:", error);
-      alert("Ocurrió un error al actualizar el proveedor: " + error.message);
-    }
+    // import { db } from '.../firebaseconfig' si la usas
+    // const proveedorRef = doc(db, "proveedores", proveedor.id);
+    // await updateDoc(proveedorRef, { ...formulario });
   };
 
   return (
     <div className="layout-proveedores">
-      {/* Navegación lateral persistente */}
       <Sidebar />
-
-      {/* Título de módulo */}
       <h1 className="titulo-fondo-oscuro">Proveedores</h1>
 
       <div className="proveedores-container">
         <div className="proveedor-detalle-card">
-          {/* Encabezado: título + acciones */}
           <div className="encabezado-detalle">
             <h2 className="titulo-proyecto">{formulario.empresa}</h2>
 
             <div className="botones-superiores">
-              {/* Botón dual: Editar ↔ Guardar */}
               <button
                 onClick={() => (editando ? handleGuardar() : setEditando(true))}
                 title={editando ? "Guardar" : "Editar"}
@@ -204,12 +161,10 @@ const DetalleProveedorView = () => {
                 />
               </button>
 
-              {/* Eliminar proveedor */}
               <button onClick={handleEliminar} title="Eliminar">
                 <img src={deleteIcon} alt="Eliminar" />
               </button>
 
-              {/* Volver a listado */}
               <button
                 onClick={() =>
                   navigate("/proveedores", {
@@ -223,7 +178,6 @@ const DetalleProveedorView = () => {
             </div>
           </div>
 
-          {/* Formulario de detalle (inputs deshabilitados si no se edita) */}
           <div className="fila-detalle-vertical">
             <div className="campo-horizontal">
               <label>Nombre:</label>
@@ -313,12 +267,34 @@ const DetalleProveedorView = () => {
         </div>
       </div>
 
-      {/* Toast de éxito tras guardar */}
+      {/* Toast de éxito */}
       {showToast && (
-        <div className="toast-exito-proveedor">
-          ✅ Proveedor actualizado con éxito
-        </div>
+        <div className="toast-exito-proveedor">✅ Proveedor actualizado con éxito</div>
       )}
+
+      {/* Modal de Confirmación de eliminación */}
+      <ConfirmModal
+        open={showDeleteModal}
+        variant="warning"
+        title="¿Eliminar proveedor?"
+        message={`¿Seguro que deseas eliminar a "${formulario.nombre || formulario.empresa}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        showCancel={true}
+        onConfirm={confirmEliminar}
+        onClose={() => setShowDeleteModal(false)}
+      />
+
+      {/* Modal informativo (reemplaza alerts) */}
+      <ConfirmModal
+        open={infoModal.open}
+        variant={infoModal.variant}
+        title={infoModal.title}
+        message={infoModal.message}
+        confirmText={infoModal.confirmText}
+        onConfirm={() => setInfoModal((s) => ({ ...s, open: false }))}
+        onClose={() => setInfoModal((s) => ({ ...s, open: false }))}
+      />
     </div>
   );
 };

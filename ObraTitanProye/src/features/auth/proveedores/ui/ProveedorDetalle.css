@@ -229,3 +229,26 @@ body {
     max-width: 100%;
   }
 }
+
+
+.toast-exito-proveedor {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #1e293b; /* 💚 verde éxito — cámbialo al que desees */
+  color: #fff;               /* texto blanco */
+  padding: 16px 28px;
+  border-radius: 12px;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  z-index: 9999;
+  animation: fadeInOut 3s ease forwards;
+}
+
+/* 🌈 Animación de entrada/salida suave */
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(10px); }
+}

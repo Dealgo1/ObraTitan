@@ -23,6 +23,7 @@ import Sidebar from '../../../../components/Sidebar';
 import PantallaCarga from '../../../../components/PantallaCarga'; // ⬅️ Loader wave
 import '../ui/ListaPagos.css';
 import { format } from 'date-fns';
+import ConfirmModal from '../../../../components/ConfirmModal';
 
 // Íconos
 import editIcon from '../../../../assets/iconos/edit.png';
@@ -34,6 +35,7 @@ const PagosListView = () => {
   // Proyecto provisto vía navegación (state)
   const location = useLocation();
   const { project } = location.state || {};
+  const [confirmDel, setConfirmDel] = useState({ open: false, id: null });
 
   const { userData } = useAuth(); // tenantId
   const navigate = useNavigate();
@@ -144,24 +146,32 @@ const PagosListView = () => {
   /**
    * Elimina un pago (y su gasto vinculado si existe).
    */
-  const eliminarPago = async (id) => {
-    if (confirm('¿Deseas eliminar este pago?')) {
-      try {
-        const refPago = doc(db, 'pagos', id);
-        const pagoSnap = await getDoc(refPago);
-        const pago = pagoSnap.data();
+  // (A) Elimina en BD (pago y gasto vinculado)
+  const doDeletePago = async (id) => {
+    try {
+      const refPago = doc(db, 'pagos', id);
+      const pagoSnap = await getDoc(refPago);
+      const pago = pagoSnap.data();
 
-        if (pago?.gastoId) {
-          await deleteDoc(doc(db, 'gastos', pago.gastoId));
-        }
-
-        await deleteDoc(refPago);
-        setPagos(prev => prev.filter(p => p.id !== id));
-      } catch (error) {
-        console.error('Error eliminando pago/gasto:', error);
+      if (pago?.gastoId) {
+        await deleteDoc(doc(db, 'gastos', pago.gastoId));
       }
+
+      await deleteDoc(refPago);
+      setPagos(prev => prev.filter(p => p.id !== id));
+    } catch (error) {
+      console.error('Error eliminando pago/gasto:', error);
     }
   };
+
+  // (B) Handler del botón "Eliminar" en el ConfirmModal
+  const handleConfirmDelete = async () => {
+    const id = confirmDel.id;
+    if (!id) return;
+    await doDeletePago(id);
+    setConfirmDel({ open: false, id: null });
+  };
+
 
   /** Cambios en inputs/selects del formulario inline */
   const handleChange = (e) => {
@@ -322,9 +332,10 @@ const PagosListView = () => {
                               <button onClick={() => iniciarEdicion(pago)}>
                                 <img src={editIcon} alt="Editar" />
                               </button>
-                              <button onClick={() => eliminarPago(pago.id)}>
+                              <button onClick={() => setConfirmDel({ open: true, id: pago.id })}>
                                 <img src={deleteIcon} alt="Eliminar" />
                               </button>
+
                             </div>
                           </td>
                         </>
@@ -350,7 +361,22 @@ const PagosListView = () => {
       {showToast && (
         <div className="toast-exito-pago">✅ Pago actualizado con éxito</div>
       )}
+
+      <ConfirmModal
+        open={confirmDel.open}
+        variant="warning"
+        title="Eliminar pago"
+        message="¿Deseás eliminar este pago? También se eliminará el gasto vinculado, si existe."
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        showCancel={true}
+        onClose={() => setConfirmDel({ open: false, id: null })}
+        onConfirm={handleConfirmDelete}
+      />
+
     </div>
+
+
   );
 };
 

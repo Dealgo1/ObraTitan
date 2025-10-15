@@ -5,6 +5,8 @@ import FormularioPago from '../ui/FormularioPago'; // 🧾 Componente que contie
 import Sidebar from '../../../../components/Sidebar'; // 📌 Sidebar lateral
 import "../ui/FormularioPago.css"; // 🎨 Estilos del formulario de pago
 import { useAuth } from "../../../../context/authcontext";
+import Close from '../../../../assets/iconos/close.png';
+
 /**
  * 📌 Vista: AgregarPago
  * 
@@ -18,7 +20,7 @@ const AgregarPago = () => {
 
   // 📌 El proyecto llega desde la navegación anterior (state)
   const { project } = location.state || {};
-const { userData } = useAuth(); // <- de aquí sale tenantId
+  const { userData } = useAuth(); // <- de aquí sale tenantId
   /**
    * 📝 Maneja el evento de agregar pago.
    * - Guarda el pago en Firestore
@@ -45,12 +47,25 @@ const { userData } = useAuth(); // <- de aquí sale tenantId
 
         {/* 🧾 Contenedor del formulario */}
         <div className="form-pago-container">
-          <FormularioPago
-            onSubmit={handleAgregarPago}       // ✅ callback cuando se envía el form
-            nombreProyecto={project?.nombre}   // 📌 muestra el nombre del proyecto actual
-            projectId={project?.id}            // 📌 pasa el id para guardar el pago en el proyecto correcto
-          />
+          <div className="form-card">
+            <button
+              type="button"
+              className="go-corner-x"
+              onClick={() => navigate(-1)}
+              title="Volver"
+              aria-label="Volver"
+            >
+              <img src={Close} alt="" />
+            </button>
+
+            <FormularioPago
+              onSubmit={handleAgregarPago}
+              nombreProyecto={project?.nombre}
+              projectId={project?.id}
+            />
+          </div>
         </div>
+
       </div>
     </div>
   );

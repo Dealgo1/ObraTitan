@@ -209,3 +209,48 @@
   font-size: 0.86rem;
   color: #b42318;
 }
+
+
+/* Contenedor centrado y responsivo */
+.form-pago-container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 16px; /* respiro lateral en móviles */
+}
+
+/* Wrapper de la tarjeta para anclar el botón */
+.form-card {
+  position: relative;
+  width: 100%;
+  max-width: 700px; /* mismo ancho que .formulario-pago */
+}
+
+/* Asegúrate de que la tarjeta ocupe el 100% del wrapper */
+.formulario-pago { width: 100%; }
+
+/* Botón X anclado a la esquina superior derecha de la tarjeta */
+.go-corner-x {
+  position: absolute;
+  top: 10px;
+  right: 10px;   /* <— responsive, sin valores fijos */
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: #D35400;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+.go-corner-x img { width: 18px; height: 18px; filter: invert(1); }
+.go-corner-x:hover { transform: scale(1.05); opacity: 0.9; }
+
+/* Toca objetivo un poco más grande en pantallas pequeñas */
+@media (max-width: 768px) {
+  .go-corner-x { width: 40px; height: 40px; }
+  .go-corner-x img { width: 20px; height: 20px; }
+}

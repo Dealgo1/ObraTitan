@@ -50,13 +50,7 @@ const formatFechaParaInput = (fecha) => {
   return date.toISOString().split("T")[0];
 };
 
- const [infoModal, setInfoModal] = useState({
-   open: false,
-   variant: "error",
-   title: "",
-  message: "",
-   confirmText: "Entendido",
- });
+
 
 
 /** Devuelve símbolo de moneda a partir de ISO */
@@ -97,6 +91,13 @@ const GastoDetail = () => {
   const [showModal, setShowModal] = useState(false); // confirmación de eliminar
   const [showFacturaModal, setShowFacturaModal] = useState(false); // preview de factura
   const [errores, setErrores] = useState({});
+  const [infoModal, setInfoModal] = useState({
+    open: false,
+    variant: "error",
+    title: "",
+    message: "",
+    confirmText: "Entendido",
+  });
 
   // Categorías por proyecto
   const [categorias, setCategorias] = useState([]);
@@ -165,13 +166,13 @@ const GastoDetail = () => {
    */
   const handleGuardar = async () => {
     if (gasto.esPago) {
-     setInfoModal({
-       open: true,
-       variant: "error",
-       title: "Acción no permitida",
-      message: "Este gasto proviene de un pago (Caja) y no puede editarse.",
-      confirmText: "Entendido",
-    });
+      setInfoModal({
+        open: true,
+        variant: "error",
+        title: "Acción no permitida",
+        message: "Este gasto proviene de un pago (Caja) y no puede editarse.",
+        confirmText: "Entendido",
+      });
       setModoEdicion(false);
       return;
     }
@@ -217,7 +218,13 @@ const GastoDetail = () => {
    */
   const handleEliminar = async () => {
     if (gasto.esPago) {
-      alert("❌ Este gasto proviene de un pago (Caja) y no puede eliminarse.");
+      setInfoModal({
+        open: true,
+        variant: "error",
+        title: "Acción no permitida",
+        message: "Este gasto proviene de un pago (Caja) y no puede eliminarse.",
+        confirmText: "Entendido",
+      });
       setShowModal(false);
       return;
     }
@@ -470,22 +477,19 @@ const GastoDetail = () => {
       {showToast && <div className="toast-exito">✅ Gasto actualizado con éxito</div>}
 
       {/* Modal de Confirmación de eliminación */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Confirmar Eliminación</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          ¿Estás seguro de que deseas eliminar este gasto?
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cancelar
-          </Button>
-          <Button variant="danger" onClick={handleEliminar}>
-            Eliminar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      {/* Confirmación de eliminación con tu componente */}
+      <ConfirmModal
+        open={showModal}
+        variant="warning"
+        title="Confirmar Eliminación"
+        message="¿Estás seguro de que deseas eliminar este gasto?"
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        showCancel={true}
+        onClose={() => setShowModal(false)}
+        onConfirm={handleEliminar}
+      />
+
 
       {/* Modal para previsualizar/descargar factura */}
       <Modal
@@ -532,6 +536,18 @@ const GastoDetail = () => {
           )}
         </Modal.Body>
       </Modal>
+
+
+      {/* Modal informativo (reemplaza alerts) */}
+      <ConfirmModal
+        open={infoModal.open}
+        variant={infoModal.variant}
+        title={infoModal.title}
+        message={infoModal.message}
+        confirmText={infoModal.confirmText}
+        onConfirm={() => setInfoModal((s) => ({ ...s, open: false }))}
+        onClose={() => setInfoModal((s) => ({ ...s, open: false }))}
+      />
     </div>
   );
 };
