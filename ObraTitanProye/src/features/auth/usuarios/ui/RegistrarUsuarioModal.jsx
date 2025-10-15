@@ -1,14 +1,14 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth, db } from "../../../../services/firebaseconfig"; // <-- ajusta si tu config exporta diferente
+import { getApp, initializeApp, deleteApp } from "firebase/app";
+import { getAuth, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, setDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../../../../services/firebaseconfig"; // usa tu instancia principal de Firestore
 import { useAuth } from "../../../../context/authcontext";
 import "../ui/RegistrarUsuarioModal.css";
+
 const ROLES_PERMITIDOS = ["administrador", "ingeniero", "contador", "lector"];
-const EMAIL_REGEX =
-  /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-const NOMBRE_REGEX =
-  /^[A-Za-zÁ-ÖØ-öø-ÿÑñ'.\-\s]{3,60}$/; // letras, espacios, tildes, . - '
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const NOMBRE_REGEX = /^[A-Za-zÁ-ÖØ-öø-ÿÑñ'.\-\s]{3,60}$/;
 const TEL_REGEX = /^[0-9+\-\s()]{7,20}$/;
 
 const defaultForm = {
@@ -22,75 +22,62 @@ const defaultForm = {
 };
 
 const RegistrarUsuarioModal = ({ onClose }) => {
-  const { userData } = useAuth(); // debe contener tenantId y (opcional) info del admin
+  const { userData } = useAuth(); // debe contener tenantId
   const [form, setForm] = useState(defaultForm);
   const [errors, setErrors] = useState({});
   const [showPass, setShowPass] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
   const modalRef = useRef(null);
   const firstFieldRef = useRef(null);
 
-  // ---- Accesibilidad: enfocar primer campo y manejar ESC
+  // Accesibilidad: focus 1er campo + cerrar con Esc
   useEffect(() => {
     firstFieldRef.current?.focus();
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose?.();
-    };
+    const onKey = (e) => { if (e.key === "Escape") onClose?.(); };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  // ---- Cerrar si hacen click fuera de la tarjeta
+  // Cerrar si hacen click fuera de la tarjeta
   const onOverlayClick = (e) => {
     if (e.target === e.currentTarget) onClose?.();
   };
 
-  // ---- Validaciones
+  // Validaciones
   const validate = (draft = form) => {
     const v = {};
-
-    // nombre / apellido
     const nombre = (draft.nombre || "").trim().replace(/\s+/g, " ");
     const apellido = (draft.apellido || "").trim().replace(/\s+/g, " ");
+
     if (!nombre) v.nombre = "Nombre es requerido.";
-    else if (!NOMBRE_REGEX.test(nombre))
-      v.nombre = "Solo letras/espacios (3–60).";
+    else if (!NOMBRE_REGEX.test(nombre)) v.nombre = "Solo letras/espacios (3–60).";
+
     if (!apellido) v.apellido = "Apellido es requerido.";
-    else if (!NOMBRE_REGEX.test(apellido))
-      v.apellido = "Solo letras/espacios (3–60).";
+    else if (!NOMBRE_REGEX.test(apellido)) v.apellido = "Solo letras/espacios (3–60).";
 
-    // correo
     if (!draft.correo) v.correo = "Correo es requerido.";
-    else if (!EMAIL_REGEX.test(draft.correo))
-      v.correo = "Formato de correo inválido.";
+    else if (!EMAIL_REGEX.test(draft.correo)) v.correo = "Formato de correo inválido.";
 
-    // teléfono
-    if (draft.telefono && !TEL_REGEX.test(draft.telefono))
-      v.telefono = "Teléfono inválido.";
+    if (draft.telefono && !TEL_REGEX.test(draft.telefono)) v.telefono = "Teléfono inválido.";
 
-    // rol
     if (!draft.rol) v.rol = "Rol es requerido.";
-    else if (!ROLES_PERMITIDOS.includes(draft.rol))
-      v.rol = "Rol no permitido.";
+    else if (!ROLES_PERMITIDOS.includes(draft.rol)) v.rol = "Rol no permitido.";
 
-    // password
-    // Reglas: min 8, al menos 1 may, 1 min, 1 número
+    // Password fuerte: min 8, 1 may, 1 min, 1 número
     const pass = draft.password || "";
     if (!pass) v.password = "Contraseña requerida.";
     else {
       if (pass.length < 8) v.password = "Mínimo 8 caracteres.";
       if (!/[a-z]/.test(pass) || !/[A-Z]/.test(pass) || !/[0-9]/.test(pass)) {
-        v.password = (v.password ? v.password + " " : "") +
-          "Debe incluir mayúscula, minúscula y número.";
+        v.password = (v.password ? v.password + " " : "") + "Debe incluir mayúscula, minúscula y número.";
       }
     }
 
     if (!draft.confirmPassword) v.confirmPassword = "Confirma la contraseña.";
-    else if (draft.confirmPassword !== draft.password)
-      v.confirmPassword = "Las contraseñas no coinciden.";
+    else if (draft.confirmPassword !== draft.password) v.confirmPassword = "Las contraseñas no coinciden.";
 
-    // tenantId
     if (!userData?.tenantId) v.tenant = "Falta tenantId del usuario actual.";
 
     return v;
@@ -113,9 +100,7 @@ const RegistrarUsuarioModal = ({ onClose }) => {
     e.preventDefault();
     const nextErrors = validate();
     setErrors(nextErrors);
-
     if (Object.keys(nextErrors).length > 0) {
-      // Enfoca el primer campo con error
       const firstErrorKey = Object.keys(nextErrors)[0];
       const el = modalRef.current?.querySelector(`[name="${firstErrorKey}"]`);
       el?.focus();
@@ -123,16 +108,23 @@ const RegistrarUsuarioModal = ({ onClose }) => {
     }
 
     setSubmitting(true);
+    setSuccessMsg("");
+
     try {
-      // 1) Crear en Firebase Auth
+      // === Crear Auth secundario para NO afectar tu sesión actual ===
+      const primaryApp = getApp();
+      const secondaryApp = initializeApp(primaryApp.options, "secondary-" + Date.now());
+      const secondaryAuth = getAuth(secondaryApp);
+
+      // 1) Crear en Firebase Auth (secundario)
       const cred = await createUserWithEmailAndPassword(
-        auth,
+        secondaryAuth,
         form.correo,
         form.password
       );
+      const uid = cred.user.uid;
 
       // 2) Crear documento en Firestore
-      const uid = cred.user.uid;
       const payload = {
         uid,
         nombre: form.nombre.trim().replace(/\s+/g, " "),
@@ -144,26 +136,23 @@ const RegistrarUsuarioModal = ({ onClose }) => {
         estado: "activo",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
-        // flags útiles en tu app
         mustChangePassword: false,
       };
-
       await setDoc(doc(db, "users", uid), payload);
 
-      // 3) Feedback y cerrar
-      alert("Usuario registrado correctamente.");
-      onClose?.();
+      // 3) Cerrar sesión y destruir la app secundaria
+      try { await signOut(secondaryAuth); } catch {}
+      try { await deleteApp(secondaryApp); } catch {}
+
+      // 4) Mostrar mensaje de éxito y cerrar modal automáticamente
+      setSuccessMsg("✅ Usuario registrado correctamente.");
+      setTimeout(() => onClose?.(), 1200);
     } catch (err) {
       console.error("Error registrando usuario:", err);
       let msg = "No se pudo registrar el usuario.";
-      // mensajes más amigables
-      if (String(err?.code).includes("auth/email-already-in-use")) {
-        msg = "Ese correo ya está registrado.";
-      }
-      if (String(err?.code).includes("auth/weak-password")) {
-        msg = "La contraseña es demasiado débil.";
-      }
-      alert(msg);
+      if (String(err?.code).includes("auth/email-already-in-use")) msg = "Ese correo ya está registrado.";
+      if (String(err?.code).includes("auth/weak-password")) msg = "La contraseña es demasiado débil.";
+      setErrors((prev) => ({ ...prev, global: msg }));
     } finally {
       setSubmitting(false);
     }
@@ -174,14 +163,13 @@ const RegistrarUsuarioModal = ({ onClose }) => {
       <div className="registrar-modal__card" ref={modalRef} role="dialog" aria-modal="true" aria-labelledby="reg-title">
         <header className="registrar-modal__header">
           <h2 id="reg-title">Registrar usuario (login)</h2>
-          <button
-            className="registrar-modal__close"
-            onClick={onClose}
-            aria-label="Cerrar"
-          >
-            ×
-          </button>
+          <button className="registrar-modal__close" onClick={onClose} aria-label="Cerrar">X</button>
         </header>
+
+        {/* Mensaje de éxito */}
+        {successMsg && <div className="alerta-exito">{successMsg}</div>}
+        {/* Mensaje de error global */}
+        {errors.global && <div className="alerta-error" style={{ margin: "10px 16px 0" }}>{errors.global}</div>}
 
         <form className="registrar-modal__form" onSubmit={handleSubmit} noValidate>
           <div className="registrar-modal__grid">
@@ -310,9 +298,7 @@ const RegistrarUsuarioModal = ({ onClose }) => {
                   {showPass2 ? "🙈" : "👁️"}
                 </button>
               </div>
-              {errors.confirmPassword && (
-                <small className="error">{errors.confirmPassword}</small>
-              )}
+              {errors.confirmPassword && <small className="error">{errors.confirmPassword}</small>}
             </div>
           </div>
 
@@ -335,10 +321,8 @@ const RegistrarUsuarioModal = ({ onClose }) => {
             </button>
           </div>
 
-          {/* Hint de reglas de password */}
           <p className="password-hint">
-            La contraseña debe tener al menos 8 caracteres e incluir
-            mayúsculas, minúsculas y números.
+            La contraseña debe tener al menos 8 caracteres e incluir mayúsculas, minúsculas y números.
           </p>
         </form>
       </div>
