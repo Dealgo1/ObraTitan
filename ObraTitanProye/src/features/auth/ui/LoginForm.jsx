@@ -1,6 +1,4 @@
 // src/modules/auth/components/LoginForm.jsx
-
-
 const LoginForm = ({
   email,
   password,

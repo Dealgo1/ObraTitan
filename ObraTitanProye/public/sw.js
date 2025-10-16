@@ -2,10 +2,10 @@
 // ⚙️ Service Worker — ObraTitan (seguro)
 // =========================================
 
-const CACHE_NAME = 'obra-titan-cache-v12';
+const CACHE_NAME = 'obra-titan-cache-v13';
 const URLS_TO_CACHE = [
   '/', '/index.html', '/manifest.webmanifest',
-  '/logo-192.png', '/logo-512.png', '/vite.svg'
+  '/logo-192.png', '/logo-512.png'
 ];
 
 // Rutas/hosts que NUNCA debe interceptar (HMR, herramientas, etc.)
