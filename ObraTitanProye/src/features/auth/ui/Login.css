@@ -1,290 +1,208 @@
-/* ==========================================================================
-   Tipografía y fondo animado global
-   ========================================================================== */
-@import url('https://fonts.googleapis.com/css2?family=Arapey:wght@400;700&display=swap');
+/* Paleta ObraTitan */
+:root {
+  --ot-bg: #1E293B;
+  --ot-bg-dark: #0F1626;
+  --ot-amber: #E3A008;
+  --ot-orange: #D35400;
+  --ot-text: #f8fafc;
+  --ot-muted: #b8c0cc;
+  --ot-radius: 14px;
+  --ot-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --ot-font-serif: 'Arapey', serif;
+  --ot-font-sans: 'Inter', sans-serif;
+}
 
+/* Layout general */
 body {
   margin: 0;
-  padding: 0;
-  font-family: 'Arapey', serif;
-
-  /* Fondo radial animado (efecto glow) */
-  background: radial-gradient(circle at center, #0e0e0e, #000);
-  background-size: 200% 200%;
-  animation: glowBackground 10s ease infinite;
+  background: var(--ot-bg);
+  font-family: var(--ot-font-sans);
+  color: var(--ot-text);
 }
 
-/* Animación de desplazamiento del fondo */
-@keyframes glowBackground {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* ==========================================================================
-   Contenedor principal del login y selector (login/registro)
-   ========================================================================== */
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start; /* separa del borde superior */
-  align-items: center;
-  padding: 3rem 1rem;
-}
-
-.form-toggle {
+.ot-login-page {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 1rem;
-  font-size: 1.2rem;
-  color: #ccc;
+  min-height: 100vh;
+  padding: 1rem;
 }
 
-/* Interacción del toggle (texto) */
-.form-toggle span {
-  cursor: pointer;
-  transition: color 0.3s ease;
+/* Contenedor principal */
+.ot-login-card {
+  display: flex;
+  flex-wrap: wrap;
+  background: var(--ot-bg-dark);
+  border-radius: var(--ot-radius);
+  box-shadow: var(--ot-shadow);
+  overflow: hidden;
+  width: min(100%, 900px);
 }
 
-/* Estado activo (login/registro seleccionado) */
-.form-toggle .activo {
-  color: #FFD700;
-  font-weight: bold;
-  text-shadow: 0 0 6px #FFD700;
-  text-decoration: underline;
-}
-
-/* ==========================================================================
-   Switch visual (checkbox + slider) para alternar vistas
-   ========================================================================== */
-.switch {
-  position: relative;
-  width: 50px;
-  height: 26px;
-}
-
-.switch input {
-  opacity: 0; /* esconde el checkbox nativo */
-  width: 0;
-  height: 0;
-}
-
-/* Rail del switch */
-.slider {
-  position: absolute;
-  inset: 0;
-  background-color: #333;
-  border-radius: 34px;
-}
-
-/* Thumb del switch */
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 20px;
-  width: 20px;
-  left: 4px;
-  bottom: 3px;
-  background-color: #FFD700;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
-}
-
-/* Movimiento del thumb cuando está activo */
-input:checked + .slider:before {
-  transform: translateX(24px);
-}
-
-/* ==========================================================================
-   Tarjeta "flip" (frente: login | reverso: registro)
-   ========================================================================== */
-.card-login {
-  width: 100%;
-  max-width: 400px;
-  perspective: 1000px; /* necesario para efecto 3D */
-}
-
-.card-login-inner {
-  width: 100%;
-  transition: transform 0.6s ease-in-out;
-  transform-style: preserve-3d; /* mantener caras en 3D */
-  position: relative;
-}
-
-/* Estado volteado (muestra el reverso/registro) */
-.login-container.flipped .card-login-inner {
-  transform: rotateY(180deg);
-}
-
-/* Caras de la tarjeta */
-.card-front,
-.card-back {
-  background: #111;
+/* Panel izquierdo (info) */
+.ot-left {
+  flex: 1 1 45%;
+  background: linear-gradient(180deg, var(--ot-orange), var(--ot-amber));
+  color: #111;
   padding: 2rem;
-  border-radius: 20px;
-  border: 2px solid #FFD700;
-  box-shadow: 0 0 16px #FFD70066;
-  backface-visibility: hidden; /* oculta la cara posterior cuando rota */
-  position: absolute;
-  width: 100%;
-  top: 0;
-  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
 }
 
-/* Reverso rotado 180° */
-.card-back {
-  transform: rotateY(180deg);
+.ot-logo {
+  width: 90px;
+  margin-bottom: 1rem;
 }
 
-/* ==========================================================================
-   Títulos, inputs y botones
-   ========================================================================== */
-/* Título del formulario */
-.titulo-formulario {
-  text-align: center;
-  color: #FFD700;
+.ot-brand {
+  font-family: var(--ot-font-serif);
   font-size: 2rem;
-  margin-bottom: 2rem;
-  text-shadow: 0 0 8px #FFD700;
+  margin-bottom: 0.5rem;
 }
 
-/* Grupo input con ícono a la izquierda */
-.input-icon {
-  position: relative;
+.ot-description {
+  font-size: 1.05rem;
+  margin-bottom: 1rem;
+}
+
+.ot-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #111;
+  font-weight: 500;
+}
+.ot-features li {
+  margin: 0.3rem 0;
+}
+
+/* Panel derecho (formulario) */
+.ot-right {
+  flex: 1 1 55%;
+  padding: 2.5rem;
+  background: var(--ot-bg);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ot-title {
+  text-align: center;
+  color: var(--ot-amber);
+  font-family: var(--ot-font-serif);
   margin-bottom: 1.5rem;
 }
 
-/* Ícono flotante dentro del input */
-.input-icon .icon {
+/* Campos */
+.ot-field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+}
+.ot-field label {
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+  color: var(--ot-muted);
+}
+.ot-field input {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0F1626;
+  color: var(--ot-text);
+  font-size: 1rem;
+  transition: all 0.25s ease;
+}
+.ot-field input:focus {
+  outline: none;
+  border-color: var(--ot-amber);
+  box-shadow: 0 0 0 3px rgba(227, 160, 8, 0.25);
+}
+
+/* Contraseña */
+.ot-password {
+  position: relative;
+}
+.ot-toggle {
   position: absolute;
-  left: 12px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  color: #FFD700;
-}
-
-/* Campo de texto */
-.input-icon input {
-  width: 100%;
-  padding: 12px 12px 12px 42px; /* espacio para el ícono */
-  background-color: #222;
   border: none;
-  border-radius: 8px;
-  color: white;
-  font-size: 1rem;
-  box-shadow: inset 0 0 3px #000;
-  transition: all 0.3s ease;
-}
-
-/* Enfoque del input (accesibilidad visual) */
-.input-icon input:focus {
-  outline: none;
-  box-shadow: 0 0 8px #FFD700;
-  border: 1px solid #FFD700;
+  background: transparent;
+  color: var(--ot-muted);
+  cursor: pointer;
 }
 
 /* Botón principal */
-.btn-formulario {
-  background: #FFD700;
-  border: none;
-  width: 100%;
-  padding: 12px;
+.ot-btn {
+  background: linear-gradient(90deg, var(--ot-amber), var(--ot-orange));
+  color: #111;
   font-weight: bold;
+  border: none;
   border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 0 8px #FFD70066;
+  width: 100%;
+}
+.ot-btn:hover {
+  filter: brightness(0.95);
+  box-shadow: 0 0 10px rgba(227, 160, 8, 0.4);
+}
+.ot-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
-.btn-formulario:hover {
-  background-color: #ffe042;
-  box-shadow: 0 0 12px #FFD700;
-  transform: scale(1.02);
-}
-
-/* Mensaje de error contextual */
-.error-msg {
-  background-color: #2a2a2a;
+/* Alertas */
+.ot-alert {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ffaaaa;
   border-left: 4px solid #e74c3c;
-  color: #e74c3c;
-  padding: 0.8rem;
-  border-radius: 6px;
+  padding: 10px 12px;
+  border-radius: 8px;
   margin-bottom: 1rem;
   font-size: 0.95rem;
   text-align: center;
 }
 
-/* ==========================================================================
-   Responsive (móviles <= 500px)
-   ========================================================================== */
-@media (max-width: 500px) {
-  .login-container {
-    padding: 2rem 1rem;
-  }
+/* Enlace inferior */
+.ot-link {
+  margin-top: 1rem;
+  background: none;
+  border: none;
+  color: var(--ot-amber);
+  font-size: 0.9rem;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: center;
+}
+.ot-link:hover {
+  color: var(--ot-orange);
+}
 
-  .form-toggle {
+/* Responsive */
+@media (max-width: 768px) {
+  .ot-login-card {
     flex-direction: column;
-    gap: 0.5rem;
-    font-size: 1.05rem;
   }
-
-  .titulo-formulario {
-    font-size: 1.6rem;
+  .ot-left {
+    align-items: center;
+    text-align: center;
   }
-
-  .btn-formulario {
-    font-size: 1rem;
-  }
-
-  .input-icon input {
-    font-size: 1rem;
+  .ot-right {
+    padding: 2rem 1.5rem;
   }
 }
-
-/* ==========================================================================
-   Glow de fondo adicional detrás del login (decorativo)
-   ========================================================================== */
-.login-container::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(60deg, #D35400, #E3A008, #d35400ca);
-  background-size: 300% 300%;
-  animation: neonMove 10s ease infinite;
-  z-index: 0;
-  filter: blur(20px);
-  opacity: 0.2;
+@media (max-width: 400px) {
+  .ot-left {
+    padding: 1.5rem 1rem;
+  }
+  .ot-right {
+    padding: 1.5rem 1rem;
+  }
 }
-
-/* Animación del glow decorativo */
-@keyframes neonMove {
-  0% { background-position: 0% 100%; }
-  50% { background-position: 100% 0%; }
-  100% { background-position: 0% 100%; }
-}
-
-/* ==========================================================================
-   Popup de éxito (registro)
-   ========================================================================== */
-.popup-success {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  background-color: #0f0;
-  color: black;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-weight: bold;
-  font-size: 1rem;
-  box-shadow: 0 0 10px #0f0;
-  animation: fadeOut 2s ease-in-out forwards; /* desaparece solo */
-  z-index: 9999;
-}
-
-/* Animación del popup (desvanece y sube) */
-@keyframes fadeOut {
-  0% { opacity: 1; transform: translateY(0); }
-  80% { opacity: 1; }
-  100% { opacity: 0; transform: translateY(-20px); }
-}
+/* Fin de Paleta ObraTitan */
