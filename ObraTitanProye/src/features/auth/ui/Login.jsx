@@ -9,7 +9,7 @@ import {
 import { appfirebase } from "../../../services/firebaseconfig";
 import LoginForm from "./LoginForm";
 import "./Login.css";
-import logo from "../../../assets/iconos/logo.png"; // tu logo lateral
+import logo from "../../../assets/iconos/Logo.png"; // tu logo lateral
 
 const Login = () => {
   const navigate = useNavigate();
