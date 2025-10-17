@@ -490,6 +490,13 @@ const ActividadesList = () => {
     const estados = ["enProceso", "finalizado", "cancelado"];
     const index = estados.indexOf(actividad.estado);
     let nuevoEstado = estados[(index + 1) % estados.length];
+const isFormControl = (el) =>
+  el &&
+  (el.tagName === 'INPUT' ||
+    el.tagName === 'TEXTAREA' ||
+    el.tagName === 'SELECT' ||
+    el.tagName === 'BUTTON' ||
+    el.isContentEditable === true);
 
     // Si se intenta pasar a "finalizado", valida subtareas (solo si existen)
     if (nuevoEstado === "finalizado") {
@@ -670,10 +677,7 @@ const ActividadesList = () => {
                   onClick={() => toggleVisibilidad(act.id)}
                   role="button"
                   tabIndex={0}
-                  onKeyDown={(e) =>
-                    (e.key === "Enter" || e.key === " ") &&
-                    toggleVisibilidad(act.id)
-                  }
+                  
                 >
                   <div className="info-tarea">
                     {/* Checkbox maestro: marca todas si ya están completas (validado) */}
